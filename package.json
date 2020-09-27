@@ -7,7 +7,19 @@
   },
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha"
+    "serve-doc": "documentation serve --shallow -w index.js formats/music.js formats/musicHandler.js",
+    "test": "./node_modules/mocha/bin/mocha",
+    "watch": "npm-watch"
+  },
+  "watch": {
+    "serve-doc": [
+      "index.js",
+      "formats/*.js"
+    ],
+    "test": [
+      "index.js",
+      "{formats,test}/*.js"
+    ]
   },
   "repository": {
     "type": "git",
@@ -40,7 +52,8 @@
     "documentation": "^13.0.2",
     "eslint": "^7.9.0",
     "mocha": "^8.1.3",
-    "mocha-eslint": "^6.0.0"
+    "mocha-eslint": "^6.0.0",
+    "npm-watch": "^0.7.0"
   },
   "directories": {
     "test": "test"
