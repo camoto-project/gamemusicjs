@@ -151,9 +151,9 @@ class Operations
 		}
 
 		console.warn('Saving to', params.target, 'as', params.format);
-		let outContent;
+		let outContent, outMessages = [];
 		try {
-			outContent = handler.generate(this.music);
+			outContent = handler.generate(this.music, outMessages);
 		} catch (e) {
 			debug(e);
 			throw new OperationsError(`save: generate failed - ${e.message}`);
@@ -168,6 +168,13 @@ class Operations
 			);
 		});
 		promises.push(fs.promises.writeFile(params.target, outContent.main));
+
+		if (outMessages.length) {
+			console.log('There were warnings generated while saving:\n');
+			for (let i = 0; i < outMessages.length; i++) {
+				console.log((i + 1).toString().padStart(2) + ': ' + outMessages[i]);
+			}
+		}
 
 		return Promise.all(promises);
 	}
