@@ -31,6 +31,7 @@ const fileTypes = [
 
 	// These formats require enumeration, sometimes all the way to the
 	// end of the file, so they are next.
+	...require('./formats/mus-imf-idsoftware.js'),
 
 	// These formats are so ambiguous that they are often misidentified,
 	// so they are last.
