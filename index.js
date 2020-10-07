@@ -118,6 +118,6 @@ class GameMusic
 	}
 };
 
-GameMusic.Music = require('./formats/music.js');
+GameMusic.Music = require('./src/music.js');
 
 module.exports = GameMusic;
