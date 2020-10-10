@@ -249,38 +249,38 @@ class UtilOPL
 		const chipOffset = 0x100 * (channel / 9 >>> 0);
 		const chipChannel = channel % 9;
 
-		function getOp(op) {
+		function getOp(chipOperOffset) {
 			return {
-				enableTremolo: (regs[chipOffset + BASE_CHAR_MULT + op] >> 7) & 1,
-				enableVibrato: (regs[chipOffset + BASE_CHAR_MULT + op] >> 6) & 1,
-				enableSustain: (regs[chipOffset + BASE_CHAR_MULT + op] >> 5) & 1,
-				enableKSR:     (regs[chipOffset + BASE_CHAR_MULT + op] >> 4) & 1,
-				freqMult:       regs[chipOffset + BASE_CHAR_MULT + op] & 0x0F,
-				scaleLevel:     regs[chipOffset + BASE_SCAL_LEVL + op] >> 6,
-				outputLevel:    regs[chipOffset + BASE_SCAL_LEVL + op] & 0x3F,
-				attackRate:     regs[chipOffset + BASE_ATCK_DCAY + op] >> 4,
-				decayRate:      regs[chipOffset + BASE_ATCK_DCAY + op] & 0x0F,
-				sustainRate:    regs[chipOffset + BASE_SUST_RLSE + op] >> 4,
-				releaseRate:    regs[chipOffset + BASE_SUST_RLSE + op] & 0x0F,
-				waveSelect:     regs[chipOffset + BASE_WAVE      + op] & 0x07,
+				enableTremolo: (regs[BASE_CHAR_MULT + chipOperOffset] >> 7) & 1,
+				enableVibrato: (regs[BASE_CHAR_MULT + chipOperOffset] >> 6) & 1,
+				enableSustain: (regs[BASE_CHAR_MULT + chipOperOffset] >> 5) & 1,
+				enableKSR:     (regs[BASE_CHAR_MULT + chipOperOffset] >> 4) & 1,
+				freqMult:       regs[BASE_CHAR_MULT + chipOperOffset] & 0x0F,
+				scaleLevel:     regs[BASE_SCAL_LEVL + chipOperOffset] >> 6,
+				outputLevel:    regs[BASE_SCAL_LEVL + chipOperOffset] & 0x3F,
+				attackRate:     regs[BASE_ATCK_DCAY + chipOperOffset] >> 4,
+				decayRate:      regs[BASE_ATCK_DCAY + chipOperOffset] & 0x0F,
+				sustainRate:    regs[BASE_SUST_RLSE + chipOperOffset] >> 4,
+				releaseRate:    regs[BASE_SUST_RLSE + chipOperOffset] & 0x0F,
+				waveSelect:     regs[BASE_WAVE      + chipOperOffset] & 0x07,
 			};
 		}
 
-		// TODO: Make a `Patch` instance
+		const regOffset = chipOffset + chipChannel;
+
 		let patch = new Music.Patch.OPL({
 			slot: [],
-			feedback: (regs[chipOffset + BASE_FEED_CONN + chipChannel] >> 1) & 0x07,
-			connection: regs[chipOffset + BASE_FEED_CONN + chipChannel] & 1,
+			feedback: (regs[BASE_FEED_CONN + regOffset] >> 1) & 0x07,
+			connection: regs[BASE_FEED_CONN + regOffset] & 1,
 		});
 
 		for (let s = 0; s < 4; s++) {
 			if (slots[s]) {
-				const operator = this.oplOperatorOffset(channel, s);
-				patch.slot[s] = getOp(operator);
+				const operatorOffset = this.oplOperatorOffset(channel, s);
+				patch.slot[s] = getOp(operatorOffset);
 			}
 		}
 
-		const regOffset = chipOffset + chipChannel;
 		return {
 			fnum: ((regs[BASE_KEYON_FREQ + regOffset] & 0x3) << 8)
 				| regs[BASE_FNUM_L + regOffset],

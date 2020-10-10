@@ -67,6 +67,38 @@ function appendOPLEvents(patches, events, oplState, oplStatePrev)
 		oplStatePrev[0x105] = oplState[0x105];
 	}
 
+	if (oplDiff[0xBD]) {
+		// We are assuming these values are set globally for the whole chip, even on
+		// an OPL3 where the register only exists for the lower registers.
+		// @todo Confirm this applies to all 18 channels and not just the lower 9.
+		if (oplDiff[0xBD] & 0x80) { // tremolo mode changed
+			events.push(new Music.ConfigurationEvent({
+				option: Music.ConfigurationEvent.Option.EnableDeepTremolo,
+				value: !!(oplState[0xBD] & 0x80),
+			}));
+		}
+
+		if (oplDiff[0xBD] & 0x40) { // vibrato mode changed
+			events.push(new Music.ConfigurationEvent({
+				option: Music.ConfigurationEvent.Option.EnableDeepVibrato,
+				value: !!(oplState[0xBD] & 0x40),
+			}));
+		}
+
+		if (oplDiff[0xBD] & 0x20) { // rhythm mode changed
+			events.push(new Music.ConfigurationEvent({
+				option: Music.ConfigurationEvent.Option.EnableRhythm,
+				value: !!(oplState[0xBD] & 0x20),
+			}));
+		}
+
+		// Mark just these bits as processed, so the other bits can be handled
+		// later in the percussive note-on handler.
+		const mask = 0x80 + 0x40 + 0x20;
+		oplStatePrev[0xBD] &= mask;
+		oplStatePrev[0xBD] |= oplState[0xBD] & mask;
+	}
+
 	// Handle new note on events (not notes currently playing)
 	const checkForNote = (channel, slots, rhythm) => {
 		// If the channel is >= 8, set chipOffset to 0x100, otherwise use 0.
@@ -76,26 +108,28 @@ function appendOPLEvents(patches, events, oplState, oplStatePrev)
 		// If this is a rhythm instrument, use its keyon bit, otherwise use the
 		// normal channel keyon bit.
 		const keyOnChange = !!((rhythm !== undefined)
-			? oplDiff[0xBD] & (1 << rhythm)
-			: oplDiff[0xB0 + chipChannel + chipOffset] & 0x20);
+			? oplDiff[0xBD] & (1 << rhythm) // 0xBD is in lower register set only
+			: oplDiff[chipChannel + 0xB0 + chipOffset] & 0x20);
 
 		// Ignore this channel if the note hasn't changed (was already playing or
 		// already off).
 		if (!keyOnChange) return;
 
-		const keyOn = !!(rhythm
+		const keyOn = !!((rhythm !== undefined)
 			? oplState[0xBD] & (1 << rhythm)
-			: oplState[0xB0 + chipChannel + chipOffset] & 0x20);
+			: oplState[chipOffset + 0xB0 + chipChannel] & 0x20);
 
 		// Mark register as processed.
 		const setPrevState = () => {
 			if (rhythm === undefined) {
 				for (const i of [0xB0]) {
-					const offset = i + chipChannel + chipOffset;
+					const offset = chipOffset + i + chipChannel;
 					oplStatePrev[offset] = oplState[offset];
 				}
 			} else {
-				oplStatePrev[0xBD] = oplState[0xBD];
+				// Mark rhythm-mode keyon bit as processed
+				oplStatePrev[0xBD] &= ~(1 << rhythm);
+				oplStatePrev[0xBD] |= oplState[0xBD] & (1 << rhythm);
 			}
 		};
 
@@ -114,6 +148,10 @@ function appendOPLEvents(patches, events, oplState, oplStatePrev)
 
 		// Compare active patch  to known ones, add if not.
 		const channelSettings = UtilOPL.getChannelSettings(oplState, channel, slots);
+		// Mark frequency registers as processed.
+		oplStatePrev[chipOffset + 0xB0 + chipChannel] &= ~0x1F;
+		oplStatePrev[chipOffset + 0xB0 + chipChannel] |= oplState[chipOffset + 0xB0 + chipChannel] & 0x1F;
+
 		let patch = channelSettings.patch;
 		const idxInstrument = UtilOPL.findAddPatch(patches, patch);
 
@@ -136,18 +174,17 @@ function appendOPLEvents(patches, events, oplState, oplStatePrev)
 	}
 
 	const rhythmOn = !!(oplState[0xBD] & 0x20);
-	const melodicChannels = rhythmOn ? 6 : 9;
 
 	// Check if any channels are in four-operator mode.
 	let op4 = [];
 	op4[0] = !!(oplState[0x104] & 0x01);
 	op4[1] = !!(oplState[0x104] & 0x02);
 	op4[2] = !!(oplState[0x104] & 0x04);
-	op4[8] = !!(oplState[0x104] & 0x08);
-	op4[9] = !!(oplState[0x104] & 0x10);
-	op4[10] = !!(oplState[0x104] & 0x20);
+	op4[9] = !!(oplState[0x104] & 0x08);
+	op4[10] = !!(oplState[0x104] & 0x10);
+	op4[11] = !!(oplState[0x104] & 0x20);
 
-	for (let c = 0; c < melodicChannels; c++) {
+	for (let c = 0; c < 18; c++) {
 		if (op4[c]) {
 			checkForNote(c, [1, 1, 1, 1]); // 4op
 		} else if ((c === 6) && rhythmOn) {
