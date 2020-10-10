@@ -75,6 +75,7 @@ class NoteOnEvent extends Event {
 
 	clone() {
 		return new NoteOnEvent({
+			custom: this.custom,
 			frequency: this.frequency,
 			velocity: this.velocity,
 			instrument: this.instrument,

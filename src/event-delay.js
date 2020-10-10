@@ -41,6 +41,7 @@ class DelayEvent extends Event {
 
 	clone() {
 		return new DelayEvent({
+			custom: this.custom,
 			ticks: this.ticks,
 		});
 	}

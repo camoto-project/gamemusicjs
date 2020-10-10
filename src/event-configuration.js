@@ -43,6 +43,7 @@ class ConfigurationEvent extends Event {
 
 	clone() {
 		return new ConfigurationEvent({
+			custom: this.custom,
 			option: this.option,
 			value: this.value,
 		});

@@ -87,6 +87,7 @@ class TempoEvent extends Event {
 
 	clone() {
 		return new TempoEvent({
+			custom: this.custom,
 			beatsPerBar: this.beatsPerBar,
 			beatLength: this.beatLength,
 			ticksPerBeat: this.ticksPerBeat,

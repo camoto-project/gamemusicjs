@@ -39,6 +39,7 @@ class Event {
 	constructor(typeName, type, params = {}) {
 		this.typeName = typeName;
 		this.type = type;
+		this.custom = params.custom || {};
 	}
 
 	clone() {

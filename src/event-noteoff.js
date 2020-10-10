@@ -32,6 +32,7 @@ class NoteOffEvent extends Event {
 
 	clone() {
 		return new NoteOffEvent({
+			custom: this.custom,
 		});
 	}
 };
