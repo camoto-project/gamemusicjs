@@ -447,6 +447,15 @@ class Music_IMF_IDSoftware_Nukem2 extends Music_IMF_IDSoftware_Type0
 		return md;
 	}
 
+	static identify(content, filename) {
+		if (super.identify(content, filename) === true) {
+			// Matches IMF, but we can't be sure it's a Nukem2 variant, so return a
+			// definite maybe.
+			return undefined;
+		}
+		return false;
+	}
+
 	static getTempo() {
 		return 280;
 	}
