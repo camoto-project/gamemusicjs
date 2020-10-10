@@ -119,5 +119,7 @@ class GameMusic
 };
 
 GameMusic.Music = require('./src/music.js');
+GameMusic.UtilMusic = require('./src/utl-music.js');
+GameMusic.UtilMIDI = require('./src/utl-midi.js');
 
 module.exports = GameMusic;
