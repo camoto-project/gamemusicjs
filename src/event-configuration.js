@@ -35,7 +35,7 @@ const Event = require('./event.js');
  */
 class ConfigurationEvent extends Event {
 	constructor(params = {}) {
-		super('ConfigurationEvent', params);
+		super('ConfigurationEvent', ConfigurationEvent, params);
 
 		this.option = params.option;
 		this.value = params.value;

@@ -97,7 +97,7 @@ class UtilMusic
 					ev.absTime = tPattern + tTrack;
 					ev.idxTrack = idxTrack;
 
-					if (ev.type == 'DelayEvent') {
+					if (ev.type === Music.DelayEvent) {
 						tTrack += ev.ticks;
 					} else {
 						events.push(ev);

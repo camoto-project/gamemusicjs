@@ -27,7 +27,7 @@ const Event = require('./event.js');
  */
 class NoteOffEvent extends Event {
 	constructor(params = {}) {
-		super('NoteOffEvent', params);
+		super('NoteOffEvent', NoteOffEvent, params);
 	}
 
 	clone() {

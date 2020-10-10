@@ -48,7 +48,7 @@ const Event = require('./event.js');
  */
 class NoteOnEvent extends Event {
 	constructor(params = {}) {
-		super('NoteOnEvent', params);
+		super('NoteOnEvent', NoteOnEvent, params);
 
 		this.frequency = params.frequency;
 		this.velocity = params.velocity;

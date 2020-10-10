@@ -34,7 +34,7 @@ const Event = require('./event.js');
  */
 class DelayEvent extends Event {
 	constructor(params = {}) {
-		super('DelayEvent', params);
+		super('DelayEvent', DelayEvent, params);
 
 		this.ticks = params.ticks;
 	}

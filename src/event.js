@@ -36,7 +36,8 @@
  * @alias Music.Event
  */
 class Event {
-	constructor(type, params = {}) {
+	constructor(typeName, type, params = {}) {
+		this.typeName = typeName;
 		this.type = type;
 	}
 

@@ -48,7 +48,7 @@ describe(`UtilOPL tests`, function() {
 				assert.equal(events[0].usPerTick, 1000, 'Wrong tempo');
 
 				assert.ok(events[1]);
-				assert.equal(events[1].type, 'ConfigurationEvent', 'Wrong event type');
+				assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
 				assert.equal(events[1].option, Music.ConfigurationEvent.Option.EnableWaveSel, 'Wrong ConfigurationEvent option');
 				assert.equal(events[1].value, true, 'Wrong ConfigurationEvent value');
 
@@ -56,7 +56,7 @@ describe(`UtilOPL tests`, function() {
 				assert.equal(events[2].ticks, 10 + 10, 'Wrong delay value');
 
 				assert.ok(events[3]);
-				assert.equal(events[3].type, 'ConfigurationEvent', 'Wrong event type');
+				assert.equal(events[3].type, Music.ConfigurationEvent, 'Wrong event type');
 				assert.equal(events[3].option, Music.ConfigurationEvent.Option.EnableWaveSel, 'Wrong ConfigurationEvent option');
 				assert.equal(events[3].value, false, 'Wrong ConfigurationEvent value');
 
@@ -74,7 +74,7 @@ describe(`UtilOPL tests`, function() {
 				], defaultTempo);
 
 				assert.ok(events[1]);
-				assert.equal(events[1].type, 'ConfigurationEvent', 'Wrong event type');
+				assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
 				assert.equal(events[1].option, Music.ConfigurationEvent.Option.EnableOPL3, 'Wrong ConfigurationEvent option');
 				assert.equal(events[1].value, true, 'Wrong ConfigurationEvent value');
 
@@ -82,7 +82,7 @@ describe(`UtilOPL tests`, function() {
 				assert.equal(events[2].ticks, 10, 'Wrong delay value');
 
 				assert.ok(events[3]);
-				assert.equal(events[3].type, 'ConfigurationEvent', 'Wrong event type');
+				assert.equal(events[3].type, Music.ConfigurationEvent, 'Wrong event type');
 				assert.equal(events[3].option, Music.ConfigurationEvent.Option.EnableOPL3, 'Wrong ConfigurationEvent option');
 				assert.equal(events[3].value, false, 'Wrong ConfigurationEvent value');
 
@@ -97,7 +97,7 @@ describe(`UtilOPL tests`, function() {
 				], defaultTempo);
 
 				assert.ok(events[1]);
-				assert.equal(events[1].type, 'ConfigurationEvent', 'Wrong event type');
+				assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
 				assert.equal(events[1].option, Music.ConfigurationEvent.Option.EnableDeepTremolo, 'Wrong ConfigurationEvent option');
 				assert.equal(events[1].value, true, 'Wrong ConfigurationEvent value');
 
@@ -105,7 +105,7 @@ describe(`UtilOPL tests`, function() {
 				assert.equal(events[2].ticks, 10, 'Wrong delay value');
 
 				assert.ok(events[3]);
-				assert.equal(events[3].type, 'ConfigurationEvent', 'Wrong event type');
+				assert.equal(events[3].type, Music.ConfigurationEvent, 'Wrong event type');
 				assert.equal(events[3].option, Music.ConfigurationEvent.Option.EnableDeepTremolo, 'Wrong ConfigurationEvent option');
 				assert.equal(events[3].value, false, 'Wrong ConfigurationEvent value');
 
@@ -120,7 +120,7 @@ describe(`UtilOPL tests`, function() {
 				], defaultTempo);
 
 				assert.ok(events[1]);
-				assert.equal(events[1].type, 'ConfigurationEvent', 'Wrong event type');
+				assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
 				assert.equal(events[1].option, Music.ConfigurationEvent.Option.EnableDeepVibrato, 'Wrong ConfigurationEvent option');
 				assert.equal(events[1].value, true, 'Wrong ConfigurationEvent value');
 
@@ -128,7 +128,7 @@ describe(`UtilOPL tests`, function() {
 				assert.equal(events[2].ticks, 10, 'Wrong delay value');
 
 				assert.ok(events[3]);
-				assert.equal(events[3].type, 'ConfigurationEvent', 'Wrong event type');
+				assert.equal(events[3].type, Music.ConfigurationEvent, 'Wrong event type');
 				assert.equal(events[3].option, Music.ConfigurationEvent.Option.EnableDeepVibrato, 'Wrong ConfigurationEvent option');
 				assert.equal(events[3].value, false, 'Wrong ConfigurationEvent value');
 
@@ -143,7 +143,7 @@ describe(`UtilOPL tests`, function() {
 				], defaultTempo);
 
 				assert.ok(events[1]);
-				assert.equal(events[1].type, 'ConfigurationEvent', 'Wrong event type');
+				assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
 				assert.equal(events[1].option, Music.ConfigurationEvent.Option.EnableRhythm, 'Wrong ConfigurationEvent option');
 				assert.equal(events[1].value, true, 'Wrong ConfigurationEvent value');
 
@@ -151,7 +151,7 @@ describe(`UtilOPL tests`, function() {
 				assert.equal(events[2].ticks, 10, 'Wrong delay value');
 
 				assert.ok(events[3]);
-				assert.equal(events[3].type, 'ConfigurationEvent', 'Wrong event type');
+				assert.equal(events[3].type, Music.ConfigurationEvent, 'Wrong event type');
 				assert.equal(events[3].option, Music.ConfigurationEvent.Option.EnableRhythm, 'Wrong ConfigurationEvent option');
 				assert.equal(events[3].value, false, 'Wrong ConfigurationEvent value');
 
@@ -979,7 +979,7 @@ describe(`UtilOPL tests`, function() {
 			], defaultTempo);
 
 			assert.ok(events[1], 'Missing event');
-			assert.equal(events[1].type, 'NoteOnEvent', 'Wrong event type');
+			assert.equal(events[1].type, Music.NoteOnEvent, 'Wrong event type');
 			TestUtil.almostEqual(events[1].freq, 169.928);
 			TestUtil.almostEqual(events[1].velocity, 1);
 
@@ -987,7 +987,7 @@ describe(`UtilOPL tests`, function() {
 			assert.equal(events[2].ticks, 10, 'Wrong delay value');
 
 			assert.ok(events[3]);
-			assert.equal(events[3].type, 'NoteOffEvent', 'Wrong event type');
+			assert.equal(events[3].type, Music.NoteOffEvent, 'Wrong event type');
 
 			assert.equal(events.length, 4, 'Incorrect number of events produced');
 
@@ -1017,18 +1017,18 @@ describe(`UtilOPL tests`, function() {
 				], defaultTempo);
 
 				assert.ok(events[1]);
-				assert.equal(events[1].type, 'ConfigurationEvent', 'Wrong event type');
+				assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
 				assert.equal(events[1].option, Music.ConfigurationEvent.Option.EnableRhythm, 'Wrong ConfigurationEvent option');
 				assert.equal(events[1].value, true, 'Wrong ConfigurationEvent value');
 
 				assert.ok(events[2], 'Missing event');
-				assert.equal(events[2].type, 'NoteOnEvent', 'Wrong event type');
+				assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
 				TestUtil.almostEqual(events[2].freq, 169.928);
 				TestUtil.almostEqual(events[2].velocity, 1);
 				assert.equal(events[2].opl.channel, 7, 'Wrong source OPL channel');
 
 				assert.ok(events[4], 'Missing event');
-				assert.equal(events[4].type, 'NoteOffEvent', 'Wrong event type');
+				assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
 
 				assert.ok(patches[0], 'Failed to supply patch');
 				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
@@ -1054,18 +1054,18 @@ describe(`UtilOPL tests`, function() {
 				], defaultTempo);
 
 				assert.ok(events[1]);
-				assert.equal(events[1].type, 'ConfigurationEvent', 'Wrong event type');
+				assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
 				assert.equal(events[1].option, Music.ConfigurationEvent.Option.EnableRhythm, 'Wrong ConfigurationEvent option');
 				assert.equal(events[1].value, true, 'Wrong ConfigurationEvent value');
 
 				assert.ok(events[2], 'Missing event');
-				assert.equal(events[2].type, 'NoteOnEvent', 'Wrong event type');
+				assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
 				TestUtil.almostEqual(events[2].freq, 169.928);
 				TestUtil.almostEqual(events[2].velocity, 1);
 				assert.equal(events[2].opl.channel, 8, 'Wrong source OPL channel');
 
 				assert.ok(events[4], 'Missing event');
-				assert.equal(events[4].type, 'NoteOffEvent', 'Wrong event type');
+				assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
 
 				assert.ok(patches[0], 'Failed to supply patch');
 				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
@@ -1091,18 +1091,18 @@ describe(`UtilOPL tests`, function() {
 				], defaultTempo);
 
 				assert.ok(events[1]);
-				assert.equal(events[1].type, 'ConfigurationEvent', 'Wrong event type');
+				assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
 				assert.equal(events[1].option, Music.ConfigurationEvent.Option.EnableRhythm, 'Wrong ConfigurationEvent option');
 				assert.equal(events[1].value, true, 'Wrong ConfigurationEvent value');
 
 				assert.ok(events[2], 'Missing event');
-				assert.equal(events[2].type, 'NoteOnEvent', 'Wrong event type');
+				assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
 				TestUtil.almostEqual(events[2].freq, 169.928);
 				TestUtil.almostEqual(events[2].velocity, 1);
 				assert.equal(events[2].opl.channel, 8, 'Wrong source OPL channel');
 
 				assert.ok(events[4], 'Missing event');
-				assert.equal(events[4].type, 'NoteOffEvent', 'Wrong event type');
+				assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
 
 				assert.ok(patches[0], 'Failed to supply patch');
 				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
@@ -1128,18 +1128,18 @@ describe(`UtilOPL tests`, function() {
 				], defaultTempo);
 
 				assert.ok(events[1]);
-				assert.equal(events[1].type, 'ConfigurationEvent', 'Wrong event type');
+				assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
 				assert.equal(events[1].option, Music.ConfigurationEvent.Option.EnableRhythm, 'Wrong ConfigurationEvent option');
 				assert.equal(events[1].value, true, 'Wrong ConfigurationEvent value');
 
 				assert.ok(events[2], 'Missing event');
-				assert.equal(events[2].type, 'NoteOnEvent', 'Wrong event type');
+				assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
 				TestUtil.almostEqual(events[2].freq, 169.928);
 				TestUtil.almostEqual(events[2].velocity, 1);
 				assert.equal(events[2].opl.channel, 7, 'Wrong source OPL channel');
 
 				assert.ok(events[4], 'Missing event');
-				assert.equal(events[4].type, 'NoteOffEvent', 'Wrong event type');
+				assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
 
 				assert.ok(patches[0], 'Failed to supply patch');
 				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
@@ -1171,18 +1171,18 @@ describe(`UtilOPL tests`, function() {
 				], defaultTempo);
 
 				assert.ok(events[1]);
-				assert.equal(events[1].type, 'ConfigurationEvent', 'Wrong event type');
+				assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
 				assert.equal(events[1].option, Music.ConfigurationEvent.Option.EnableRhythm, 'Wrong ConfigurationEvent option');
 				assert.equal(events[1].value, true, 'Wrong ConfigurationEvent value');
 
 				assert.ok(events[2], 'Missing event');
-				assert.equal(events[2].type, 'NoteOnEvent', 'Wrong event type');
+				assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
 				TestUtil.almostEqual(events[2].freq, 169.928);
 				TestUtil.almostEqual(events[2].velocity, 1);
 				assert.equal(events[2].opl.channel, 6, 'Wrong source OPL channel');
 
 				assert.ok(events[4], 'Missing event');
-				assert.equal(events[4].type, 'NoteOffEvent', 'Wrong event type');
+				assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
 
 				assert.ok(patches[0], 'Failed to supply patch');
 				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
@@ -1207,22 +1207,22 @@ describe(`UtilOPL tests`, function() {
 			], defaultTempo);
 
 			assert.ok(events[0]);
-			assert.equal(events[0].type, 'TempoEvent', 'Wrong event type');
+			assert.equal(events[0].type, Music.TempoEvent, 'Wrong event type');
 			assert.equal(events[0].usPerTick, 1000, 'Wrong tempo value');
 
 			assert.ok(events[3]);
-			assert.equal(events[3].type, 'TempoEvent', 'Wrong event type');
+			assert.equal(events[3].type, Music.TempoEvent, 'Wrong event type');
 			assert.equal(events[3].usPerTick, 2000, 'Wrong tempo value');
 
 			assert.ok(events[5]);
-			assert.equal(events[5].type, 'TempoEvent', 'Wrong event type');
+			assert.equal(events[5].type, Music.TempoEvent, 'Wrong event type');
 			assert.equal(events[5].usPerTick, 3000, 'Wrong tempo value');
 
 			assert.ok(events[6]);
 			assert.equal(events[6].ticks, 30, 'Wrong delay value');
 
 			assert.ok(events[7]);
-			assert.equal(events[7].type, 'TempoEvent', 'Wrong event type');
+			assert.equal(events[7].type, Music.TempoEvent, 'Wrong event type');
 			assert.equal(events[7].usPerTick, 4000, 'Wrong tempo value');
 
 			assert.equal(events.length, 8, 'Incorrect number of events produced');

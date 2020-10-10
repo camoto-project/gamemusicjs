@@ -76,7 +76,7 @@ const US_PER_SEC = 1000000.0;
  */
 class TempoEvent extends Event {
 	constructor(params = {}) {
-		super('TempoEvent', params);
+		super('TempoEvent', TempoEvent, params);
 
 		this.beatsPerBar = params.beatsPerBar;
 		this.beatLength = params.beatLength;

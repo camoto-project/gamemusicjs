@@ -231,7 +231,7 @@ function parseOPL(oplData, initialTempoEvent)
 
 	let events = [], patches = [];
 
-	if (!initialTempoEvent || initialTempoEvent.type !== 'TempoEvent') {
+	if (!initialTempoEvent || initialTempoEvent.type !== Music.TempoEvent) {
 		throw new Error('parseOPL(): initialTempoEvent must be a TempoEvent.');
 	}
 	events.push(initialTempoEvent);
@@ -263,11 +263,11 @@ function parseOPL(oplData, initialTempoEvent)
 			if (!(evOPL.tempo instanceof Music.TempoEvent)) {
 				throw new Error('Must pass Music.TempoEvent instance when setting tempo.');
 			}
-			if (events[events.length - 1].type === 'TempoEvent') {
+			if (events[events.length - 1].type === Music.TempoEvent) {
 				// The previous event was a tempo change, replace it.
 				events.pop();
 			}
-			if (evOPL.tempo.type !== 'TempoEvent') {
+			if (evOPL.tempo.type !== Music.TempoEvent) {
 				throw new Error('`tempo` property must be a TempoEvent.');
 			}
 			events.push(evOPL.tempo);
@@ -289,7 +289,7 @@ function parseOPL(oplData, initialTempoEvent)
 		appendOPLEvents(patches, events, oplState, oplStatePrev);
 
 		let lastEvent = events[events.length - 1] || {};
-		if (lastEvent.type === 'DelayEvent') {
+		if (lastEvent.type === Music.DelayEvent) {
 			// Previous event was a delay, so nothing has changed since then.  Add
 			// our delay onto that to avoid multiple DelayEvents in a row.
 			lastEvent.ticks += evOPL.delay;

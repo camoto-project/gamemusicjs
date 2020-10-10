@@ -180,14 +180,14 @@ allHandlers.forEach(handler => {
 
 				it('should have the expected events', function() {
 					const events = music.patterns[0].tracks[0].events;
-					assert.equal(events[0].type, 'TempoEvent');
-					assert.equal(events[1].type, 'NoteOnEvent');
-					assert.equal(events[2].type, 'DelayEvent');
-					assert.equal(events[3].type, 'NoteOffEvent');
-					assert.equal(events[4].type, 'DelayEvent');
-					assert.equal(events[5].type, 'NoteOnEvent');
-					assert.equal(events[6].type, 'DelayEvent');
-					assert.equal(events[7].type, 'NoteOffEvent');
+					assert.equal(events[0].type, Music.TempoEvent);
+					assert.equal(events[1].type, Music.NoteOnEvent);
+					assert.equal(events[2].type, Music.DelayEvent);
+					assert.equal(events[3].type, Music.NoteOffEvent);
+					assert.equal(events[4].type, Music.DelayEvent);
+					assert.equal(events[5].type, Music.NoteOnEvent);
+					assert.equal(events[6].type, Music.DelayEvent);
+					assert.equal(events[7].type, Music.NoteOffEvent);
 
 					TestUtil.almostEqual(events[1].frequency, 440, 0.1);
 					TestUtil.almostEqual(events[5].frequency, 92.5, 0.1);

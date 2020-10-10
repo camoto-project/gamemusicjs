@@ -59,7 +59,7 @@ function generateOPL(events, trackConfig, outMessages)
 	let oplState = [], oplStatePrev = [];
 	for (const ev of events) {
 
-		if ((ev.idxTrack === undefined) && (ev.type !== 'DelayEvent')) {
+		if ((ev.idxTrack === undefined) && (ev.type !== Music.DelayEvent)) {
 			debug('Encountered an event without an `idxTrack` property:', ev);
 			throw new Error('Encountered an event without an `idxTrack` property.');
 		}
@@ -95,7 +95,7 @@ function generateOPL(events, trackConfig, outMessages)
 
 		switch (ev.type) {
 
-			case 'ConfigurationEvent':
+			case Music.ConfigurationEvent:
 				switch (ev.option) {
 
 					case Music.ConfigurationEvent.Option.EnableWaveSel:
@@ -119,7 +119,7 @@ function generateOPL(events, trackConfig, outMessages)
 				}
 				break;
 
-			case 'DelayEvent':
+			case Music.DelayEvent:
 				// Write all the changed OPL data followed by this delay.
 				const oplDataBefore = oplData.length;
 				writeOPLChanges(oplData, oplStatePrev, oplState);
@@ -138,7 +138,7 @@ function generateOPL(events, trackConfig, outMessages)
 				}
 				break;
 
-			case 'NoteOnEvent':
+			case Music.NoteOnEvent:
 				// TODO: program instrument, handle perc
 				const curBlock = (oplState[BASE_KEYON_FREQ + regOffset] >> 2) & 0x7;
 				const targetFnum = UtilOPL.frequencyToFnum(ev.frequency, curBlock);
@@ -163,12 +163,12 @@ function generateOPL(events, trackConfig, outMessages)
 				}
 				break;
 
-			case 'NoteOffEvent':
+			case Music.NoteOffEvent:
 				// TODO: handle perc
 				oplState[0xB0 | trackCfg.channelIndex] &= ~0x20;
 				break;
 
-			case 'TempoEvent':
+			case Music.TempoEvent:
 				oplData.push({
 					tempo: ev,
 				});
