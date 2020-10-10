@@ -81,6 +81,10 @@ class NoteOnEvent extends Event {
 			instrument: this.instrument,
 		});
 	}
+
+	toString() {
+		return `[NoteOnEvent F:${this.frequency.toFixed(2)} V:${this.velocity.toFixed(2)} I:${this.instrument}]`;
+	}
 };
 
 module.exports = NoteOnEvent;

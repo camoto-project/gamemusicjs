@@ -96,6 +96,10 @@ class TempoEvent extends Event {
 		});
 	}
 
+	toString() {
+		return `[TempoEvent us:${this.usPerTick || '?'} tsig:${this.beatsPerBar || '?'}/${this.beatLength || '?'} frames:${this.framesPerTick || '?'}]`;
+	}
+
 	/**
 	 * Get/set tempo as beats-per-minute.
 	 *

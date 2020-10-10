@@ -35,6 +35,10 @@ class NoteOffEvent extends Event {
 			custom: this.custom,
 		});
 	}
+
+	toString() {
+		return `[NoteOffEvent]`;
+	}
 };
 
 module.exports = NoteOffEvent;

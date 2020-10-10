@@ -45,6 +45,10 @@ class DelayEvent extends Event {
 			ticks: this.ticks,
 		});
 	}
+
+	toString() {
+		return `[DelayEvent T:${this.ticks}]`;
+	}
 };
 
 module.exports = DelayEvent;
