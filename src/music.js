@@ -82,6 +82,8 @@ class Music
 	}
 }
 
+module.exports = Music;
+
 /**
  * A pattern to be placed inside {@link Music.patterns}.
  *
@@ -226,5 +228,3 @@ Music.NoteOnEvent = require('./event-noteon.js');
 Music.TempoEvent = require('./event-tempo.js');
 
 Music.Patch = require('./patch.js');
-
-module.exports = Music;

@@ -18,24 +18,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+const Music = require('./music.js');
+
 /**
  * Base class for an instrument's settings.
  */
 class Patch
 {
-	constructor(type, params) {
-		this.type = type;
+	constructor(channelType, params) {
+		this.channelType = channelType;
 		this.title = params.title || null;
 	}
 }
 
 class PatchOPL extends Patch {
 	constructor(params = {}) {
-		super('PatchOPL', params);
+		super(Music.ChannelType.OPL, params);
 
 		this.slot = params.slot || [];
-		this.feedback = 0;
-		this.connection = 0;
+		this.feedback = params.feedback || 0;
+		this.connection = params.connection || 0;
 	}
 
 	clone() {
@@ -55,8 +57,8 @@ class PatchOPL extends Patch {
 
 class PatchMIDI extends Patch {
 	constructor(params = {}) {
-		super('PatchMIDI', params);
-		
+		super(Music.ChannelType.MIDI, params);
+
 		this.midiPatch = params.midiPatch;
 	}
 
@@ -69,8 +71,8 @@ class PatchMIDI extends Patch {
 
 class PatchPCM extends Patch {
 	constructor(params = {}) {
-		super('PatchPCM', params);
-		
+		super(Music.ChannelType.PCM, params);
+
 		this.sampleRate = params.sampleRate || 8000;
 	}
 
