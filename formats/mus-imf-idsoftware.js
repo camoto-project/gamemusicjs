@@ -204,7 +204,15 @@ class Music_IMF_IDSoftware_Common extends MusicHandler
 		music.patches = patches;
 
 		// Split the single long list of events into tracks.
-		const { trackConfig, pattern } = UtilMusic.splitEvents(events, ev => (ev.opl && ev.opl.channel || 0));
+		function fnGetTrackConfig(ev) {
+			let tc = new Music.TrackConfiguration({
+				channelType: Music.ChannelType.OPL,
+				channelIndex: ev.custom.oplChannel || 1,
+			});
+			tc.trackIndex = ev.custom.oplChannel || 1;
+			return tc;
+		}
+		const { trackConfig, pattern } = UtilMusic.splitEvents(events, fnGetTrackConfig);
 
 		music.trackConfig = trackConfig;
 
