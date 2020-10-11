@@ -962,6 +962,112 @@ describe(`UtilOPL tests`, function() {
 
 			}); // should handle channel registers
 
+			describe('patch handling', function() {
+
+				it('should recognise existing patch reused', function() {
+					const { patches, events } = UtilOPL.parseOPL([
+						// Inst1
+						{reg: 0x23, val: 0x55},
+						{reg: 0x43, val: 0x55},
+						{reg: 0x63, val: 0x55},
+						{reg: 0x83, val: 0x55},
+						{reg: 0xA3, val: 0x55},
+						{reg: 0xE3, val: 0x55},
+						{reg: 0xC0, val: 0x55},
+						{reg: 0xB0, val: 0x25},
+						{delay: 10},
+						{reg: 0xB0, val: 0x05},
+						{delay: 10},
+						// Inst2
+						{reg: 0x23, val: 0xAA},
+						{reg: 0x43, val: 0xAA},
+						{reg: 0x63, val: 0xAA},
+						{reg: 0x83, val: 0xAA},
+						{reg: 0xA3, val: 0xAA},
+						{reg: 0xE3, val: 0xAA},
+						{reg: 0xC0, val: 0xAA},
+						{reg: 0xB0, val: 0x2A},
+						{delay: 10},
+						{reg: 0xB0, val: 0x0A},
+						{delay: 10},
+						// Inst1 again, should not be picked up as new patch
+						{reg: 0x23, val: 0x55},
+						{reg: 0x43, val: 0x55},
+						{reg: 0x63, val: 0x55},
+						{reg: 0x83, val: 0x55},
+						{reg: 0xA3, val: 0x55},
+						{reg: 0xE3, val: 0x55},
+						{reg: 0xC0, val: 0x55},
+						{reg: 0xB0, val: 0x25},
+						{delay: 10},
+						{reg: 0xB0, val: 0x05},
+					], defaultTempo);
+
+					assert.ok(patches[0], 'Failed to supply patch 0');
+					assert.ok(patches[1], 'Failed to supply patch 1');
+					assert.equal(patches[0].channelType, Music.ChannelType.OPL);
+					assert.equal(patches[1].channelType, Music.ChannelType.OPL);
+					assert.equal(patches.length, 2, 'Wrong number of patches read');
+
+					assert.ok(events[1], 'Missing event');
+					assert.equal(events[1].type, Music.NoteOnEvent, 'Wrong event type');
+					assert.equal(events[1].instrument, 0);
+
+					assert.ok(events[5], 'Missing event');
+					assert.equal(events[5].type, Music.NoteOnEvent, 'Wrong event type');
+					assert.equal(events[5].instrument, 1);
+
+					assert.ok(events[9], 'Missing event');
+					assert.equal(events[9].type, Music.NoteOnEvent, 'Wrong event type');
+					assert.equal(events[9].instrument, 0);
+				});
+
+				it('should ignore outputLevel and use it as velocity', function() {
+					const { patches, events } = UtilOPL.parseOPL([
+						{reg: 0x23, val: 0x55},
+						{reg: 0x43, val: 0xC0}, // outputLevel=0
+						{reg: 0x63, val: 0x55},
+						{reg: 0x83, val: 0x55},
+						{reg: 0xA3, val: 0x55},
+						{reg: 0xC3, val: 0x55},
+						{reg: 0xE3, val: 0x55},
+						{reg: 0xB0, val: 0x25},
+						{delay: 10},
+						{reg: 0xB0, val: 0x05},
+						{delay: 10},
+						{reg: 0x43, val: 0xC8}, // outputLevel=8
+						{reg: 0xB0, val: 0x25},
+						{delay: 10},
+						{reg: 0xB0, val: 0x05},
+						{delay: 10},
+						{reg: 0x43, val: 0xFF}, // outputLevel=0x3F
+						{reg: 0xB0, val: 0x25},
+						{delay: 10},
+						{reg: 0xB0, val: 0x05},
+					], defaultTempo);
+
+					assert.ok(patches[0], 'Failed to supply patch 0');
+					assert.equal(patches[0].channelType, Music.ChannelType.OPL);
+					assert.equal(patches.length, 1, 'Wrong number of patches read');
+
+					assert.ok(events[1], 'Missing event');
+					assert.equal(events[1].type, Music.NoteOnEvent, 'Wrong event type');
+					assert.equal(events[1].velocity, 1);
+					assert.equal(events[1].instrument, 0);
+
+					assert.ok(events[5], 'Missing event');
+					assert.equal(events[5].type, Music.NoteOnEvent, 'Wrong event type');
+					TestUtil.almostEqual(events[5].velocity, 0.4716);
+					assert.equal(events[5].instrument, 0);
+
+					assert.ok(events[9], 'Missing event');
+					assert.equal(events[9].type, Music.NoteOnEvent, 'Wrong event type');
+					assert.equal(events[9].velocity, 0);
+					assert.equal(events[9].instrument, 0);
+				});
+
+			}); // patch handling
+
 		}); // OPL patch
 
 		it('should handle melodic notes', function() {
