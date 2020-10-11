@@ -20,7 +20,9 @@
 const fs = require('fs');
 const commandLineArgs = require('command-line-args');
 const GameMusic = require('../index.js');
-const debug = require('../src/utl-debug.js')('gamemus');
+const Music = GameMusic.Music;
+const chalk = require('chalk');
+const Debug = require('../src/utl-debug.js')('gamemus');
 
 class OperationsError extends Error {
 }
@@ -81,6 +83,132 @@ class Operations
 		});
 	}
 
+	dump(params) {
+		for (const idxPattern in this.music.patterns) {
+			const pat = this.music.patterns[idxPattern];
+			process.stdout.write(`\nPattern #${idxPattern}:\n`);
+			for (const idxTrack in pat.tracks) {
+				const trk = pat.tracks[idxTrack];
+				process.stdout.write(`\nTrack #${idxTrack}:\n\n`);
+				for (const ev of trk.events) {
+					process.stdout.write(`${ev}\n`);
+				}
+			}
+		}
+	}
+
+	list(params) {
+		const debug = Debug.extend('list');
+
+		const trackCount = this.music.trackConfig.length;
+		process.stdout.write(chalk`{green.bold ${trackCount}} tracks.\n`);
+
+		let t = 0;
+
+		function printEvents(cachedEvents) {
+			// Print the previous rows
+
+			//todo ev.sort
+			let trackEvents = [];
+			let trackEventMax = 0;
+			for (const ev of cachedEvents) {
+				if (!trackEvents[ev.custom.idxTrack]) {
+					trackEvents[ev.custom.idxTrack] = [];
+				}
+				trackEvents[ev.custom.idxTrack].push(ev);
+				trackEventMax = Math.max(trackEventMax, trackEvents[ev.custom.idxTrack].length);
+			}
+
+			while (trackEventMax--) {
+				process.stdout.write(
+					chalk.grey(`T${t.toString().padStart(6, '0')} `)
+				);
+
+				for (let idxTrack = 0; idxTrack < trackCount; idxTrack++) {
+					const track = trackEvents[idxTrack];
+
+					if (!track) {
+						// No event for this track at this time
+						process.stdout.write(chalk`{grey ... .. .. }`);
+						continue;
+					}
+					const ev = track.shift();// cachedEvents.find(i => i.custom.idxTrack === idxTrack);
+					if (!ev) {
+						process.stdout.write(chalk`{grey ... .. .. }`);
+						continue;
+					}
+					switch (ev.type) {
+						case Music.NoteOnEvent: {
+							const note = GameMusic.UtilMIDI.frequencyToMIDIBend(ev.frequency);
+							const vel = Math.round((ev.velocity * 255)).toString(16);
+							const inst = ev.instrument.toString(16).padStart(2, '0').padStart(3);
+							process.stdout.write(
+								chalk`{green.bold ${note.name}} {blue.bold ${vel}}{white ${inst}} `
+							);
+							break;
+						}
+
+						case Music.NoteOffEvent:
+							process.stdout.write(
+								chalk.green(`--- .. .. `)
+							);
+							break;
+
+						case Music.TempoEvent:
+							process.stdout.write(
+								chalk`{magenta.bold T${Math.round(ev.usPerTick).toString().padStart(8)}} `
+							);
+							break;
+
+						case Music.ConfigurationEvent: {
+							const txt = [
+								() => '?????',
+								() => 'EMPTY',
+								v => 'OPL3' + (v ? '+' : '-'),
+								v => 'TREM' + (v ? '+' : '-'),
+								v => 'VIBR' + (v ? '+' : '-'),
+								v => 'PERC' + (v ? '+' : '-'),
+								v => 'WVSL' + (v ? '+' : '-'),
+							][(ev.option || -1) + 1](ev.value);
+							process.stdout.write(
+								chalk`{cyan.bold CFG ${txt}} `
+							);
+							break;
+						}
+
+						default:
+							debug(`Unhandled event: ${ev}`);
+							process.stdout.write(`??? .. .. `);
+							break;
+					}
+				} // while (trackEventMax--)
+				process.stdout.write(`\n`);
+			}
+		}
+
+		for (const pat of this.music.patterns) {
+			let events = [];
+			GameMusic.UtilMusic.mergeTracks(events, pat.tracks);
+
+			t = 0;
+			let cachedEvents = [];
+			for (const ev of events) {
+				if (ev.type === Music.DelayEvent) {
+					if (cachedEvents.length) {
+						printEvents(cachedEvents);
+						cachedEvents = [];
+					}
+					t += ev.ticks;
+					continue;
+				}
+				cachedEvents.push(ev);
+			}
+			if (cachedEvents.length) {
+				printEvents(cachedEvents);
+			}
+		}
+	}
+
 	open(params) {
 		let handler;
 		if (params.format) {
@@ -130,6 +258,8 @@ class Operations
 	}
 
 	async save(params) {
+		const debug = Debug.extend('save');
+
 		if (!params.target) {
 			throw new OperationsError('save: missing filename');
 		}
@@ -192,6 +322,12 @@ Operations.names = {
 		{ name: 'format', alias: 'f' },
 		{ name: 'target', defaultOption: true },
 	],
+	dump: [],
+	list: [
+		{ name: 'channel', alias: 'c' },
+		{ name: 'pattern', alias: 'p' },
+		{ name: 'track',   alias: 't' },
+	],
 };
 
 // Make some alises
@@ -219,7 +355,6 @@ function listFormats()
 async function processCommands()
 {
 	let cmdDefinitions = [
-		{ name: 'debug', type: Boolean },
 		{ name: 'help', type: Boolean },
 		{ name: 'formats', type: Boolean },
 		{ name: 'name', defaultOption: true },
@@ -252,6 +387,12 @@ Commands:
     Open the local <file>, autodetecting the format unless -f is
     given.  Use --formats for a list of possible values.  If other commands are
     used without 'open', a new empty song is used.
+
+  list
+    List all the events in the song in a clean layout.
+
+  dump
+    List all the events in the song in raw format.
 
   save [-f format] <file>
     Save the current song to local <file> in the given <format>.  -f defaults
