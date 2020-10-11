@@ -31,55 +31,66 @@ class UtilMusic
 	 *
 	 * @param {Array<Event>} events
 	 *
-	 * @param {Function} fnGetTrackIndex
-	 *   Function called with each event, and returns an integer for the track
-	 *   number that event should appear in.
+	 * @param {Function} fnGetTrackConfig
+	 *   Function called with each event, and returns a TrackConfiguration
+	 *   instance for the track that event should appear in.
 	 *
 	 * @return {Music.Pattern} Track list suitable for appending to
 	 *   {@link Music.patterns}.
 	 */
-	static splitEvents(events, fnGetTrackIndex) {
+	static splitEvents(events, fnGetTrackConfig) {
 		const debug = Debug.extend('splitEvents');
-
-		// Split all the events up into separate channels
-		let channels = [];
-		let absTime = 0;
-		for (const ev of events) {
-			const c = fnGetTrackIndex(ev);
-			if (c === undefined) {
-				throw new Error('fnTrackIndex failed to return a track index.');
-			}
-			if (!channels[c]) {
-				channels[c] = {
-					absTimeLastEvent: 0,
-					events: [],
-				};
-			}
-			absTime += ev.preDelay;
-
-			let cpEvent = ev.clone();
-			cpEvent.preDelay = absTime - channels[c].absTimeLastEvent;
-			channels[c].events.push(ev);
-
-			channels[c].absTimeLastEvent += absTime;
-		}
-		debug('Split events into channels:', Object.keys(channels));
 
 		let pattern = new Music.Pattern();
 		let trackConfig = [];
 
-		for (const idxChannel in channels) {
-			const ch = channels[idxChannel];
-			let track = new Music.Track();
-			track.events = ch.events;
+		// Split all the events up into separate channels.
+		let channels = [];
+		let absTime = 0;
+		for (const ev of events) {
+			if (ev.type === Music.DelayEvent) {
+				absTime += ev.ticks;
+				continue;
+			}
 
-			let tc = new Music.TrackConfiguration();
-			tc.channelType = Music.ChannelType.OPL;
-			tc.channelIndex = idxChannel;
-			trackConfig.push(tc);
+			const tc = fnGetTrackConfig(ev);
+			if (!tc) {
+				throw new Error('fnGetTrackConfig failed to return a track index.');
+			}
+			if (!pattern.tracks[tc.trackIndex]) {
+				pattern.tracks[tc.trackIndex] = {
+					absTimeLastEvent: 0,
+					events: [],
+				};
+				trackConfig[tc.trackIndex] = tc;
+			}
 
-			pattern.tracks.push(track);
+			let track = pattern.tracks[tc.trackIndex];
+
+			const eventPreDelay = absTime - track.absTimeLastEvent;
+			if (eventPreDelay) {
+				track.events.push(new Music.DelayEvent({ticks: eventPreDelay}));
+			}
+			//let cpEvent = ev.clone();
+			track.events.push(ev);
+
+			track.absTimeLastEvent = absTime;
 		}
+
+		// Tidy up.
+		let cleanTracks = [], cleanTrackConfig = [];
+		for (let idxTrack in pattern.tracks) {
+			if (!pattern.tracks[idxTrack]) continue;
+			delete pattern.tracks[idxTrack].absTimeLastEvent;
+			cleanTracks.push(pattern.tracks[idxTrack]);
+			cleanTrackConfig.push(trackConfig[idxTrack]);
+		}
+		pattern.tracks = cleanTracks;
+		trackConfig = cleanTrackConfig;
+
+		debug('Split events into channels:', trackConfig.map(tc =>
+			`${Music.ChannelType.toString(tc.channelType)}-${tc.channelIndex}`
+		));
 		debug(`Split events into ${pattern.tracks.length} tracks.`);
 
 		return {
@@ -88,10 +99,40 @@ class UtilMusic
 		};
 	}
 
+	static mergeTracks(events, tracks) {
+		const absEvents = [];
+		for (let idxTrack = 0; idxTrack < tracks.length; idxTrack++) {
+			const track = tracks[idxTrack];
+			let tTrack = 0;
+
+			for (const ev of track.events) {
+				ev.custom.absTime = tTrack;
+				ev.custom.idxTrack = idxTrack;
+
+				if (ev.type === Music.DelayEvent) {
+					tTrack += ev.ticks;
+				} else {
+					absEvents.push(ev);
+				}
+			}
+		}
+
+		// Now convert all the absTime values into DelayEvents.
+		let absLastTime = 0;
+		absEvents.sort((a, b) => a.custom.absTime - b.custom.absTime);
+		for (let ev of absEvents) {
+			if (ev.custom.absTime > absLastTime) {
+				events.push(new Music.DelayEvent({ticks: ev.custom.absTime - absLastTime}));
+			}
+			absLastTime = ev.custom.absTime;
+			delete ev.custom.absTime;
+			events.push(ev);
+		}
+	}
+
 	static mergePatterns(patterns) {
 		let events = [];
 
-		let tPattern = 0;
 		for (let idxPattern = 0; idxPattern < patterns.length; idxPattern++) {
 			const pattern = patterns[idxPattern];
 
@@ -99,23 +140,7 @@ class UtilMusic
 				throw new Error(`Music.patterns[${idxPattern}].tracks must be an array.`);
 			}
 
-			let tTrack = 0;
-			for (let idxTrack = 0; idxTrack < pattern.tracks.length; idxTrack++) {
-				const track = pattern.tracks[idxTrack];
-
-				for (const ev of track.events) {
-					ev.absTime = tPattern + tTrack;
-					ev.idxTrack = idxTrack;
-
-					if (ev.type === Music.DelayEvent) {
-						tTrack += ev.ticks;
-					} else {
-						events.push(ev);
-					}
-				}
-			}
-
-			tPattern += tTrack;
+			const tTrack = this.mergeTracks(events, pattern.tracks);
 		}
 
 		// Now all the DelayEvents have been removed but `absTime` exists on
@@ -165,9 +190,6 @@ class UtilMusic
 		let output = [];
 		for (const evSrc of events) {
 			let evDst = evSrc.clone();
-
-			// Also copy across our custom data used by mergePatterns().
-			evDst.idxTrack = evSrc.idxTrack;
 
 // TODO: adjust timings
 			output.push(evDst);
