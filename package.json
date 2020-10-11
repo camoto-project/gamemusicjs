@@ -45,6 +45,7 @@
   "homepage": "https://github.com/Malvineous/gamemusicjs#readme",
   "dependencies": {
     "@malvineous/record-io-buffer": "^2.2.2",
+    "chalk": "^4.1.0",
     "debug": "^4.2.0"
   },
   "devDependencies": {
