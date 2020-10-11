@@ -121,42 +121,44 @@ class Operations
 
 			while (trackEventMax--) {
 				process.stdout.write(
-					chalk.grey(`T${t.toString().padStart(6, '0')} `)
+					chalk.grey(`T${t.toString().padStart(6, '0')}`)
 				);
 
 				for (let idxTrack = 0; idxTrack < trackCount; idxTrack++) {
 					const track = trackEvents[idxTrack];
 
+					process.stdout.write(chalk`{grey  | }`);
+
 					if (!track) {
 						// No event for this track at this time
-						process.stdout.write(chalk`{grey ... .. .. }`);
+						process.stdout.write(chalk`{grey ... .. ..}`);
 						continue;
 					}
 					const ev = track.shift();// cachedEvents.find(i => i.custom.idxTrack === idxTrack);
 					if (!ev) {
-						process.stdout.write(chalk`{grey ... .. .. }`);
+						process.stdout.write(chalk`{grey ... .. ..}`);
 						continue;
 					}
 					switch (ev.type) {
 						case Music.NoteOnEvent: {
 							const note = GameMusic.UtilMIDI.frequencyToMIDIBend(ev.frequency);
-							const vel = Math.round((ev.velocity * 255)).toString(16);
-							const inst = ev.instrument.toString(16).padStart(2, '0').padStart(3);
+							const vel = Math.round((ev.velocity * 255)).toString(16).toUpperCase().padStart(2, '0');
+							const inst = ev.instrument.toString(16).toUpperCase().padStart(2, '0').padStart(3);
 							process.stdout.write(
-								chalk`{green.bold ${note.name}} {blue.bold ${vel}}{white ${inst}} `
+								chalk`{green.bold ${note.name}} {blue.bold ${vel}}{white ${inst}}`
 							);
 							break;
 						}
 
 						case Music.NoteOffEvent:
 							process.stdout.write(
-								chalk.green(`--- .. .. `)
+								chalk`{green ---} {grey .. ..}`
 							);
 							break;
 
 						case Music.TempoEvent:
 							process.stdout.write(
-								chalk`{magenta.bold T${Math.round(ev.usPerTick).toString().padStart(8)}} `
+								chalk`{magenta.bold T${Math.round(ev.usPerTick).toString().padStart(8)}}`
 							);
 							break;
 
@@ -171,14 +173,16 @@ class Operations
 								v => 'WVSL' + (v ? '+' : '-'),
 							][(ev.option || -1) + 1](ev.value);
 							process.stdout.write(
-								chalk`{cyan.bold CFG ${txt}} `
+								chalk`{cyan.bold CFG ${txt}}`
 							);
 							break;
 						}
 
 						default:
 							debug(`Unhandled event: ${ev}`);
-							process.stdout.write(`??? .. .. `);
+							process.stdout.write(
+								chalk`{red.bold ??? ?? ??}`
+							);
 							break;
 					}
 				} // while (trackEventMax--)
@@ -206,6 +210,24 @@ class Operations
 			if (cachedEvents.length) {
 				printEvents(cachedEvents);
 			}
+		}
+
+		process.stdout.write('\n');
+		for (const t in this.music.trackConfig) {
+			const tc = this.music.trackConfig[t];
+			const channelTitle = `${Music.ChannelType.toString(tc.channelType)}-${tc.channelIndex}`;
+			process.stdout.write(
+				chalk`Track {yellow.bold ${t}}: {white.bold ${channelTitle}}\n`
+			);
+		}
+
+		process.stdout.write('\n');
+		for (const p in this.music.patches) {
+			const patch = this.music.patches[p];
+			const title = patch.title ? chalk`{cyan.bold ${patch.title}}` : chalk`{grey Untitled}`;
+			process.stdout.write(
+				chalk`Patch {yellow.bold ${p}}: {green.bold ${patch}} {grey // }${title}\n`
+			);
 		}
 	}
 
