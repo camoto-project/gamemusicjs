@@ -171,8 +171,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 						{delay: 10},
 						{reg: 0xB0, val: 0x1F},
@@ -182,8 +182,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 					], defaultTempo);
 
@@ -202,8 +202,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 						{delay: 10},
 						{reg: 0xB0, val: 0x1F},
@@ -213,8 +213,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 					], defaultTempo);
 
@@ -233,8 +233,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 						{delay: 10},
 						{reg: 0xB0, val: 0x1F},
@@ -244,8 +244,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 					], defaultTempo);
 
@@ -264,8 +264,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 						{delay: 10},
 						{reg: 0xB0, val: 0x1F},
@@ -275,8 +275,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 					], defaultTempo);
 
@@ -295,8 +295,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 						{delay: 10},
 						{reg: 0xB0, val: 0x1F},
@@ -306,8 +306,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 					], defaultTempo);
 
@@ -326,8 +326,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 						{delay: 10},
 						{reg: 0xB0, val: 0x1F},
@@ -337,8 +337,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 					], defaultTempo);
 
@@ -357,8 +357,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 						{delay: 10},
 						{reg: 0xB0, val: 0x1F},
@@ -368,8 +368,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 					], defaultTempo);
 
@@ -388,8 +388,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 						{delay: 10},
 						{reg: 0xB0, val: 0x1F},
@@ -399,8 +399,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0x1F},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 					], defaultTempo);
 
@@ -419,8 +419,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 						{delay: 10},
 						{reg: 0xB0, val: 0x1F},
@@ -430,8 +430,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xF1},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 					], defaultTempo);
 
@@ -450,8 +450,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 						{delay: 10},
 						{reg: 0xB0, val: 0x1F},
@@ -461,8 +461,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0x1F},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 					], defaultTempo);
 
@@ -481,8 +481,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 						{delay: 10},
 						{reg: 0xB0, val: 0x1F},
@@ -492,8 +492,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xF1},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 					], defaultTempo);
 
@@ -512,8 +512,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 						{delay: 10},
 						{reg: 0xB0, val: 0x1F},
@@ -523,8 +523,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xF9},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 					], defaultTempo);
 
@@ -863,7 +863,7 @@ describe(`UtilOPL tests`, function() {
 					assert.equal(patches[1].slot[2].attackRate, 0x4);
 					assert.equal(patches[1].slot[3].attackRate, 0x5);
 				});
-			});
+			}); // should handle operator/slot registers
 
 			describe('should handle channel registers', function() {
 
@@ -874,8 +874,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 						{delay: 10},
 						{reg: 0xB0, val: 0x1F},
@@ -885,8 +885,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xF3},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xF3},
 						{reg: 0xB0, val: 0x3F},
 					], defaultTempo);
 
@@ -905,8 +905,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFF},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFF},
 						{reg: 0xB0, val: 0x3F},
 						{delay: 10},
 						{reg: 0xB0, val: 0x1F},
@@ -916,8 +916,8 @@ describe(`UtilOPL tests`, function() {
 						{reg: 0x60, val: 0xFF},
 						{reg: 0x80, val: 0xFF},
 						{reg: 0xA0, val: 0xFF},
-						{reg: 0xC0, val: 0xFE},
 						{reg: 0xE0, val: 0xFF},
+						{reg: 0xC0, val: 0xFE},
 						{reg: 0xB0, val: 0x3F},
 					], defaultTempo);
 
@@ -960,7 +960,7 @@ describe(`UtilOPL tests`, function() {
 					assert.equal(patches[1].feedback, 0x1);
 				});
 
-			});
+			}); // should handle channel registers
 
 		}); // OPL patch
 
