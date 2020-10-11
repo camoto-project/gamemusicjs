@@ -66,16 +66,26 @@ class UtilMusic
 		debug('Split events into channels:', Object.keys(channels));
 
 		let pattern = new Music.Pattern();
+		let trackConfig = [];
 
-		for (const ch of channels) {
+		for (const idxChannel in channels) {
+			const ch = channels[idxChannel];
 			let track = new Music.Track();
 			track.events = ch.events;
+
+			let tc = new Music.TrackConfiguration();
+			tc.channelType = Music.ChannelType.OPL;
+			tc.channelIndex = idxChannel;
+			trackConfig.push(tc);
 
 			pattern.tracks.push(track);
 		}
 		debug(`Split events into ${pattern.tracks.length} tracks.`);
 
-		return pattern;
+		return {
+			trackConfig: trackConfig,
+			pattern: pattern,
+		};
 	}
 
 	static mergePatterns(patterns) {
