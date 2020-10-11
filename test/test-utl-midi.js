@@ -19,12 +19,9 @@
 
 const assert = require('assert');
 
-const Music = require('../src/music.js');
 const UtilMIDI = require('../src/utl-midi.js');
 
 const TestUtil = require('./util.js');
-
-const defaultTempo = new Music.TempoEvent({usPerTick: 1000});
 
 describe(`UtilMIDI tests`, function() {
 
