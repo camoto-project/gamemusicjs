@@ -59,16 +59,16 @@ function generateOPL(events, trackConfig, outMessages)
 	let oplState = [], oplStatePrev = [];
 	for (const ev of events) {
 
-		if ((ev.idxTrack === undefined) && (ev.type !== Music.DelayEvent)) {
+		if ((ev.custom.idxTrack === undefined) && (ev.type !== Music.DelayEvent)) {
 			debug('Encountered an event without an `idxTrack` property:', ev);
 			throw new Error('Encountered an event without an `idxTrack` property.');
 		}
 
-		if (ev.idxTrack >= trackConfig.length) {
-			debug(`Encountered an event from track ${ev.idxTrack} but the last track index from trackConfig is ${trackConfig.length}`);
+		if (ev.custom.idxTrack >= trackConfig.length) {
+			debug(`Encountered an event from track ${ev.custom.idxTrack} but the last track index from trackConfig is ${trackConfig.length}`);
 			throw new Error('Encountered an event with an out of range `idxTrack` property.');
 		}
-		const trackCfg = trackConfig[ev.idxTrack || 0]; // 0 for DelayEvents
+		const trackCfg = trackConfig[ev.custom.idxTrack || 0]; // 0 for DelayEvents
 
 		let channel;
 		switch (trackCfg.channelType) {

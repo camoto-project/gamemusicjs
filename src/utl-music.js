@@ -126,7 +126,7 @@ class UtilMusic
 		let lastTick = 0;
 		for (const ev of events) {
 			// There's a delay before the next event, so add a DelayEvent for it.
-			if (ev.absTime > lastTick) {
+			if (ev.custom.absTime > lastTick) {
 				const delta = ev.absTime - lastTick;
 				finalEvents.push(new Music.DelayEvent({
 					ticks: delta,
@@ -134,7 +134,7 @@ class UtilMusic
 			}
 
 			// Add the event itself.
-			delete ev.absTime;
+			delete ev.custom.absTime;
 			finalEvents.push(ev);
 		}
 

@@ -1258,7 +1258,7 @@ describe(`UtilOPL tests`, function() {
 					}),
 					new Music.DelayEvent({ticks: 10}),
 				];
-				for (const ev of events) ev.idxTrack = 0;
+				for (const ev of events) ev.custom.idxTrack = 0;
 				const oplData = UtilOPL.generateOPL(events, trackConfig);
 
 				assert.equal(oplData.length, 4, 'Incorrect number of register writes produced');
@@ -1286,7 +1286,7 @@ describe(`UtilOPL tests`, function() {
 						value: false,
 					}),
 				];
-				for (const ev of events) ev.idxTrack = 0;
+				for (const ev of events) ev.custom.idxTrack = 0;
 				const oplData = UtilOPL.generateOPL(events, trackConfig);
 
 				assert.equal(oplData.length, 3, 'Incorrect number of register writes produced');
@@ -1319,7 +1319,7 @@ describe(`UtilOPL tests`, function() {
 				}),
 				new Music.DelayEvent({ticks: 30}),
 			];
-			for (const ev of events) ev.idxTrack = 0;
+			for (const ev of events) ev.custom.idxTrack = 0;
 			const oplData = UtilOPL.generateOPL(events, trackConfig);
 
 			// First delay should be unchanged.
@@ -1357,7 +1357,7 @@ describe(`UtilOPL tests`, function() {
 					value: false,
 				}),
 			];
-			for (const ev of events) ev.idxTrack = 0;
+			for (const ev of events) ev.custom.idxTrack = 0;
 			const oplData = UtilOPL.generateOPL(events, trackConfig);
 
 			assert.equal(oplData[0].tempo.usPerTick, 1000, 'Wrong tempo value');
