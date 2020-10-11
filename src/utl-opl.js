@@ -308,10 +308,13 @@ class UtilOPL
 	 * @return {Number} Index into `patches` where the instrument can be found.
 	 */
 	static findAddPatch(patches, target) {
+		const debug = Debug.extend('findAddPatch');
+
 		const idx = patches.find(p => this.comparePatch(p, target));
 		if (idx >= 0) return idx;
 
 		// Patch not found, add it.
+		debug(`Found new patch: ${target}`);
 		return patches.push(target) - 1;
 	}
 
@@ -342,16 +345,44 @@ class UtilOPL
 
 }
 
+/**
+ * Type of rhythm-mode instrument.
+ *
+ * @enum {Number}
+ */
 UtilOPL.Rhythm = {
+	/**
+	 * Normal melodic instrument.
+	 */
 	NO: 0,
+
+	/**
+	 * Hi-hat.
+	 */
 	HH: 1,
+
+	/**
+	 * Top cymbal.
+	 */
 	CY: 2,
+
+	/**
+	 * Tom tom.
+	 */
 	TT: 3,
+
+	/**
+	 * Snare drum.
+	 */
 	SD: 4,
+
+	/**
+	 * Bass drum.
+	 */
 	BD: 5,
 };
 
-UtilOPL.Rhythm.toString = v => ['NO', 'HH', 'CY', 'TT', 'SD', 'BD'][v] || '??';
+UtilOPL.Rhythm.toString = v => Object.keys(UtilOPL.Rhythm)[v] || '??';
 
 module.exports = UtilOPL;
 
