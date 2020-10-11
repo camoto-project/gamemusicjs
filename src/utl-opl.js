@@ -231,7 +231,7 @@ class UtilOPL
 	 *   channels 10..18.
 	 *
 	 * For rhythm-mode, the caller will need to extract the relevant operator from
-	 * the returned object's `mod` or `car` property.
+	 * the returned object's `slot[0]` or `slot[1]` property.
 	 *
 	 * @return {Object} Current channel settings.
 	 */
@@ -310,37 +310,12 @@ class UtilOPL
 	static findAddPatch(patches, target) {
 		const debug = Debug.extend('findAddPatch');
 
-		const idx = patches.find(p => this.comparePatch(p, target));
+		const idx = patches.findIndex(p => target.equalTo(p));
 		if (idx >= 0) return idx;
 
 		// Patch not found, add it.
 		debug(`Found new patch: ${target}`);
 		return patches.push(target) - 1;
-	}
-
-	static comparePatch(a, b) {
-		function compareOp(opA, opB) {
-			return (
-				(opA.enableTremolo === opB.enableTremolo)
-				&& (opA.enableVibrato === opB.enableVibrato)
-				&& (opA.enableSustain === opB.enableSustain)
-				&& (opA.enableKSR === opB.enableKSR)
-				&& (opA.freqMult === opB.freqMult)
-				&& (opA.scaleLevel === opB.scaleLevel)
-				&& (opA.outputLevel === opB.outputLevel)
-				&& (opA.attackRate === opB.attackRate)
-				&& (opA.decayRate === opB.decayRate)
-				&& (opA.sustainRate === opB.sustainRate)
-				&& (opA.releaseRate === opB.releaseRate)
-				&& (opA.waveSelect === opB.waveSelect)
-			);
-		}
-		return (
-			(a.feedback === b.feedback)
-			&& (a.connection === b.connection)
-			&& ((a.mod || b.mod) ? compareOp(a.mod || {}, b.mod || {}) : true)
-			&& ((a.car || b.car) ? compareOp(a.car || {}, b.car || {}) : true)
-		);
 	}
 
 }

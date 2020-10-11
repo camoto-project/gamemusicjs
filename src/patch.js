@@ -31,6 +31,14 @@ class Patch
 		this.channelType = channelType;
 		this.title = params.title || null;
 	}
+
+	clone() {
+		throw new Error(`BUG: clone() not implemented by descendent class.`);
+	}
+
+	equalTo(b) {
+		throw new Error(`BUG: equalTo() not implemented by descendent class.`);
+	}
 }
 
 class PatchOPL extends Patch {
@@ -84,6 +92,48 @@ class PatchOPL extends Patch {
 			+ '/'
 			+ this.slot.map(s => operatorToString(s)).join('/')
 			+ ']'
+		);
+	}
+
+	equalTo(b) {
+		const a = this;
+		function compareOp(opA, opB, includeOutput) {
+			return (
+				(opA.enableTremolo === opB.enableTremolo)
+				&& (opA.enableVibrato === opB.enableVibrato)
+				&& (opA.enableSustain === opB.enableSustain)
+				&& (opA.enableKSR === opB.enableKSR)
+				&& (opA.freqMult === opB.freqMult)
+				&& (opA.scaleLevel === opB.scaleLevel)
+				&& (
+					!includeOutput || (opA.outputLevel === opB.outputLevel)
+				)
+				&& (opA.attackRate === opB.attackRate)
+				&& (opA.decayRate === opB.decayRate)
+				&& (opA.sustainRate === opB.sustainRate)
+				&& (opA.releaseRate === opB.releaseRate)
+				&& (opA.waveSelect === opB.waveSelect)
+			);
+		}
+
+		for (let s = 0; s < 4; s++) {
+			if (!a.slot[s] && !b.slot[s]) continue; // neither patch has this slot
+			if (
+				(a.slot[s] && !b.slot[s])
+				|| (!a.slot[s] && b.slot[s])
+			) {
+				return false;
+			}
+			// Ignore the outputLevel in slot1 if it exists, otherwise assume rhythm
+			// and ignore the outputLevel in slot0 instead.
+			const outputSlot = a.slot[1] ? 1 : 0;
+			const includeOutput = s != outputSlot;
+			if (!compareOp(a.slot[s], b.slot[s], includeOutput)) return false;
+		}
+
+		return (
+			(a.feedback === b.feedback)
+			&& (a.connection === b.connection)
 		);
 	}
 }
