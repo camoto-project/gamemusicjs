@@ -1583,268 +1583,180 @@ describe(`UtilOPL tests`, function() {
 		});
 	}); // velocityToOutputLevel()
 
-	describe('comparePatch()', function() {
-		it('modulator-only instruments are matched', function() {
-			const a = {
-				mod: {
-					enableTremolo: 1,
-					enableVibrato: 1,
-					enableSustain: 1,
-					enableKSR: 0,
-					freqMult: 2,
-					scaleLevel: 3,
-					outputLevel: 4,
-					attackRate: 5,
-					decayRate: 6,
-					sustainRate: 7,
-					releaseRate: 8,
-					waveSelect: 9,
-				},
+	describe('PatchOPL.equalTo()', function() {
+		it('single-operator instruments are matched', function() {
+			const a = new Music.Patch.OPL({
+				slot: [
+					{
+						enableTremolo: 1,
+						enableVibrato: 1,
+						enableSustain: 1,
+						enableKSR: 0,
+						freqMult: 2,
+						scaleLevel: 3,
+						outputLevel: 4,
+						attackRate: 5,
+						decayRate: 6,
+						sustainRate: 7,
+						releaseRate: 8,
+						waveSelect: 9,
+					},
+				],
 				feedback: 3,
 				connection: 1,
-			};
+				rhythm: 0,
+			});
 
 			// Same as above, with some entries overridden with the same value.
 			// This confirms overriding values doesn't break anything.
-			const a2 = {
-				...a,
-				mod: {
-					...a.mod,
-					scaleLevel: 3,
-				},
-				feedback: 3,
-			};
+			let a2 = a.clone();
+			a2.slot[0].scaleLevel = 3;
+			a2.feedback = 3;
 
 			// As above with a change to the modulator only.
 			// All changes have been tested in `a2` to show overriding these elements
 			// isn't the cause of the problem.
-			const x1 = {
-				...a,
-				mod: {
-					...a.mod,
-					scaleLevel: 4,
-				},
-				feedback: 3,
-			};
+			let x1 = a.clone();
+			x1.slot[0].scaleLevel = 4;
+			x1.feedback = 3;
 
 			// As with `x1` but with the difference outside the OPL operator.
-			const x2 = {
-				...a,
-				mod: {
-					...a.mod,
-				},
-				feedback: 2,
-			};
+			let x2 = a.clone();
+			x2.feedback = 2;
 
 			// As with `x1` but comparing against a modulator-only patch.
-			const x3 = {
-				...a,
-				mod: {
-					...a.car,
-				},
-			};
+			let x3 = a.clone();
+			x3.slot[1] = x3.slot[0];
+			delete x3.slot[0];
 
 			// As with `x1` but comparing against a two-operator patch where the
 			// carrier matches this patch, but the modulator is additional.
-			const x4 = {
-				...a,
-				car: {
-					...a.car,
-				},
-				mod: {
-					...a.car,
-				},
-			};
+			let x4 = a.clone();
+			x4.slot[1] = x4.slot[0];
 
-			assert.ok(UtilOPL.comparePatch(a, a));
-			assert.ok(UtilOPL.comparePatch(a, a2));
+			assert.ok(a.equalTo(a));
+			assert.ok(a.equalTo(a2));
 
-			assert.ok(!UtilOPL.comparePatch(a, x1));
-			assert.ok(!UtilOPL.comparePatch(a, x2));
-			assert.ok(!UtilOPL.comparePatch(a, x3));
-			assert.ok(!UtilOPL.comparePatch(a, x4));
-		});
-
-		it('carrier-only instruments are matched', function() {
-			const a = {
-				car: {
-					enableTremolo: 1,
-					enableVibrato: 1,
-					enableSustain: 1,
-					enableKSR: 0,
-					freqMult: 2,
-					scaleLevel: 3,
-					outputLevel: 4,
-					attackRate: 5,
-					decayRate: 6,
-					sustainRate: 7,
-					releaseRate: 8,
-					waveSelect: 9,
-				},
-				feedback: 3,
-				connection: 1,
-			};
-
-			// Same as above, with some entries overridden with the same value.
-			// This confirms overriding values doesn't break anything.
-			const a2 = {
-				...a,
-				car: {
-					...a.car,
-					scaleLevel: 3,
-				},
-				feedback: 3,
-			};
-
-			// As above with a change to the carrier only.
-			// All changes have been tested in `a2` to show overriding these elements
-			// isn't the cause of the problem.
-			const x1 = {
-				...a,
-				car: {
-					...a.car,
-					scaleLevel: 4,
-				},
-				feedback: 3,
-			};
-
-			// As with `x1` but with the difference outside the OPL operator.
-			const x2 = {
-				...a,
-				car: {
-					...a.car,
-				},
-				feedback: 2,
-			};
-
-			// As with `x1` but comparing against a modulator-only patch.
-			const x3 = {
-				...a,
-				car: undefined,
-				mod: {
-					...a.car,
-				},
-			};
-
-			// As with `x1` but comparing against a two-operator patch where the
-			// carrier matches this patch, but the modulator is additional.
-			const x4 = {
-				...a,
-				car: {
-					...a.car,
-				},
-				mod: {
-					...a.car,
-				},
-			};
-
-			assert.ok(UtilOPL.comparePatch(a, a));
-			assert.ok(UtilOPL.comparePatch(a, a2));
-
-			assert.ok(!UtilOPL.comparePatch(a, x1));
-			assert.ok(!UtilOPL.comparePatch(a, x2));
-			assert.ok(!UtilOPL.comparePatch(a, x3));
-			assert.ok(!UtilOPL.comparePatch(a, x4));
+			assert.ok(!a.equalTo(x1));
+			assert.ok(!a.equalTo(x2));
+			assert.ok(!a.equalTo(x3));
+			assert.ok(!a.equalTo(x4));
 		});
 
 		it('two-operator instruments are matched', function() {
-			const a = {
-				mod: {
-					enableTremolo: 1,
-					enableVibrato: 1,
-					enableSustain: 1,
-					enableKSR: 0,
-					freqMult: 2,
-					scaleLevel: 3,
-					outputLevel: 4,
-					attackRate: 5,
-					decayRate: 6,
-					sustainRate: 7,
-					releaseRate: 8,
-					waveSelect: 9,
-				},
-				car: {
-					enableTremolo: 1,
-					enableVibrato: 0,
-					enableSustain: 1,
-					enableKSR: 0,
-					freqMult: 3,
-					scaleLevel: 4,
-					outputLevel: 5,
-					attackRate: 6,
-					decayRate: 7,
-					sustainRate: 8,
-					releaseRate: 9,
-					waveSelect: 10,
-				},
+			const a = new Music.Patch.OPL({
+				slot: [
+					{
+						enableTremolo: 1,
+						enableVibrato: 1,
+						enableSustain: 1,
+						enableKSR: 0,
+						freqMult: 2,
+						scaleLevel: 3,
+						outputLevel: 4,
+						attackRate: 5,
+						decayRate: 6,
+						sustainRate: 7,
+						releaseRate: 8,
+						waveSelect: 9,
+					}, {
+						enableTremolo: 1,
+						enableVibrato: 0,
+						enableSustain: 1,
+						enableKSR: 0,
+						freqMult: 3,
+						scaleLevel: 4,
+						outputLevel: 5,
+						attackRate: 6,
+						decayRate: 7,
+						sustainRate: 8,
+						releaseRate: 9,
+						waveSelect: 10,
+					},
+				],
 				feedback: 4,
 				connection: 0,
-			};
+				rhythm: 0,
+			});
 
 			// Same as above, with some entries overridden with the same value.
 			// This confirms overriding values doesn't break anything.
-			const a2 = {
-				...a,
-				mod: {
-					...a.mod,
-					outputLevel: 4,
-				},
-				car: {
-					...a.car,
-					attackRate: 6,
-				},
-				feedback: 4,
-			};
+			let a2 = a.clone();
+			a2.slot[0].attackRate = 5;
+			a2.slot[1].decayRate = 7;
+			a2.feedback = 4;
 
 			// As above with a change to the modulator only.
 			// All changes have been tested in `a2` to show overriding these elements
 			// isn't the cause of the problem.
-			const x1 = {
-				...a,
-				mod: {
-					...a.mod,
-					outputLevel: 3,
-				},
-				car: {
-					...a.car,
-					attackRate: 5,
-				},
-				feedback: 4,
-			};
+			let x1 = a.clone();
+			x1.slot[0].attackRate = 3;
+			x1.slot[1].decayRate = 5;
 
 			// As with `x1` but for carrier only.
-			const x2 = {
-				...a,
-				mod: {
-					...a.mod,
-					outputLevel: 4,
-				},
-				car: {
-					...a.car,
-					attackRate: 7,
-				},
-				feedback: 4,
-			};
+			let x2 = a.clone();
+			x2.slot[1].decayRate = 8;
 
 			// As with `x1` but with the difference outside the OPL operator.
-			const x3 = {
-				...a,
-				mod: {
-					...a.mod,
-				},
-				car: {
-					...a.car,
-				},
-				feedback: 2,
-			};
+			let x3 = a.clone();
+			x3.feedback = 2;
 
-			assert.ok(UtilOPL.comparePatch(a, a));
-			assert.ok(UtilOPL.comparePatch(a, a2));
+			assert.ok(a.equalTo(a));
+			assert.ok(a.equalTo(a2));
 
-			assert.ok(!UtilOPL.comparePatch(a, x1));
-			assert.ok(!UtilOPL.comparePatch(a, x2));
-			assert.ok(!UtilOPL.comparePatch(a, x3));
+			assert.ok(!a.equalTo(x1));
+			assert.ok(!a.equalTo(x2));
+			assert.ok(!a.equalTo(x3));
 		});
-	}); // velocityToOutputLevel()
+
+		it('outputLevel is ignored', function() {
+			const a = new Music.Patch.OPL({
+				slot: [
+					{
+						enableTremolo: 1,
+						enableVibrato: 1,
+						enableSustain: 1,
+						enableKSR: 0,
+						freqMult: 2,
+						scaleLevel: 3,
+						outputLevel: 4,
+						attackRate: 5,
+						decayRate: 6,
+						sustainRate: 7,
+						releaseRate: 8,
+						waveSelect: 9,
+					}, {
+						enableTremolo: 1,
+						enableVibrato: 0,
+						enableSustain: 1,
+						enableKSR: 0,
+						freqMult: 3,
+						scaleLevel: 4,
+						outputLevel: 5,
+						attackRate: 6,
+						decayRate: 7,
+						sustainRate: 8,
+						releaseRate: 9,
+						waveSelect: 10,
+					},
+				],
+				feedback: 4,
+				connection: 0,
+				rhythm: 0,
+			});
+
+			// Operator 0 only, should be ignored.
+			let a2 = a.clone();
+			a2.slot[0].outputLevel = 2;
+
+			// Operator 1 only, should cause mismatch.
+			let a3 = a.clone();
+			a3.slot[1].outputLevel = 2;
+
+			assert.ok(a.equalTo(a));
+			assert.ok(a.equalTo(a2));
+			assert.ok(!a.equalTo(a3));
+		});
+	}); // Patch.equalTo()
 
 }); // UtilOPL tests
