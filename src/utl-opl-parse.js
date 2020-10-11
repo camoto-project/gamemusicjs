@@ -105,31 +105,32 @@ function appendOPLEvents(patches, events, oplState, oplStatePrev)
 		const chipOffset = 0x100 * (channel / 9 >>> 0);
 		const chipChannel = channel % 9;
 
+		const rhythmBit = 1 << (rhythm - 1);
 		// If this is a rhythm instrument, use its keyon bit, otherwise use the
 		// normal channel keyon bit.
-		const keyOnChange = !!((rhythm !== undefined)
-			? oplDiff[0xBD] & (1 << rhythm) // 0xBD is in lower register set only
+		const keyOnChange = !!(rhythm
+			? oplDiff[0xBD] & rhythmBit // 0xBD is in lower register set only
 			: oplDiff[chipChannel + 0xB0 + chipOffset] & 0x20);
 
 		// Ignore this channel if the note hasn't changed (was already playing or
 		// already off).
 		if (!keyOnChange) return;
 
-		const keyOn = !!((rhythm !== undefined)
-			? oplState[0xBD] & (1 << rhythm)
+		const keyOn = !!(rhythm
+			? oplState[0xBD] & rhythmBit
 			: oplState[chipOffset + 0xB0 + chipChannel] & 0x20);
 
 		// Mark register as processed.
 		const setPrevState = () => {
-			if (rhythm === undefined) {
+			if (!rhythm) {
 				for (const i of [0xB0]) {
 					const offset = chipOffset + i + chipChannel;
 					oplStatePrev[offset] = oplState[offset];
 				}
 			} else {
 				// Mark rhythm-mode keyon bit as processed
-				oplStatePrev[0xBD] &= ~(1 << rhythm);
-				oplStatePrev[0xBD] |= oplState[0xBD] & (1 << rhythm);
+				oplStatePrev[0xBD] &= ~rhythmBit;
+				oplStatePrev[0xBD] |= oplState[0xBD] & rhythmBit;
 			}
 		};
 
@@ -182,17 +183,17 @@ function appendOPLEvents(patches, events, oplState, oplStatePrev)
 
 	for (let c = 0; c < 18; c++) {
 		if (op4[c]) {
-			checkForNote(c, [1, 1, 1, 1]); // 4op
+			checkForNote(c, [1, 1, 1, 1], UtilOPL.Rhythm.NO); // 4op
 		} else if ((c === 6) && rhythmOn) {
-			checkForNote(c, [1, 1, 0, 0], 4); // BD: ch6 slot1+2 = op12+15
+			checkForNote(c, [1, 1, 0, 0], UtilOPL.Rhythm.BD); // BD: ch6 slot1+2 = op12+15
 		} else if ((c === 7) && rhythmOn) {
-			checkForNote(c, [1, 0, 0, 0], 0); // HH: ch7 slot1 = op13
-			checkForNote(c, [0, 1, 0, 0], 3); // SD: ch7 slot2 = op16
+			checkForNote(c, [1, 0, 0, 0], UtilOPL.Rhythm.HH); // HH: ch7 slot1 = op13
+			checkForNote(c, [0, 1, 0, 0], UtilOPL.Rhythm.SD); // SD: ch7 slot2 = op16
 		} else if ((c === 8) && rhythmOn) {
-			checkForNote(c, [1, 0, 0, 0], 2); // TT: ch8 slot1 = op14
-			checkForNote(c, [0, 1, 0, 0], 1); // CY: ch8 slot2 = op17
+			checkForNote(c, [1, 0, 0, 0], UtilOPL.Rhythm.TT); // TT: ch8 slot1 = op14
+			checkForNote(c, [0, 1, 0, 0], UtilOPL.Rhythm.CY); // CY: ch8 slot2 = op17
 		} else {
-			checkForNote(c, [1, 1, 0, 0]); // 2op
+			checkForNote(c, [1, 1, 0, 0], UtilOPL.Rhythm.NO); // 2op
 		}
 	}
 }

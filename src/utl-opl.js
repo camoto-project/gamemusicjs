@@ -342,6 +342,17 @@ class UtilOPL
 
 }
 
+UtilOPL.Rhythm = {
+	NO: 0,
+	HH: 1,
+	CY: 2,
+	TT: 3,
+	SD: 4,
+	BD: 5,
+};
+
+UtilOPL.Rhythm.toString = v => ['NO', 'HH', 'CY', 'TT', 'SD', 'BD'][v] || '??';
+
 module.exports = UtilOPL;
 
 // These must go after module.exports due to cyclic dependencies.
