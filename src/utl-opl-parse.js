@@ -136,10 +136,8 @@ function appendOPLEvents(patches, events, oplState, oplStatePrev)
 		if (!keyOn) {
 			// Note was just switched off
 			let ev = new Music.NoteOffEvent();
-			ev.opl = {
-				channel: channel,
-				rhythm: rhythm,
-			};
+			ev.custom.oplChannel = channel;
+			ev.custom.oplRhythm = rhythm;
 			events.push(ev);
 
 			setPrevState(); // mark registers as processed
@@ -165,10 +163,8 @@ function appendOPLEvents(patches, events, oplState, oplStatePrev)
 			velocity: UtilOPL.log_volume_to_lin_velocity(63 - outputLevel, 63),
 			instrument: idxInstrument,
 		});
-		ev.opl = {
-			channel: channel,
-			rhythm: rhythm,
-		};
+		ev.custom.oplChannel = channel;
+		ev.custom.oplRhythm = rhythm;
 		events.push(ev);
 		setPrevState(); // mark registers as processed
 	}

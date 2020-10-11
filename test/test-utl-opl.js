@@ -1025,7 +1025,7 @@ describe(`UtilOPL tests`, function() {
 				assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
 				TestUtil.almostEqual(events[2].freq, 169.928);
 				TestUtil.almostEqual(events[2].velocity, 1);
-				assert.equal(events[2].opl.channel, 7, 'Wrong source OPL channel');
+				assert.equal(events[2].custom.oplChannel, 7, 'Wrong source OPL channel');
 
 				assert.ok(events[4], 'Missing event');
 				assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
@@ -1062,7 +1062,7 @@ describe(`UtilOPL tests`, function() {
 				assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
 				TestUtil.almostEqual(events[2].freq, 169.928);
 				TestUtil.almostEqual(events[2].velocity, 1);
-				assert.equal(events[2].opl.channel, 8, 'Wrong source OPL channel');
+				assert.equal(events[2].custom.oplChannel, 8, 'Wrong source OPL channel');
 
 				assert.ok(events[4], 'Missing event');
 				assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
@@ -1099,7 +1099,7 @@ describe(`UtilOPL tests`, function() {
 				assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
 				TestUtil.almostEqual(events[2].freq, 169.928);
 				TestUtil.almostEqual(events[2].velocity, 1);
-				assert.equal(events[2].opl.channel, 8, 'Wrong source OPL channel');
+				assert.equal(events[2].custom.oplChannel, 8, 'Wrong source OPL channel');
 
 				assert.ok(events[4], 'Missing event');
 				assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
@@ -1136,7 +1136,7 @@ describe(`UtilOPL tests`, function() {
 				assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
 				TestUtil.almostEqual(events[2].freq, 169.928);
 				TestUtil.almostEqual(events[2].velocity, 1);
-				assert.equal(events[2].opl.channel, 7, 'Wrong source OPL channel');
+				assert.equal(events[2].custom.oplChannel, 7, 'Wrong source OPL channel');
 
 				assert.ok(events[4], 'Missing event');
 				assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
@@ -1179,7 +1179,7 @@ describe(`UtilOPL tests`, function() {
 				assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
 				TestUtil.almostEqual(events[2].freq, 169.928);
 				TestUtil.almostEqual(events[2].velocity, 1);
-				assert.equal(events[2].opl.channel, 6, 'Wrong source OPL channel');
+				assert.equal(events[2].custom.oplChannel, 6, 'Wrong source OPL channel');
 
 				assert.ok(events[4], 'Missing event');
 				assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
@@ -1741,4 +1741,4 @@ describe(`UtilOPL tests`, function() {
 		});
 	}); // velocityToOutputLevel()
 
-}); // UtilOPL tetss
+}); // UtilOPL tests
