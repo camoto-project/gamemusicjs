@@ -225,7 +225,7 @@ class Music_IMF_IDSoftware_Common extends MusicHandler
 	/**
 	 * Create the binary IMF data, minus the type-1 header and tags.
 	 */
-	static generateOPLBuffer(music, outMessages)
+	static generateOPLBuffer(music)
 	{
 		// Convert all the events across all tracks in all patterns into a single
 		// event list.
@@ -235,9 +235,13 @@ class Music_IMF_IDSoftware_Common extends MusicHandler
 		// fixed speed.
 		events = UtilMusic.fixedTempo(events, 1000000 / this.getTempo());
 
-		const oplData = UtilOPL.generateOPL(events, music.trackConfig, outMessages);
+		const { oplData, warnings } = UtilOPL.generateOPL(
+			events,
+			music.patches,
+			music.trackConfig
+		);
 
-		let buffer = new RecordBuffer(65536);
+		let binOPL = new RecordBuffer(65536);
 
 		// For some reason the files almost always start with 4x 0x00 bytes.
 		let last = {
@@ -245,13 +249,13 @@ class Music_IMF_IDSoftware_Common extends MusicHandler
 			val: 0,
 			delay: 0,
 		};
-		buffer.writeRecord(recordTypes.event, last);
+		binOPL.writeRecord(recordTypes.event, last);
 
 		last.reg = undefined;
 
 		function flush() {
 			if (last.reg) {
-				buffer.writeRecord(recordTypes.event, last);
+				binOPL.writeRecord(recordTypes.event, last);
 				last.reg = undefined;
 				last.delay = 0;
 			}
@@ -269,7 +273,7 @@ class Music_IMF_IDSoftware_Common extends MusicHandler
 		}
 		flush();
 
-		return buffer;
+		return { binOPL, warnings };
 	}
 
 	static writeTags(buffer, tags)
@@ -345,10 +349,13 @@ class Music_IMF_IDSoftware_Type0 extends Music_IMF_IDSoftware_Common
 		return content.length;
 	}
 
-	static generate(music, outMessages) {
-		const binOPL = super.generateOPLBuffer(music, outMessages);
+	static generate(music) {
+		const { binOPL, warnings } = super.generateOPLBuffer(music);
 		return {
-			main: binOPL.getU8(),
+			content: {
+				main: binOPL.getU8(),
+			},
+			warnings,
 		};
 	}
 }
@@ -431,8 +438,8 @@ class Music_IMF_IDSoftware_Type1 extends Music_IMF_IDSoftware_Common
 		return content.read(RecordType.int.u16le);
 	}
 
-	static generate(music, outMessages) {
-		const binOPL = super.generateOPLBuffer(music, outMessages);
+	static generate(music) {
+		const { binOPL, warnings } = super.generateOPLBuffer(music);
 		const buffer = new RecordBuffer(binOPL.length + 1024);
 		// Write data length
 		buffer.write(RecordType.int.u16le, binOPL.length);
@@ -441,7 +448,10 @@ class Music_IMF_IDSoftware_Type1 extends Music_IMF_IDSoftware_Common
 			super.writeTags(buffer, music.tags);
 		}
 		return {
-			main: buffer.getU8(),
+			content: {
+				main: buffer.getU8(),
+			},
+			warnings,
 		};
 	}
 }
@@ -482,9 +492,12 @@ class Music_IMF_IDSoftware_Nukem2 extends Music_IMF_IDSoftware_Type0
 	}
 
 	static generate(music, outMessages) {
-		const binOPL = super.generateOPLBuffer(music, outMessages);
+		const { binOPL, warnings } = super.generateOPLBuffer(music);
 		return {
-			main: binOPL.getU8(),
+			content: {
+				main: binOPL.getU8(),
+			},
+			warnings,
 		};
 	}
 }

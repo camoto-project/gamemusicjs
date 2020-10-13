@@ -303,28 +303,28 @@ class Operations
 		}
 
 		console.warn('Saving to', params.target, 'as', params.format);
-		let outContent, outMessages = [];
+		let content, warnings;
 		try {
-			outContent = handler.generate(this.music, outMessages);
+			({ content, warnings } = handler.generate(this.music));
 		} catch (e) {
 			debug(e);
 			throw new OperationsError(`save: generate failed - ${e.message}`);
 		}
 
 		let promises = [];
-		const suppList = handler.supps(params.target, outContent.main);
+		const suppList = handler.supps(params.target, content.main);
 		if (suppList) Object.keys(suppList).forEach(id => {
 			console.warn(' - Saving supplemental file', suppList[id]);
 			promises.push(
-				fs.promises.writeFile(suppList[id], outContent[id])
+				fs.promises.writeFile(suppList[id], content[id])
 			);
 		});
-		promises.push(fs.promises.writeFile(params.target, outContent.main));
+		promises.push(fs.promises.writeFile(params.target, content.main));
 
-		if (outMessages.length) {
+		if (warnings.length) {
 			console.log('There were warnings generated while saving:\n');
-			for (let i = 0; i < outMessages.length; i++) {
-				console.log((i + 1).toString().padStart(2) + ': ' + outMessages[i]);
+			for (let i in warnings) {
+				console.log(((i >>> 0) + 1).toString().padStart(2) + '. ' + warnings[i]);
 			}
 		}
 

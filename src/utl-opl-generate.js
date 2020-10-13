@@ -40,14 +40,14 @@ function writeOPLChanges(oplData, oplStatePrev, oplState)
  * Each event must have an `idxTrack` property added so we know which track it
  * came from.
  */
-function generateOPL(events, trackConfig, outMessages)
+function generateOPL(events, patches, trackConfig)
 {
 	const debug = Debug.extend('generateOPL');
 
 	if (!trackConfig) {
 		throw new Error('Missing trackConfig parameter.');
 	}
-	if (!outMessages) outMessages = [];
+	let warnings = [];
 
 	let countUnsupportedChannel = 0;
 	let countClipFreq = 0;
@@ -144,9 +144,9 @@ function generateOPL(events, trackConfig, outMessages)
 				const targetFnum = UtilOPL.frequencyToFnum(ev.frequency, curBlock);
 				if (targetFnum.clip) {
 					if (countClipFreq < 5) {
-						outMessages.push(`Frequency ${ev.frequency} Hz out of range, clipped to max 6208.431 Hz.`);
+						warnings.push(`Frequency ${ev.frequency} Hz out of range, clipped to max 6208.431 Hz.`);
 					} else if (countClipFreq === 5) {
-						outMessages.push(`Too many notes with frequencies out-of-range high, not including any more messages for these.`);
+						warnings.push(`Too many notes with frequencies out-of-range high, not including any more messages for these.`);
 					}
 					countClipFreq++;
 				}
@@ -196,10 +196,10 @@ function generateOPL(events, trackConfig, outMessages)
 	writeOPLChanges(oplData, oplStatePrev, oplState);
 
 	if (countUnsupportedChannel) {
-		outMessages.push(`${countUnsupportedChannel} events were dropped as they were sent to non-OPL channels.`);
+		warnings.push(`${countUnsupportedChannel} events were dropped as they were sent to non-OPL channels.`);
 	}
 
-	return oplData;
+	return { oplData, warnings };
 }
 
 module.exports = generateOPL;
