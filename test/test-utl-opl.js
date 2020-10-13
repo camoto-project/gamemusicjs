@@ -1863,7 +1863,38 @@ describe(`UtilOPL tests`, function() {
 			assert.ok(!a.equalTo(x3));
 		});
 
-		it('outputLevel is ignored', function() {
+		it('outputLevel differences are ignored in slot[0] for 1op', function() {
+			const a = new Music.Patch.OPL({
+				slot: [
+					{
+						enableTremolo: 1,
+						enableVibrato: 1,
+						enableSustain: 1,
+						enableKSR: 0,
+						freqMult: 2,
+						scaleLevel: 3,
+						outputLevel: 4,
+						attackRate: 5,
+						decayRate: 6,
+						sustainRate: 7,
+						releaseRate: 8,
+						waveSelect: 9,
+					},
+				],
+				feedback: 4,
+				connection: 0,
+				rhythm: 0,
+			});
+
+			// Operator 0 only, should be ignored.
+			let a2 = a.clone();
+			a2.slot[0].outputLevel = 2;
+
+			assert.ok(a.equalTo(a));
+			assert.ok(a.equalTo(a2));
+		});
+
+		it('outputLevel differences are ignored in slot[1] for 2op', function() {
 			const a = new Music.Patch.OPL({
 				slot: [
 					{
@@ -1899,18 +1930,19 @@ describe(`UtilOPL tests`, function() {
 				rhythm: 0,
 			});
 
-			// Operator 0 only, should be ignored.
+			// Operator 0 only, should cause mismatch.
 			let a2 = a.clone();
 			a2.slot[0].outputLevel = 2;
 
-			// Operator 1 only, should cause mismatch.
+			// Operator 1 only, should be ignored.
 			let a3 = a.clone();
 			a3.slot[1].outputLevel = 2;
 
 			assert.ok(a.equalTo(a));
-			assert.ok(a.equalTo(a2));
-			assert.ok(!a.equalTo(a3));
+			assert.ok(!a.equalTo(a2));
+			assert.ok(a.equalTo(a3));
 		});
+
 	}); // Patch.equalTo()
 
 }); // UtilOPL tests
