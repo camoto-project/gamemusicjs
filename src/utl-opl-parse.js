@@ -31,7 +31,7 @@ const UtilOPL = require('./utl-opl.js');
  *   instrument settings will be examined, actioned, and copied into
  *   `oplPrevState`.
  */
-function appendOPLEvents(patches, events, oplState, oplStatePrev)
+function appendOPLEvents(patches, events, oplState, oplStatePrev, hasKeyOn)
 {
 	const debug = Debug.extend('appendOPLEvents')
 
@@ -112,13 +112,17 @@ function appendOPLEvents(patches, events, oplState, oplStatePrev)
 			? oplDiff[0xBD] & rhythmBit // 0xBD is in lower register set only
 			: oplDiff[chipChannel + 0xB0 + chipOffset] & 0x20);
 
-		// Ignore this channel if the note hasn't changed (was already playing or
-		// already off).
-		if (!keyOnChange) return;
-
 		const keyOn = !!(rhythm
 			? oplState[0xBD] & rhythmBit
 			: oplState[chipOffset + 0xB0 + chipChannel] & 0x20);
+
+		// True if a keyoff was followed by a keyon without any delay in between.
+		const thisHasKeyOn = (rhythm === 0) ? hasKeyOn.melodic[channel] : hasKeyOn.rhythm[rhythm];
+		const keyOnImmediate = !!(keyOn && thisHasKeyOn && !keyOnChange);
+
+		// Ignore this channel if the note hasn't changed (was already playing or
+		// already off).
+		if (!keyOnChange && !keyOnImmediate) return;
 
 		// Mark register as processed.
 		const setPrevState = () => {
@@ -134,15 +138,18 @@ function appendOPLEvents(patches, events, oplState, oplStatePrev)
 			}
 		};
 
-		if (!keyOn) {
+		if (!keyOn || keyOnImmediate) {
 			// Note was just switched off
 			let ev = new Music.NoteOffEvent();
 			ev.custom.oplChannel = channel;
 			ev.custom.oplRhythm = rhythm;
 			events.push(ev);
 
-			setPrevState(); // mark registers as processed
-			return;
+			if (!keyOn) {
+				// Note is off but wasn't switched back on again
+				setPrevState(); // mark registers as processed
+				return;
+			}
 		}
 
 		// Compare active patch  to known ones, add if not.
@@ -237,6 +244,10 @@ function parseOPL(oplData, initialTempoEvent)
 	let oplState = new Array(256 * 2).fill(0);
 	let oplStatePrev = new Array(256 * 2).fill(0);
 
+	let hasKeyOn = {
+		melodic: [], // 0..17
+		rhythm: [],  // index is UtilOPL.Rhythm.*
+	};
 	for (const evOPL of oplData) {
 		// If there's a register value then there's no delay, so just accumulate
 		// all the register values for later.  This may overwrite some earlier
@@ -248,6 +259,29 @@ function parseOPL(oplData, initialTempoEvent)
 			}
 			if (evOPL.tempo) {
 				throw new Error('Cannot specify both reg/val and tempo in same event.');
+			}
+			if ((evOPL.reg & 0xB0) === 0xB0) { // also 1B0
+				// This could be a keyon/off
+				if (evOPL.reg == 0xBD) { // rhythm
+					for (let r = 1; r < 6; r++) {
+						const rhythmBit = 1 << (r - 1);
+						const prevKeyOn = !!(oplState[0xBD] & rhythmBit);
+						const keyOn = !!(evOPL.val & rhythmBit);
+						if (!prevKeyOn && keyOn) {
+							// We've had a keyoff followed now by a keyon, so flag it.
+							hasKeyOn.rhythm[r] = true;
+						}
+					}
+				} else { // melodic
+					const prevKeyOn = !!(oplState[evOPL.reg] & 0x20);
+					const keyOn = !!(evOPL.val & 0x20);
+					if (!prevKeyOn && keyOn) {
+						// We've had a keyoff followed now by a keyon, so flag it.
+						const chip = evOPL.reg >> 8;
+						const channel = (chip * 9) + evOPL.reg & 0x0F;
+						hasKeyOn.melodic[channel] = true;
+					}
+				}
 			}
 			oplState[evOPL.reg] = evOPL.val;
 			continue;
@@ -283,7 +317,11 @@ function parseOPL(oplData, initialTempoEvent)
 
 		// If we're here, this is a delay event, so figure out what registers
 		// have changed and write out those events, followed by the delay.
-		appendOPLEvents(patches, events, oplState, oplStatePrev);
+		appendOPLEvents(patches, events, oplState, oplStatePrev, hasKeyOn);
+		hasKeyOn = { // reset back to empty
+			melodic: [],
+			rhythm: [],
+		};
 
 		let lastEvent = events[events.length - 1] || {};
 		if (lastEvent.type === Music.DelayEvent) {
@@ -297,7 +335,7 @@ function parseOPL(oplData, initialTempoEvent)
 	}
 
 	// Append any final event if there was no trailing delay.
-	appendOPLEvents(patches, events, oplState, oplStatePrev);
+	appendOPLEvents(patches, events, oplState, oplStatePrev, hasKeyOn);
 
 	return {
 		patches: patches,

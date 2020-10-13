@@ -184,10 +184,9 @@ allHandlers.forEach(handler => {
 					assert.equal(events[1].type, Music.NoteOnEvent);
 					assert.equal(events[2].type, Music.DelayEvent);
 					assert.equal(events[3].type, Music.NoteOffEvent);
-					assert.equal(events[4].type, Music.DelayEvent);
-					assert.equal(events[5].type, Music.NoteOnEvent);
-					assert.equal(events[6].type, Music.DelayEvent);
-					assert.equal(events[7].type, Music.NoteOffEvent);
+					assert.equal(events[4].type, Music.NoteOnEvent);
+					assert.equal(events[5].type, Music.DelayEvent);
+					assert.equal(events[6].type, Music.NoteOffEvent);
 
 					TestUtil.almostEqual(events[1].frequency, 440, 0.1);
 					TestUtil.almostEqual(events[5].frequency, 92.5, 0.1);
@@ -196,7 +195,7 @@ allHandlers.forEach(handler => {
 				it('should have the standard number of events', function() {
 					assert.equal(music.patterns.length, 1);
 					assert.equal(music.patterns[0].tracks.length, 1, 'Wrong number of tracks.');
-					assert.equal(music.patterns[0].tracks[0].events.length, 8, 'Wrong number of events in first track.');
+					assert.equal(music.patterns[0].tracks[0].events.length, 7, 'Wrong number of events in first track.');
 				});
 
 				const mdTags = Object.keys(md.caps.tags);

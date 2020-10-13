@@ -1334,6 +1334,139 @@ describe(`UtilOPL tests`, function() {
 			assert.equal(events.length, 8, 'Incorrect number of events produced');
 		});
 
+		it('should ignore zero-delay keyons', function() {
+			const { events } = UtilOPL.parseOPL([
+				{reg: 0xB0, val: 0x20},
+				{delay: 10},
+				{reg: 0xB0, val: 0x00},
+				{delay: 10},
+				{reg: 0xB0, val: 0x20}, // useless keyon
+				{reg: 0xB0, val: 0x00}, // immediately turned off again
+				{delay: 10},
+				{reg: 0xB0, val: 0x20},
+				{reg: 0xB0, val: 0x00},
+				{reg: 0xB0, val: 0x20},
+				{reg: 0xB0, val: 0x00},
+				{delay: 10},
+			], defaultTempo);
+
+			assert.ok(events[1], 'Missing event');
+			assert.equal(events[1].type, Music.NoteOnEvent, 'Wrong event type');
+
+			assert.ok(events[2]);
+			assert.equal(events[2].type, Music.DelayEvent, 'Wrong event type');
+			assert.equal(events[2].ticks, 10, 'Wrong delay value');
+
+			assert.ok(events[3], 'Missing event');
+			assert.equal(events[3].type, Music.NoteOffEvent, 'Wrong event type');
+
+			assert.ok(events[4]);
+			assert.equal(events[4].type, Music.DelayEvent, 'Wrong event type');
+			assert.equal(events[4].ticks, 30, 'Wrong delay value');
+
+			assert.equal(events.length, 5, 'Incorrect number of events produced');
+		});
+
+		it('should handle zero-delay keyoffs for melodic instruments', function() {
+			const { events } = UtilOPL.parseOPL([
+				{reg: 0xB0, val: 0x20},
+				{delay: 10},
+				{reg: 0xB0, val: 0x00},
+				{reg: 0xB0, val: 0x20}, // immediate re-keyon
+				{delay: 10},
+				{reg: 0xB0, val: 0x00},
+				{reg: 0xB0, val: 0x20}, // should be ignored (overridden below)
+				{reg: 0xB0, val: 0x00},
+				{reg: 0xB0, val: 0x20}, // another immediate re-keyon
+				{delay: 10},
+				{reg: 0xB0, val: 0x00},
+			], defaultTempo);
+
+			assert.ok(events[1], 'Missing event');
+			assert.equal(events[1].type, Music.NoteOnEvent, 'Wrong event type');
+
+			assert.ok(events[2]);
+			assert.equal(events[2].type, Music.DelayEvent, 'Wrong event type');
+			assert.equal(events[2].ticks, 10, 'Wrong delay value');
+
+			assert.ok(events[3], 'Missing event');
+			assert.equal(events[3].type, Music.NoteOffEvent, 'Wrong event type');
+
+			assert.ok(events[4], 'Missing event');
+			assert.equal(events[4].type, Music.NoteOnEvent, 'Wrong event type');
+
+			assert.ok(events[5]);
+			assert.equal(events[5].type, Music.DelayEvent, 'Wrong event type');
+			assert.equal(events[5].ticks, 10, 'Wrong delay value');
+
+			assert.ok(events[6], 'Missing event');
+			assert.equal(events[6].type, Music.NoteOffEvent, 'Wrong event type');
+
+			assert.ok(events[7], 'Missing event');
+			assert.equal(events[7].type, Music.NoteOnEvent, 'Wrong event type');
+
+			assert.ok(events[8]);
+			assert.equal(events[8].type, Music.DelayEvent, 'Wrong event type');
+			assert.equal(events[8].ticks, 10, 'Wrong delay value');
+
+			assert.ok(events[9], 'Missing event');
+			assert.equal(events[9].type, Music.NoteOffEvent, 'Wrong event type');
+
+			assert.equal(events.length, 10, 'Incorrect number of events produced');
+		});
+
+		it('should handle zero-delay keyoffs for rhythm instruments', function() {
+			const { events } = UtilOPL.parseOPL([
+				{reg: 0xBD, val: 0x20},
+				{reg: 0xBD, val: 0x21},
+				{delay: 10},
+				{reg: 0xBD, val: 0x20},
+				{reg: 0xBD, val: 0x21}, // immediate re-keyon
+				{delay: 10},
+				{reg: 0xBD, val: 0x20},
+				{reg: 0xBD, val: 0x21}, // should be ignored (overridden below)
+				{reg: 0xBD, val: 0x20},
+				{reg: 0xBD, val: 0x21}, // another immediate re-keyon
+				{delay: 10},
+				{reg: 0xBD, val: 0x20},
+			], defaultTempo);
+
+			assert.ok(events[1], 'Missing event');
+			assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
+
+			assert.ok(events[2], 'Missing event');
+			assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
+
+			assert.ok(events[3]);
+			assert.equal(events[3].type, Music.DelayEvent, 'Wrong event type');
+			assert.equal(events[3].ticks, 10, 'Wrong delay value');
+
+			assert.ok(events[4], 'Missing event');
+			assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
+
+			assert.ok(events[5], 'Missing event');
+			assert.equal(events[5].type, Music.NoteOnEvent, 'Wrong event type');
+
+			assert.ok(events[6]);
+			assert.equal(events[6].type, Music.DelayEvent, 'Wrong event type');
+			assert.equal(events[6].ticks, 10, 'Wrong delay value');
+
+			assert.ok(events[7], 'Missing event');
+			assert.equal(events[7].type, Music.NoteOffEvent, 'Wrong event type');
+
+			assert.ok(events[8], 'Missing event');
+			assert.equal(events[8].type, Music.NoteOnEvent, 'Wrong event type');
+
+			assert.ok(events[9]);
+			assert.equal(events[9].type, Music.DelayEvent, 'Wrong event type');
+			assert.equal(events[9].ticks, 10, 'Wrong delay value');
+
+			assert.ok(events[10], 'Missing event');
+			assert.equal(events[10].type, Music.NoteOffEvent, 'Wrong event type');
+
+			assert.equal(events.length, 11, 'Incorrect number of events produced');
+		});
+
 	}); // parseOPL()
 
 	describe('generateOPL()', function() {
