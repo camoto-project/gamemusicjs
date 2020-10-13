@@ -57,7 +57,7 @@ class NoteOnEvent extends Event {
 		if (typeof this.frequency !== 'number') {
 			throw new Error('NoteOnEvent requires a numeric value for: frequency, got ${typeof this.frequency}.');
 		}
-		if (this.frequency < 1) {
+		if (this.frequency < 0) {
 			throw new Error(`NoteOnEvent frequency ${this.frequency} is too low, must be >= 1.`);
 		}
 

@@ -1104,6 +1104,27 @@ describe(`UtilOPL tests`, function() {
 			assert.equal(patches[0].slot[0].decayRate, 0x5);
 		});
 
+		it('should handle fnum=0', function() {
+			const { events } = UtilOPL.parseOPL([
+				{reg: 0xA0, val: 0x00},
+				{reg: 0xB0, val: 0x20},
+				{delay: 10},
+				{reg: 0xB0, val: 0x00},
+			], defaultTempo);
+
+			assert.ok(events[1], 'Missing event');
+			assert.equal(events[1].type, Music.NoteOnEvent, 'Wrong event type');
+			TestUtil.almostEqual(events[1].freq, 0);
+
+			assert.ok(events[2]);
+			assert.equal(events[2].ticks, 10, 'Wrong delay value');
+
+			assert.ok(events[3]);
+			assert.equal(events[3].type, Music.NoteOffEvent, 'Wrong event type');
+
+			assert.equal(events.length, 4, 'Incorrect number of events produced');
+		});
+
 		describe('should handle percussive notes', function() {
 
 			it('should handle hi-hat (HH)', function() {
