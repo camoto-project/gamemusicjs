@@ -168,12 +168,12 @@ class Music_IMF_IDSoftware_Common extends MusicHandler
 			const event = buffer.readRecord(recordTypes.event);
 
 			oplData.push({
-				delay: event.delay,
+				reg: event.reg,
+				val: event.val,
 			});
 
 			oplData.push({
-				reg: event.reg,
-				val: event.val,
+				delay: event.delay,
 			});
 		}
 
@@ -240,27 +240,34 @@ class Music_IMF_IDSoftware_Common extends MusicHandler
 		let buffer = new RecordBuffer(65536);
 
 		// For some reason the files almost always start with 4x 0x00 bytes.
-		buffer.writeRecord(recordTypes.event, {
+		let last = {
 			reg: 0,
 			val: 0,
 			delay: 0,
-		});
+		};
+		buffer.writeRecord(recordTypes.event, last);
 
-		let delay = 0;
-		for (const d of oplData) {
-			if (d.delay) {
-				delay += d.delay;
-				continue;
-			}
-			if (d.reg) {
-				buffer.writeRecord(recordTypes.event, {
-					reg: d.reg,
-					val: d.val,
-					delay: delay,
-				});
-				delay = 0;
+		last.reg = undefined;
+
+		function flush() {
+			if (last.reg) {
+				buffer.writeRecord(recordTypes.event, last);
+				last.reg = undefined;
+				last.delay = 0;
 			}
 		}
+
+		for (const d of oplData) {
+			if (d.delay) {
+				last.delay += d.delay;
+			}
+			flush();
+			if (d.reg) {
+				last.reg = d.reg;
+				last.val = d.val;
+			}
+		}
+		flush();
 
 		return buffer;
 	}
