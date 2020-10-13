@@ -23,7 +23,7 @@ const UtilOPL = require('./utl-opl.js');
 
 function writeOPLChanges(oplData, oplStatePrev, oplState)
 {
-	for (const reg in oplState) {
+	for (let reg = 0; reg < 512; reg++) {
 		if (oplState[reg] != oplStatePrev[reg]) {
 			// This register has changed
 			oplData.push({
@@ -158,8 +158,22 @@ function generateOPL(events, trackConfig, outMessages)
 					// Enable rhythm mode bit
 					oplState[0xBD] |= 1 << trackCfg.channelIndex;
 				} else {
+					const reg = BASE_KEYON_FREQ + regOffset;
+					const curKeyOn = !!(oplState[reg] & 0x20);
+					const prevKeyOn = !!(oplStatePrev[reg] & 0x20);
+					if (!curKeyOn && prevKeyOn) {
+						// Current state is keyoff, but previous state is keyon, if we set
+						// keyon again we'll overwrite the keyoff and end up continuing the
+						// previous note instead of starting a new one.  So to avoid this,
+						// do a mini-flush now and write the keyoff event.
+						oplData.push({
+							reg: reg,
+							val: oplState[reg],
+						});
+						oplStatePrev[reg] = oplState[reg]; // mark as processed
+					}
 					// Enable keyon bit
-					oplState[BASE_KEYON_FREQ + regOffset] |= 0x20;
+					oplState[reg] |= 0x20;
 				}
 				break;
 
