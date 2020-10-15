@@ -35,7 +35,6 @@ const recordTypes = {
 		delay: RecordType.int.u16le,
 	},
 	tags: {
-		signature: RecordType.int.u8,
 		title: RecordType.string.variable.reqTerm(256),
 		artist: RecordType.string.variable.reqTerm(256),
 		comment: RecordType.string.variable.reqTerm(256),
@@ -190,18 +189,26 @@ class Music_IMF_IDSoftware_Common extends MusicHandler
 
 		if (contentLength < buffer.length) {
 			// There's some trailing data
-			const tags = buffer.readRecord(recordTypes.tags);
+			const sig = buffer.read(RecordType.int.u8);
+			if (sig === 0x1A) {
+				try {
+					const tags = buffer.readRecord(recordTypes.tags);
 
-			music.tags = {
-				title: tags.title,
-				artist: tags.artist,
-				comment: tags.comment,
-			};
+					music.tags = {
+						title: tags.title,
+						artist: tags.artist,
+						comment: tags.comment,
+					};
 
-			if (tags.app && tags.app.length > 0) {
-				debug(`File was created by: ${tags.app}`);
+					if (tags.app && tags.app.length > 0) {
+						debug(`File was created by: ${tags.app}`);
+					}
+				} catch (e) {
+					debug(`Exception reading tags: ${e}`);
+				}
+			} else {
+				debug('Not reading tags, extra data but incorrect signature byte.');
 			}
-
 		} else {
 			debug(`Not reading tags, only ${buffer.length - contentLength} bytes left in file`);
 		}
@@ -287,9 +294,8 @@ class Music_IMF_IDSoftware_Common extends MusicHandler
 
 	static writeTags(buffer, tags)
 	{
-		// Always write the tag block even if no tags were supplied.
+		buffer.write(RecordType.int.u8, 0x1A);
 		buffer.writeRecord(recordTypes.tags, {
-			signature: 0x1A,
 			title: tags.title || '',
 			artist: tags.artist || '',
 			comment: tags.comment || '',
@@ -443,7 +449,7 @@ class Music_IMF_IDSoftware_Type1 extends Music_IMF_IDSoftware_Common
 		// Write data length
 		buffer.write(RecordType.int.u16le, binOPL.length);
 		buffer.put(binOPL);
-		if (music.tags) {
+		if (Object.keys(music.tags).length) {
 			super.writeTags(buffer, music.tags);
 		}
 		return {
