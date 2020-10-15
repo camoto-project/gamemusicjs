@@ -51,63 +51,68 @@ class Music_IMF_IDSoftware_Common extends MusicHandler
 			caps: {
 				channelMap: [
 					{
-						name: 'Melodic',
-						channels: [
-							// OPL #0 is reserved for sound effects
+						name: 'OPL-1..6',
+						mappings: [
 							{
-								type: Music.ChannelType.OPL,
-								target: 1,
-							}, {
-								type: Music.ChannelType.OPL,
-								target: 2,
-							}, {
-								type: Music.ChannelType.OPL,
-								target: 3,
-							}, {
-								type: Music.ChannelType.OPL,
-								target: 4,
-							}, {
-								type: Music.ChannelType.OPL,
-								target: 5,
-							}, {
-								type: Music.ChannelType.OPL,
-								target: 6,
-							}, {
-								type: Music.ChannelType.OPL,
-								target: 7,
-							}, {
-								type: Music.ChannelType.OPL,
-								target: 8,
+								name: '5x melodic',
+								channels: [
+									// OPL #0 is reserved for sound effects
+									{
+										type: Music.ChannelType.OPLT,
+										target: 1,
+									}, {
+										type: Music.ChannelType.OPLT,
+										target: 2,
+									}, {
+										type: Music.ChannelType.OPLT,
+										target: 3,
+									}, {
+										type: Music.ChannelType.OPLT,
+										target: 4,
+									}, {
+										type: Music.ChannelType.OPLT,
+										target: 5,
+									},
+								],
 							},
 						],
 					}, {
-						name: 'Rhythm',
-						channels: [
-							// OPL #0 is reserved for sound effects
+						name: 'OPL-7..9',
+						mappings: [
 							{
-								type: Music.ChannelType.OPL,
-								target: 1,
+								name: '3x melodic',
+								channels: [
+									{
+										type: Music.ChannelType.OPLT,
+										target: 6,
+									}, {
+										type: Music.ChannelType.OPLT,
+										target: 7,
+									}, {
+										type: Music.ChannelType.OPLT,
+										target: 8,
+									},
+								],
 							}, {
-								type: Music.ChannelType.OPL,
-								target: 2,
-							}, {
-								type: Music.ChannelType.OPL,
-								target: 3,
-							}, {
-								type: Music.ChannelType.OPL,
-								target: 4,
-							}, {
-								type: Music.ChannelType.OPL,
-								target: 5,
-							}, {
-								type: Music.ChannelType.OPLRhythm,
-								target: 6,
-							}, {
-								type: Music.ChannelType.OPLRhythm,
-								target: 7,
-							}, {
-								type: Music.ChannelType.OPLRhythm,
-								target: 8,
+								name: '5x percussive',
+								channels: [
+									{
+										type: Music.ChannelType.OPLR,
+										target: UtilOPL.Rhythm.HH,
+									}, {
+										type: Music.ChannelType.OPLR,
+										target: UtilOPL.Rhythm.CY,
+									}, {
+										type: Music.ChannelType.OPLR,
+										target: UtilOPL.Rhythm.TT,
+									}, {
+										type: Music.ChannelType.OPLR,
+										target: UtilOPL.Rhythm.SD,
+									}, {
+										type: Music.ChannelType.OPLR,
+										target: UtilOPL.Rhythm.BD,
+									},
+								],
 							},
 						],
 					},
