@@ -62,7 +62,7 @@ module.exports = class TestUtil {
 	}
 
 	loadData(filename) {
-		const buffer = fs.readFileSync(path.resolve(__dirname, this.idHandler, filename));
+		const buffer = fs.readFileSync(filename);
 		let ab = new ArrayBuffer(buffer.length);
 		let u8 = new Uint8Array(ab);
 		u8.set(buffer);
@@ -76,9 +76,9 @@ module.exports = class TestUtil {
 			const files = fs.readdirSync(pathFiles);
 			const target = files.filter(f => f.startsWith(name + '.'));
 			assert.ok(target.length === 1, `Expected only one file: ${this.idHandler}/${name}.*`);
-			const mainFilename = target[0];
+			const mainFilename = path.join(this.idHandler, target[0]);
 			let input = {
-				main: this.loadData(mainFilename),
+				main: this.loadData(path.resolve(__dirname, mainFilename)),
 			};
 			input.main.filename = mainFilename;
 
@@ -94,19 +94,22 @@ module.exports = class TestUtil {
 	}
 
 	static buffersEqual(expected, actual, msg) {
+		const errorFilename = path.resolve(__dirname, expected.filename);
+
 		if (expected instanceof ArrayBuffer) {
 			expected = new Uint8Array(expected);
 		}
 		if (!arrayEqual(expected, actual)) {
 			if (process.env.SAVE_FAILED_TEST == 1) {
+				let fn = (errorFilename || 'error1') + '.failed_test_output';
 				for (let i = 1; i <= 20; i++) {
-					const fn = `error${i}.bin`;
 					if (!fs.existsSync(fn)) {
 						// eslint-disable-next-line no-console
 						console.warn(`** Saving actual data to ${fn}`);
 						fs.writeFileSync(fn, actual);
 						break;
 					}
+					fn = `error${i + 1}.failed_test_output`;
 				}
 			}
 
