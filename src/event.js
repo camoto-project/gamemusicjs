@@ -31,9 +31,6 @@
  *
  * @param {Object} params
  *   Convenience method for setting object properties during construction.
- *
- * @class
- * @alias Music.Event
  */
 class Event {
 	constructor(typeName, type, params = {}) {
@@ -42,6 +39,15 @@ class Event {
 		this.custom = params.custom || {};
 	}
 
+	/**
+	 * Copy the event into a new separate instance.
+	 *
+	 * This creates an independent instance, changing one won't change the other,
+	 * and the type is whatever the original event was (e.g. cloning a
+	 * `DelayEvent` will produce another `DelayEvent`).
+	 *
+	 * @return {Event} Type-specific copy of the event.
+	 */
 	clone() {
 		throw new Error('Cannot clone a generic event, add a clone() method.');
 	}

@@ -21,6 +21,8 @@ const Event = require('./event.js');
 
 /**
  * Number of microseconds in one second.
+ *
+ * @private
  */
 const US_PER_SEC = 1000000.0;
 
@@ -70,9 +72,6 @@ const US_PER_SEC = 1000000.0;
  *   ticks can be subdivided for these effect frames.  If this value is set to
  *   2 for example, there will be two retrigs between rows (for those rows where
  *   the retrig effect is used.)
- *
- * @class
- * @alias Music.ConfigurationEvent
  */
 class TempoEvent extends Event {
 	constructor(params = {}) {

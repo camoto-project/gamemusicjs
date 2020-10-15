@@ -42,9 +42,6 @@ const Event = require('./event.js');
  *
  * @param {Object} params
  *   Convenience method for setting object properties during construction.
- *
- * @class
- * @alias Music.NoteOnEvent
  */
 class NoteOnEvent extends Event {
 	constructor(params = {}) {

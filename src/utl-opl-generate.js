@@ -21,6 +21,12 @@ const Debug = require('./utl-debug.js')('utl-opl-generate');
 const Music = require('./music.js');
 const UtilOPL = require('./utl-opl.js');
 
+/**
+ * Work out which OPL registers have changed since the last event and add them
+ * to the array.
+ *
+ * @private
+ */
 function writeOPLChanges(oplData, oplStatePrev, oplState)
 {
 	for (let reg = 0; reg < 512; reg++) {
@@ -39,6 +45,8 @@ function writeOPLChanges(oplData, oplStatePrev, oplState)
  *
  * Each event must have an `idxTrack` property added so we know which track it
  * came from.
+ *
+ * @alias UtilOPL.generateOPL
  */
 function generateOPL(events, patches, trackConfig)
 {

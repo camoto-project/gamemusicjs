@@ -30,6 +30,8 @@ const UtilOPL = require('./utl-opl.js');
  *   When the note is eventually played on the channel, that's when the
  *   instrument settings will be examined, actioned, and copied into
  *   `oplPrevState`.
+ *
+ * @private
  */
 function appendOPLEvents(patches, events, oplState, oplStatePrev, hasKeyOn)
 {
@@ -245,6 +247,8 @@ function appendOPLEvents(patches, events, oplState, oplStatePrev, hasKeyOn)
  * @return {Object} `{events: [], patches: []}` where Events is a list of
  *   `Event` instances and `patches` is a list of instruments as `Patch`
  *   instances.
+ *
+ * @alias UtilOPL.parseOPL
  */
 function parseOPL(oplData, initialTempoEvent)
 {

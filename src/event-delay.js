@@ -28,9 +28,6 @@ const Event = require('./event.js');
  *
  * @property {Number} ticks
  *   Number of ticks to delay for.
- *
- * @class
- * @alias Music.DelayEvent
  */
 class DelayEvent extends Event {
 	constructor(params = {}) {

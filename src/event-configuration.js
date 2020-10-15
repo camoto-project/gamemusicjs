@@ -29,9 +29,6 @@ const Event = require('./event.js');
  *
  * @property {Any} value
  *   Value being set.
- *
- * @class
- * @alias Music.ConfigurationEvent
  */
 class ConfigurationEvent extends Event {
 	constructor(params = {}) {

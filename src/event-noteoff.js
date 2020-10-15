@@ -21,9 +21,6 @@ const Event = require('./event.js');
 
 /**
  * Event for when a note stops playing in a track.
- *
- * @class
- * @alias Music.NoteOffEvent
  */
 class NoteOffEvent extends Event {
 	constructor(params = {}) {
