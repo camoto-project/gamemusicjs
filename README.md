@@ -5,6 +5,21 @@ This is a Javascript library that can read and write music files used by a
 number of MS-DOS games from the 1990s.  This library is an attempt to provide
 a unified interface for reading and writing many of these formats.
 
+## Supported music formats
+
+Converting between any supported formats is possible (essentially you are
+opening a song in one format and then saving it again in a different format
+without modifying it), however some manual intervention is usually required in
+the form of replacing the instruments.  This is because a MIDI file for example,
+can't play OPL2 or digitized PCM instruments.  Once the instruments are changed
+to those supported by the target format, then the notes and effects (where
+supported) are converted automatically.
+
+Files in the following formats can be read and written:
+
+* .dro: [DOSBox Raw OPL](http://www.shikadi.net/moddingwiki/DRO_Format)
+* .imf: [id Software Music Format](http://www.shikadi.net/moddingwiki/IMF_Format)
+
 ## Installation as an end-user
 
 If you wish to use the command-line `gamemus` utility to work with music files
@@ -22,7 +37,8 @@ quick examples:
     # Convert a DOSBox raw OPL capture to MIDI format
     gamemus open example.dro save -f mus-mid-type1 output.mid
 
-To get a list of supported file formats, run:
+To get a list of supported file formats and the code names to identify them
+with when saving files, run:
 
     gamemus --formats
 
