@@ -236,33 +236,23 @@ class UtilOPL
 	 * @return {Object} Current channel settings.
 	 */
 	static getChannelSettings(regs, channel, slots) {
-		const BASE_CHAR_MULT  = 0x20;
-		const BASE_SCAL_LEVL  = 0x40;
-		const BASE_ATCK_DCAY  = 0x60;
-		const BASE_SUST_RLSE  = 0x80;
-		const BASE_FNUM_L     = 0xA0;
-		const BASE_KEYON_FREQ = 0xB0;
-		const BASE_RHYTHM     = 0xBD;
-		const BASE_WAVE       = 0xE0;
-		const BASE_FEED_CONN  = 0xC0;
-
 		const chipOffset = 0x100 * (channel / 9 >>> 0);
 		const chipChannel = channel % 9;
 
 		function getOp(chipOperOffset) {
 			return {
-				enableTremolo: (regs[BASE_CHAR_MULT + chipOperOffset] >> 7) & 1,
-				enableVibrato: (regs[BASE_CHAR_MULT + chipOperOffset] >> 6) & 1,
-				enableSustain: (regs[BASE_CHAR_MULT + chipOperOffset] >> 5) & 1,
-				enableKSR:     (regs[BASE_CHAR_MULT + chipOperOffset] >> 4) & 1,
-				freqMult:       regs[BASE_CHAR_MULT + chipOperOffset] & 0x0F,
-				scaleLevel:     regs[BASE_SCAL_LEVL + chipOperOffset] >> 6,
-				outputLevel:    regs[BASE_SCAL_LEVL + chipOperOffset] & 0x3F,
-				attackRate:     regs[BASE_ATCK_DCAY + chipOperOffset] >> 4,
-				decayRate:      regs[BASE_ATCK_DCAY + chipOperOffset] & 0x0F,
-				sustainRate:    regs[BASE_SUST_RLSE + chipOperOffset] >> 4,
-				releaseRate:    regs[BASE_SUST_RLSE + chipOperOffset] & 0x0F,
-				waveSelect:     regs[BASE_WAVE      + chipOperOffset] & 0x07,
+				enableTremolo: (regs[UtilOPL.BASE_CHAR_MULT + chipOperOffset] >> 7) & 1,
+				enableVibrato: (regs[UtilOPL.BASE_CHAR_MULT + chipOperOffset] >> 6) & 1,
+				enableSustain: (regs[UtilOPL.BASE_CHAR_MULT + chipOperOffset] >> 5) & 1,
+				enableKSR:     (regs[UtilOPL.BASE_CHAR_MULT + chipOperOffset] >> 4) & 1,
+				freqMult:       regs[UtilOPL.BASE_CHAR_MULT + chipOperOffset] & 0x0F,
+				scaleLevel:     regs[UtilOPL.BASE_SCAL_LEVL + chipOperOffset] >> 6,
+				outputLevel:    regs[UtilOPL.BASE_SCAL_LEVL + chipOperOffset] & 0x3F,
+				attackRate:     regs[UtilOPL.BASE_ATCK_DCAY + chipOperOffset] >> 4,
+				decayRate:      regs[UtilOPL.BASE_ATCK_DCAY + chipOperOffset] & 0x0F,
+				sustainRate:    regs[UtilOPL.BASE_SUST_RLSE + chipOperOffset] >> 4,
+				releaseRate:    regs[UtilOPL.BASE_SUST_RLSE + chipOperOffset] & 0x0F,
+				waveSelect:     regs[UtilOPL.BASE_WAVE      + chipOperOffset] & 0x07,
 			};
 		}
 
@@ -270,26 +260,74 @@ class UtilOPL
 
 		let patch = new Music.Patch.OPL({
 			slot: [],
-			feedback: (regs[BASE_FEED_CONN + regOffset] >> 1) & 0x07,
-			connection: regs[BASE_FEED_CONN + regOffset] & 1,
+			feedback: (regs[UtilOPL.BASE_FEED_CONN + regOffset] >> 1) & 0x07,
+			connection: regs[UtilOPL.BASE_FEED_CONN + regOffset] & 1,
 		});
 
+		// If slot[1] == 2 then get slot 1 and store it in patch.slot[2].
 		for (let s = 0; s < 4; s++) {
-			if (slots[s]) {
-				const operatorOffset = this.oplOperatorOffset(channel, s);
-				patch.slot[s] = getOp(operatorOffset);
-			}
+			if ((slots[s] < 0) || (slots[s] === undefined)) continue;
+			const operatorOffset = this.oplOperatorOffset(channel, s);
+			patch.slot[slots[s]] = getOp(operatorOffset);
 		}
 
 		return {
-			fnum: ((regs[BASE_KEYON_FREQ + regOffset] & 0x3) << 8)
-				| regs[BASE_FNUM_L + regOffset],
-			block: ((regs[BASE_KEYON_FREQ + regOffset] >> 2) & 0x7),
-			noteOn: !!(regs[BASE_KEYON_FREQ + regOffset] & 0x20),
-			panLeft: !!(regs[BASE_FEED_CONN + regOffset] & 0x10),
-			panRight: !!(regs[BASE_FEED_CONN + regOffset] & 0x20),
+			fnum: ((regs[UtilOPL.BASE_KEYON_FREQ + regOffset] & 0x3) << 8)
+				| regs[UtilOPL.BASE_FNUM_L + regOffset],
+			block: ((regs[UtilOPL.BASE_KEYON_FREQ + regOffset] >> 2) & 0x7),
+			noteOn: !!(regs[UtilOPL.BASE_KEYON_FREQ + regOffset] & 0x20),
+			panLeft: !!(regs[UtilOPL.BASE_FEED_CONN + regOffset] & 0x10),
+			panRight: !!(regs[UtilOPL.BASE_FEED_CONN + regOffset] & 0x20),
 			patch: patch,
 		};
+	}
+
+	// slots = [x, y] means load patch.slot[0] into slot[x] and patch.slot[1] into
+	// slot[y].  This allows single-slot patches to be loaded into slot 0 or 1 for
+	// rhythm mode.
+	static setPatch(oplState, channel, slots, patch) {
+		function setOp(chipOperOffset, op) {
+			oplState[UtilOPL.BASE_CHAR_MULT + chipOperOffset] =
+				(op.enableTremolo ? 0x80 : 0)
+				| (op.enableVibrato ? 0x40 : 0)
+				| (op.enableSustain ? 0x20 : 0)
+				| (op.enableKSR ? 0x10 : 0)
+				| (op.freqMult & 0x0F)
+			;
+			oplState[UtilOPL.BASE_SCAL_LEVL + chipOperOffset] =
+				(op.scaleLevel & 0x03) << 6
+				| (op.outputLevel & 0x3F)
+			;
+			oplState[UtilOPL.BASE_ATCK_DCAY + chipOperOffset] =
+				(op.attackRate & 0x0F) << 4
+				| (op.decayRate & 0x0F)
+			;
+			oplState[UtilOPL.BASE_SUST_RLSE + chipOperOffset] =
+				(op.sustainRate & 0x0F) << 4
+				| (op.releaseRate & 0x0F)
+			;
+			oplState[UtilOPL.BASE_WAVE + chipOperOffset] = op.waveSelect & 0x07;
+		}
+
+		for (let s = 0; s < 3; s++) {
+			if (slots[s] >= 0) {
+				if (!patch.slot[slots[s]]) {
+					const hasSlots = Object.keys(patch.slot).join(', ');
+					throw new Error(`Tried to assign patch ("${patch.title}") to `
+						+ `slot/operator ${s} but this patch only has settings for `
+						+ `operators [${hasSlots}].`);
+				}
+				const operatorOffset = this.oplOperatorOffset(channel, s);
+				setOp(operatorOffset, patch.slot[slots[s]]);
+			}
+		}
+		const chipOffset = 0x100 * (channel / 9 >>> 0);
+		const chipChannel = channel % 9;
+		const regOffset = chipOffset + chipChannel;
+		oplState[UtilOPL.BASE_FEED_CONN + regOffset] =
+			((patch.feedback & 0x07) << 1)
+			| (patch.connection & 0x01)
+		;
 	}
 
 	/**
@@ -316,6 +354,30 @@ class UtilOPL
 		// Patch not found, add it.
 		debug(`Found new patch: ${target}`);
 		return patches.push(target) - 1;
+	}
+
+	/**
+	 * Callback function for `UtilMusic.splitEvents()` for standard OPL split.
+	 *
+	 * If OPL data was parsed with `UtilOPL.parseOPL()` then when it is split into
+	 * tracks with `UtilMusic.splitEvents()`, this function can be passed as the
+	 * callback parameter.
+	 *
+	 * It will split events up into one OPL channel per track, taking into account
+	 * OPL rhythm mode and four-operator channels.
+	 */
+	static standardTrackSplitConfig(ev) {
+		let tc = new Music.TrackConfiguration({
+			channelType: ev.custom.oplChannelType || Music.ChannelType.OPLT,
+			channelIndex: ev.custom.oplChannelIndex || 1,
+		});
+		tc.trackIndex = ev.custom.oplChannelIndex || 1;
+		if (ev.custom.oplChannelType === Music.ChannelType.OPLR) {
+			// Bump the rhythm instruments to tracks following the usual 18 melodic
+			// channels.  Empty tracks will be removed later.
+			tc.trackIndex += 18;
+		}
+		return tc;
 	}
 
 }
@@ -358,6 +420,16 @@ UtilOPL.Rhythm = {
 };
 
 UtilOPL.Rhythm.toString = v => Object.keys(UtilOPL.Rhythm)[v] || '??';
+
+UtilOPL.BASE_CHAR_MULT  = 0x20;
+UtilOPL.BASE_SCAL_LEVL  = 0x40;
+UtilOPL.BASE_ATCK_DCAY  = 0x60;
+UtilOPL.BASE_SUST_RLSE  = 0x80;
+UtilOPL.BASE_FNUM_L     = 0xA0;
+UtilOPL.BASE_KEYON_FREQ = 0xB0;
+UtilOPL.BASE_RHYTHM     = 0xBD;
+UtilOPL.BASE_WAVE       = 0xE0;
+UtilOPL.BASE_FEED_CONN  = 0xC0;
 
 module.exports = UtilOPL;
 

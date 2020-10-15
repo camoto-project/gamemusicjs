@@ -148,14 +148,180 @@ allHandlers.forEach(handler => {
 
 				defaultMusic.patterns.push(pattern);
 
-				let inst = new Music.Patch.OPL();
-				// TODO: populate inst
-				defaultMusic.patches[0] = inst;
+				// Figure out what type of instruments to use depending on what the
+				// format supports.
+				let channelTypes = [];
+				for (const cm of md.caps.channelMap) {
+					for (const mapping of cm.mappings) {
+						for (const target of mapping.channels) {
+							channelTypes[target.type] = true;
+						}
+					}
+				}
 
-				defaultMusic.trackConfig[0] = new Music.TrackConfiguration({
-					channelType: Music.ChannelType.OPL,
-					channelIndex: 0,
-				});
+				if (channelTypes[Music.ChannelType.OPLT]) {
+					let inst = new Music.Patch.OPL({
+						slot: [
+							{
+								enableTremolo: 1,
+								enableVibrato: 1,
+								enableSustain: 1,
+								enableKSR: 0,
+								freqMult: 2,
+								scaleLevel: 3,
+								outputLevel: 4,
+								attackRate: 5,
+								decayRate: 6,
+								sustainRate: 7,
+								releaseRate: 8,
+								waveSelect: 6,
+							}, {
+								enableTremolo: 1,
+								enableVibrato: 0,
+								enableSustain: 1,
+								enableKSR: 0,
+								freqMult: 3,
+								scaleLevel: 4,
+								outputLevel: 5,
+								attackRate: 6,
+								decayRate: 7,
+								sustainRate: 8,
+								releaseRate: 9,
+								waveSelect: 5,
+							},
+						],
+						feedback: 4,
+						connection: 0,
+					});
+					defaultMusic.patches.push(inst);
+
+					defaultMusic.trackConfig.push(new Music.TrackConfiguration({
+						channelType: Music.ChannelType.OPLT,
+						channelIndex: 0,
+					}));
+				}
+
+				if (channelTypes[Music.ChannelType.OPLF]) {
+					let inst = new Music.Patch.OPL({
+						slot: [
+							{
+								enableTremolo: 1,
+								enableVibrato: 1,
+								enableSustain: 1,
+								enableKSR: 0,
+								freqMult: 2,
+								scaleLevel: 3,
+								outputLevel: 4,
+								attackRate: 5,
+								decayRate: 6,
+								sustainRate: 7,
+								releaseRate: 8,
+								waveSelect: 6,
+							}, {
+								enableTremolo: 1,
+								enableVibrato: 0,
+								enableSustain: 1,
+								enableKSR: 0,
+								freqMult: 3,
+								scaleLevel: 4,
+								outputLevel: 5,
+								attackRate: 6,
+								decayRate: 7,
+								sustainRate: 8,
+								releaseRate: 9,
+								waveSelect: 5,
+							}, {
+								enableTremolo: 0,
+								enableVibrato: 1,
+								enableSustain: 0,
+								enableKSR: 1,
+								freqMult: 0,
+								scaleLevel: 5,
+								outputLevel: 6,
+								attackRate: 7,
+								decayRate: 8,
+								sustainRate: 9,
+								releaseRate: 10,
+								waveSelect: 4,
+							}, {
+								enableTremolo: 0,
+								enableVibrato: 0,
+								enableSustain: 0,
+								enableKSR: 0,
+								freqMult: 1,
+								scaleLevel: 6,
+								outputLevel: 7,
+								attackRate: 8,
+								decayRate: 9,
+								sustainRate: 10,
+								releaseRate: 11,
+								waveSelect: 3,
+							},
+						],
+						feedback: 3,
+						connection: 1,
+					});
+					defaultMusic.patches.push(inst);
+
+					defaultMusic.trackConfig.push(new Music.TrackConfiguration({
+						channelType: Music.ChannelType.OPLF,
+						channelIndex: 3,
+					}));
+				}
+
+				if (channelTypes[Music.ChannelType.OPLR]) {
+					let inst = new Music.Patch.OPL({
+						slot: [
+							{
+								enableTremolo: 1,
+								enableVibrato: 1,
+								enableSustain: 0,
+								enableKSR: 1,
+								freqMult: 8,
+								scaleLevel: 3,
+								outputLevel: 4,
+								attackRate: 5,
+								decayRate: 6,
+								sustainRate: 7,
+								releaseRate: 8,
+								waveSelect: 3,
+							},
+						],
+						feedback: 6,
+						connection: 1,
+					});
+					defaultMusic.patches.push(inst);
+
+					defaultMusic.trackConfig.push(new Music.TrackConfiguration({
+						channelType: Music.ChannelType.OPLR,
+						channelIndex: GameMusic.UtilOPL.Rhythm.HH,
+					}));
+				}
+
+				if (channelTypes[Music.ChannelType.MIDI]) {
+					let inst = new Music.Patch.MIDI({
+						midiBank: 0,
+						midiPatch: 1,
+					});
+					defaultMusic.patches.push(inst);
+
+					defaultMusic.trackConfig.push(new Music.TrackConfiguration({
+						channelType: Music.ChannelType.MIDI,
+						channelIndex: 0,
+					}));
+				}
+
+				if (channelTypes[Music.ChannelType.PCM]) {
+					let inst = new Music.Patch.PCM({
+						sampleRate: 8000,
+					});
+					defaultMusic.patches.push(inst);
+
+					defaultMusic.trackConfig.push(new Music.TrackConfiguration({
+						channelType: Music.ChannelType.PCM,
+						channelIndex: 0,
+					}));
+				}
 
 				const mdTags = Object.keys(md.caps.tags);
 				if (mdTags.length > 0) {
@@ -220,9 +386,9 @@ allHandlers.forEach(handler => {
 					const issues = handler.checkLimits(defaultMusic);
 					assert.equal(issues.length, 0, `${issues.length} issues with song, expected 0`);
 
-					const contentGenerated = handler.generate(defaultMusic);
+					const gen = handler.generate(defaultMusic);
 
-					TestUtil.contentEqual(content.default, contentGenerated);
+					TestUtil.contentEqual(content.default, gen.content);
 					// TODO: Test supps
 				});
 
@@ -235,7 +401,8 @@ allHandlers.forEach(handler => {
 						content.default.main,
 						content.default.main.filename
 					);
-					assert.ok(result.valid === true || result.valid === undefined);
+					assert.ok(result.valid === true || result.valid === undefined,
+						`Failed to recognise standard file: ${result.reason}`);
 				});
 
 				it('should not break on empty data', function() {

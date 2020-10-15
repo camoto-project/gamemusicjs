@@ -52,11 +52,11 @@ function generateOPL(events, patches, trackConfig)
 	let countUnsupportedChannel = 0;
 	let countClipFreq = 0;
 
-	// TODO: Share between UtilOPL.getChannelSettings()?
-	const BASE_KEYON_FREQ = 0xB0;
+	// * 2 for two chips (OPL3)
+	let oplState = new Array(256 * 2).fill(0);
+	let oplStatePrev = new Array(256 * 2).fill(0);
 
 	let oplData = [];
-	let oplState = [], oplStatePrev = [];
 	for (const ev of events) {
 
 		if ((ev.custom.idxTrack === undefined) && (ev.type !== Music.DelayEvent)) {
@@ -70,16 +70,46 @@ function generateOPL(events, patches, trackConfig)
 		}
 		const trackCfg = trackConfig[ev.custom.idxTrack || 0]; // 0 for DelayEvents
 
+		// Convert channel 0, 1, 2, 9, 10, 11 => 4OP bits 0..5 for reg 0x104.
+		const op4bit = ch => Math.floor(ch / 9) * 2 + (ch % 3);
 		let channel;
 		switch (trackCfg.channelType) {
 			// Process these events
-			case Music.ChannelType.Any:
-			case Music.ChannelType.OPL:
+			//case Music.ChannelType.Any:
+				// Do nothing, no setup.
+				//break;
+			case Music.ChannelType.OPLT:
 				channel = trackCfg.channelIndex;
+
+				// Clear channel 4-op mode (this won't generate any output events if
+				// it's already unset).
+				oplState[0x104] &= ~(1 << op4bit(trackCfg.channelIndex));
+
+				if ((trackCfg.channelIndex >= 6) && (trackCfg.channelIndex <= 8)) {
+					// Clear rhythm mode (no effect if already set).
+					oplState[0xBD] &= ~0x20;
+				}
 				break;
-			case Music.ChannelType.OPLPerc:
+			case Music.ChannelType.OPLF:
+				channel = trackCfg.channelIndex;
+
+				// Set channel to 4-op mode (this won't generate any output events if
+				// it's already set).
+				if (((trackCfg.channelIndex >= 3) && (trackCfg.channelIndex <= 5)) || (trackCfg.channelIndex > 11)) {
+					throw new Error(`Invalid channel index ${trackCfg.channelIndex} for OPLF channel type.`);
+				}
+				oplState[0x104] |= 1 << op4bit(trackCfg.channelIndex);
+
+				if ((trackCfg.channelIndex >= 6) && (trackCfg.channelIndex <= 8)) {
+					// Clear rhythm mode (no effect if already set).
+					oplState[0xBD] &= ~0x20;
+				}
+				break;
+			case Music.ChannelType.OPLR:
 				const map = [7, 8, 8, 7, 6]; // 0=HH .. 4=BD
-				channel = map[trackCfg.channelIndex] || 0;
+				channel = map[trackCfg.channelIndex - 1] || 0;
+				// Enable rhythm mode (no effect if already set).
+				oplState[0xBD] |= 0x20;
 				break;
 
 			default:
@@ -138,9 +168,12 @@ function generateOPL(events, patches, trackConfig)
 				}
 				break;
 
-			case Music.NoteOnEvent:
-				// TODO: program instrument, handle perc
-				const curBlock = (oplState[BASE_KEYON_FREQ + regOffset] >> 2) & 0x7;
+			case Music.NoteOnEvent: {
+				const chipOffset = 0x100 * Math.floor(trackCfg.channelIndex / 9);
+				const chipChannel = trackCfg.channelIndex % 9;
+				const regOffset = chipOffset + chipChannel;
+
+				const curBlock = (oplState[UtilOPL.BASE_KEYON_FREQ + regOffset] >> 2) & 0x7;
 				const targetFnum = UtilOPL.frequencyToFnum(ev.frequency, curBlock);
 				if (targetFnum.clip) {
 					if (countClipFreq < 5) {
@@ -150,15 +183,65 @@ function generateOPL(events, patches, trackConfig)
 					}
 					countClipFreq++;
 				}
+				// Program instrument
+				let patch = patches[ev.instrument];
+				if (!patch) {
+					warnings.push(`Tried to play notes with instrument #${ev.instrument}, which doesn't exist, using instrument #0.`);
+					patch = patches[0];
+				}
+				if (patch) {
+					switch (trackCfg.channelType) {
+						case Music.ChannelType.OPLR: // Rhythm
+							let slots, chan;
+							switch (trackCfg.channelIndex) {
+								case UtilOPL.Rhythm.HH:
+									chan = 7;
+									slots = [0]; // load op0 into op0
+									break;
+
+								case UtilOPL.Rhythm.TT:
+									chan = 8;
+									slots = [0]; // load op0 into op0
+									break;
+
+								case UtilOPL.Rhythm.SD:
+									chan = 7;
+									slots = [1]; // load op0 into op1
+									break;
+
+								case UtilOPL.Rhythm.CY:
+									chan = 8;
+									slots = [1]; // load op0 into op1
+									break;
+
+								case UtilOPL.Rhythm.BD: // fall through
+								default:
+									// Two operator, load as for 2op melodic
+									chan = 6;
+									slots = [0, 1];
+									break;
+							}
+							UtilOPL.setPatch(oplState, chan, slots, patches[ev.instrument]);
+							break;
+						case Music.ChannelType.OPLT: // Two op
+							UtilOPL.setPatch(oplState, trackCfg.channelIndex, [0, 1], patches[ev.instrument]);
+							break;
+
+						case Music.ChannelType.OPLF: // Four op
+							UtilOPL.setPatch(oplState, trackCfg.channelIndex, [0, 1, 2, 3], patches[ev.instrument]);
+							break;
+					}
+				}
+
 				// Set frequency
 				oplState[0xA0 + regOffset] = targetFnum.fnum & 0xFF;
 				oplState[0xB0 + regOffset] &= ~0x1F;
 				oplState[0xB0 + regOffset] |= (targetFnum.block << 2) | (targetFnum.fnum >> 8);
-				if (trackCfg.channelType === Music.ChannelType.OPLPerc) {
+				if (trackCfg.channelType === Music.ChannelType.OPLR) {
 					// Enable rhythm mode bit
-					oplState[0xBD] |= 1 << trackCfg.channelIndex;
-				} else {
-					const reg = BASE_KEYON_FREQ + regOffset;
+					oplState[0xBD] |= 1 << (trackCfg.channelIndex - 1);
+				} else { // 2op / 4op
+					const reg = UtilOPL.BASE_KEYON_FREQ + regOffset;
 					const curKeyOn = !!(oplState[reg] & 0x20);
 					const prevKeyOn = !!(oplStatePrev[reg] & 0x20);
 					if (!curKeyOn && prevKeyOn) {
@@ -176,11 +259,19 @@ function generateOPL(events, patches, trackConfig)
 					oplState[reg] |= 0x20;
 				}
 				break;
+			}
 
-			case Music.NoteOffEvent:
-				// TODO: handle perc
-				oplState[0xB0 | trackCfg.channelIndex] &= ~0x20;
+			case Music.NoteOffEvent: {
+				if (trackCfg.channelType === Music.ChannelType.OPLR) {
+					// Disable rhythm mode bit
+					oplState[0xBD] &= ~(1 << (trackCfg.channelIndex - 1));
+				} else { // 2op / 4op
+					const chipOffset = 0x100 * Math.floor(trackCfg.channelIndex / 9);
+					const chipChannel = trackCfg.channelIndex % 9;
+					oplState[chipOffset + 0xB0 + chipChannel] &= ~0x20;
+				}
 				break;
+			}
 
 			case Music.TempoEvent:
 				oplData.push({

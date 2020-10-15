@@ -99,6 +99,25 @@ function appendOPLEvents(patches, events, oplState, oplStatePrev, hasKeyOn)
 		oplStatePrev[0xBD] |= oplState[0xBD] & mask;
 	}
 
+	function calcCustom(channel, rhythm, slots) {
+		if (rhythm > 0) {
+			return {
+				oplChannelType: Music.ChannelType.OPLR,
+				oplChannelIndex: rhythm,
+			};
+		}
+		if (slots[3] >= 0) { // 4op
+			return {
+				oplChannelType: Music.ChannelType.OPLF,
+				oplChannelIndex: channel,
+			};
+		}
+		return {
+			oplChannelType: Music.ChannelType.OPLT,
+			oplChannelIndex: channel,
+		};
+	}
+
 	// Handle new note on events (not notes currently playing)
 	const checkForNote = (channel, slots, rhythm) => {
 		// If the channel is >= 8, set chipOffset to 0x100, otherwise use 0.
@@ -141,8 +160,7 @@ function appendOPLEvents(patches, events, oplState, oplStatePrev, hasKeyOn)
 		if (!keyOn || keyOnImmediate) {
 			// Note was just switched off
 			let ev = new Music.NoteOffEvent();
-			ev.custom.oplChannel = channel;
-			ev.custom.oplRhythm = rhythm;
+			ev.custom = calcCustom(channel, rhythm, slots);
 			events.push(ev);
 
 			if (!keyOn) {
@@ -171,8 +189,7 @@ function appendOPLEvents(patches, events, oplState, oplStatePrev, hasKeyOn)
 			velocity: UtilOPL.log_volume_to_lin_velocity(63 - outputLevel, 63),
 			instrument: idxInstrument,
 		});
-		ev.custom.oplChannel = channel;
-		ev.custom.oplRhythm = rhythm;
+		ev.custom = calcCustom(channel, rhythm, slots);
 		events.push(ev);
 		setPrevState(); // mark registers as processed
 	}
@@ -190,17 +207,17 @@ function appendOPLEvents(patches, events, oplState, oplStatePrev, hasKeyOn)
 
 	for (let c = 0; c < 18; c++) {
 		if (op4[c]) {
-			checkForNote(c, [1, 1, 1, 1], UtilOPL.Rhythm.NO); // 4op
+			checkForNote(c, [ 0,  1,  2,  3], UtilOPL.Rhythm.NO); // 4op
 		} else if ((c === 6) && rhythmOn) {
-			checkForNote(c, [1, 1, 0, 0], UtilOPL.Rhythm.BD); // BD: ch6 slot1+2 = op12+15
+			checkForNote(c, [ 0,  1, -1, -1], UtilOPL.Rhythm.BD); // BD: ch6 slot0+1 = op12+15
 		} else if ((c === 7) && rhythmOn) {
-			checkForNote(c, [1, 0, 0, 0], UtilOPL.Rhythm.HH); // HH: ch7 slot1 = op13
-			checkForNote(c, [0, 1, 0, 0], UtilOPL.Rhythm.SD); // SD: ch7 slot2 = op16
+			checkForNote(c, [ 0, -1, -1, -1], UtilOPL.Rhythm.HH); // HH: ch7 slot0 = op13
+			checkForNote(c, [-1,  0, -1, -1], UtilOPL.Rhythm.SD); // SD: ch7 slot1 = op16
 		} else if ((c === 8) && rhythmOn) {
-			checkForNote(c, [1, 0, 0, 0], UtilOPL.Rhythm.TT); // TT: ch8 slot1 = op14
-			checkForNote(c, [0, 1, 0, 0], UtilOPL.Rhythm.CY); // CY: ch8 slot2 = op17
+			checkForNote(c, [ 0, -1, -1, -1], UtilOPL.Rhythm.TT); // TT: ch8 slot0 = op14
+			checkForNote(c, [-1,  0, -1, -1], UtilOPL.Rhythm.CY); // CY: ch8 slot1 = op17
 		} else {
-			checkForNote(c, [1, 1, 0, 0], UtilOPL.Rhythm.NO); // 2op
+			checkForNote(c, [ 0,  1, -1, -1], UtilOPL.Rhythm.NO); // 2op
 		}
 	}
 }

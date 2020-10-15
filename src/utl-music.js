@@ -34,6 +34,9 @@ class UtilMusic
 	 * @param {Function} fnGetTrackConfig
 	 *   Function called with each event, and returns a TrackConfiguration
 	 *   instance for the track that event should appear in.
+	 *   For OPL data produced by {@link UtilOPL.parseOPL UtilOPL.parseOPL()}, the function
+	 *   `UtilOPL.standardTrackSplitConfig` can be passed here to save writing
+	 *   your own function for OPL data.
 	 *
 	 * @return {Music.Pattern} Track list suitable for appending to
 	 *   {@link Music.patterns}.
@@ -170,11 +173,12 @@ class UtilMusic
 	 * Remove all tempo events and run events at fixed timing.
 	 *
 	 * This is used for formats like IMF that run at a fixed speed.  It will copy
-	 * all the events into a new array and adjust the `preDelay` such that the
-	 * song will play at the correct speed when played at a rate where each
-	 * preDelay tick represents `usPerTick` microseconds.
+	 * all the events into a new array and adjust any `DelayEvent` instances such
+	 * that the song will play at the correct speed when played at a rate where
+	 * each delay tick represents `usPerTick` microseconds.
 	 *
-	 * Upon return, all tempo events will be removed.
+	 * The returned array will have no `TempoEvent` instances, and every other
+	 * event will have been cloned.
 	 *
 	 * @param {Array<Event>} Events to adjust.  These are copied and this
 	 *   parameter is not modified upon return.
@@ -188,10 +192,19 @@ class UtilMusic
 	 */
 	static fixedTempo(events, usPerTick) {
 		let output = [];
+		let factor = 1;
 		for (const evSrc of events) {
-			let evDst = evSrc.clone();
+			if (evSrc.type === Music.TempoEvent) {
+				factor = evSrc.usPerTick / usPerTick;
+				// Don't copy tempo events across.
+				continue;
+			}
 
-// TODO: adjust timings
+			let evDst = evSrc.clone();
+			if (evDst.type === Music.DelayEvent) {
+				evDst.ticks *= factor;
+			}
+
 			output.push(evDst);
 		}
 

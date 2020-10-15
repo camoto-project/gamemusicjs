@@ -27,7 +27,7 @@ describe(`UtilMusic tests`, function() {
 	describe('splitEvents()', function() {
 		const fnGetTrackConfig = ev => {
 			let tc = new Music.TrackConfiguration({
-				channelType: Music.ChannelType.OPL,
+				channelType: Music.ChannelType.OPLT,
 				channelIndex: ev.custom._test_channel_index,
 			});
 			tc.trackIndex = ev.custom._test_track_index;
@@ -74,11 +74,11 @@ describe(`UtilMusic tests`, function() {
 
 			assert.ok(r.trackConfig);
 			assert.ok(r.trackConfig[0]);
-			assert.equal(r.trackConfig[0].channelType, Music.ChannelType.OPL);
+			assert.equal(r.trackConfig[0].channelType, Music.ChannelType.OPLT);
 			assert.equal(r.trackConfig[0].channelIndex, 1);
 
 			assert.ok(r.trackConfig[1]);
-			assert.equal(r.trackConfig[1].channelType, Music.ChannelType.OPL);
+			assert.equal(r.trackConfig[1].channelType, Music.ChannelType.OPLT);
 			assert.equal(r.trackConfig[1].channelIndex, 2);
 
 			assert.ok(r.pattern);
@@ -165,6 +165,116 @@ describe(`UtilMusic tests`, function() {
 			assert.equal(events[4].ticks, 10);
 			assert.equal(events[5].type, Music.NoteOffEvent);
 		});
-	}); // frequencyToMIDI()
+	}); // mergeTracks()
+
+	describe('fixedTempo()', function() {
+		it('same tempo does not change anything', function() {
+			const genericEvent = new Music.ConfigurationEvent({
+				option: Music.ConfigurationEvent.Option.EnableWaveSel,
+				value: true,
+			});
+
+			let srcEvents = [
+				new Music.TempoEvent({usPerTick: 1000}),
+				genericEvent,
+				new Music.DelayEvent({ticks: 10}),
+				genericEvent,
+				new Music.DelayEvent({ticks: 10}),
+				new Music.TempoEvent({usPerTick: 1000}),
+				new Music.DelayEvent({ticks: 10}),
+				genericEvent,
+				new Music.DelayEvent({ticks: 10}),
+			];
+
+			const dstEvents = UtilMusic.fixedTempo(srcEvents, 1000);
+
+			assert.ok(dstEvents[0]);
+			assert.equal(dstEvents[1].ticks, 10);
+			assert.equal(dstEvents[3].ticks, 10);
+			assert.equal(dstEvents[4].ticks, 10);
+			assert.equal(dstEvents[6].ticks, 10);
+		});
+
+		it('double tempo doubles ticks', function() {
+			const genericEvent = new Music.ConfigurationEvent({
+				option: Music.ConfigurationEvent.Option.EnableWaveSel,
+				value: true,
+			});
+
+			let srcEvents = [
+				new Music.TempoEvent({usPerTick: 1000}),
+				genericEvent,
+				new Music.DelayEvent({ticks: 10}),
+				genericEvent,
+				new Music.DelayEvent({ticks: 10}),
+				new Music.TempoEvent({usPerTick: 1000}),
+				new Music.DelayEvent({ticks: 10}),
+				genericEvent,
+				new Music.DelayEvent({ticks: 10}),
+			];
+
+			const dstEvents = UtilMusic.fixedTempo(srcEvents, 500);
+
+			assert.ok(dstEvents[0]);
+			assert.equal(dstEvents[1].ticks, 20);
+			assert.equal(dstEvents[3].ticks, 20);
+			assert.equal(dstEvents[4].ticks, 20);
+			assert.equal(dstEvents[6].ticks, 20);
+		});
+
+		it('mid-song changes work', function() {
+			const genericEvent = new Music.ConfigurationEvent({
+				option: Music.ConfigurationEvent.Option.EnableWaveSel,
+				value: true,
+			});
+
+			let srcEvents = [
+				new Music.TempoEvent({usPerTick: 1000}),
+				genericEvent,
+				new Music.DelayEvent({ticks: 10}),
+				genericEvent,
+				new Music.DelayEvent({ticks: 10}),
+				new Music.TempoEvent({usPerTick: 2000}),
+				new Music.DelayEvent({ticks: 10}),
+				genericEvent,
+				new Music.DelayEvent({ticks: 10}),
+			];
+
+			const dstEvents = UtilMusic.fixedTempo(srcEvents, 500);
+
+			assert.ok(dstEvents[0]);
+			assert.equal(dstEvents[1].ticks, 20);
+			assert.equal(dstEvents[3].ticks, 20);
+			assert.equal(dstEvents[4].ticks, 40);
+			assert.equal(dstEvents[6].ticks, 40);
+		});
+
+		it('does not lose custom data', function() {
+			const genericEvent = new Music.ConfigurationEvent({
+				option: Music.ConfigurationEvent.Option.EnableWaveSel,
+				value: true,
+				custom: 'a',
+			});
+
+			let srcEvents = [
+				new Music.TempoEvent({usPerTick: 1000}),
+				genericEvent,
+				new Music.DelayEvent({ticks: 10}),
+				genericEvent,
+				new Music.DelayEvent({ticks: 10}),
+				new Music.TempoEvent({usPerTick: 2000}),
+				new Music.DelayEvent({ticks: 10}),
+				genericEvent,
+				new Music.DelayEvent({ticks: 10}),
+			];
+
+			const dstEvents = UtilMusic.fixedTempo(srcEvents, 500);
+
+			assert.ok(dstEvents[0]);
+			assert.equal(dstEvents[0].custom, 'a');
+			assert.equal(dstEvents[2].custom, 'a');
+			assert.equal(dstEvents[5].custom, 'a');
+		});
+	}); // fixedTempo()
 
 }); // UtilMIDI tests

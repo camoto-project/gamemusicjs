@@ -86,10 +86,10 @@ class MusicHandler
 		 *         name: 'Only use first and second OPL channels',
 		 *         channels: [
 		 *           {
-		 *             type: Music.ChannelType.OPL,
+		 *             type: Music.ChannelType.OPLT,
 		 *             target: 0,
 		 *           }, {
-		 *             type: Music.ChannelType.OPL,
+		 *             type: Music.ChannelType.OPLT,
 		 *             target: 1,
 		 *           },
 		 *         ],

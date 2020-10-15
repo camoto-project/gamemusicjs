@@ -1084,7 +1084,8 @@ describe('parseOPL() tests', function() {
 			assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
 			TestUtil.almostEqual(events[2].freq, 169.928);
 			TestUtil.almostEqual(events[2].velocity, 1);
-			assert.equal(events[2].custom.oplChannel, 7, 'Wrong source OPL channel');
+			assert.equal(events[2].custom.oplChannelType, Music.ChannelType.OPLR, 'Wrong source OPL channel');
+			assert.equal(events[2].custom.oplChannelIndex, UtilOPL.Rhythm.HH, 'Wrong source OPL channel');
 
 			assert.ok(events[4], 'Missing event');
 			assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
@@ -1120,15 +1121,16 @@ describe('parseOPL() tests', function() {
 			assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
 			TestUtil.almostEqual(events[2].freq, 169.928);
 			TestUtil.almostEqual(events[2].velocity, 1);
-			assert.equal(events[2].custom.oplChannel, 8, 'Wrong source OPL channel');
+			assert.equal(events[2].custom.oplChannelType, Music.ChannelType.OPLR, 'Wrong source OPL channel type');
+			assert.equal(events[2].custom.oplChannelIndex, UtilOPL.Rhythm.CY, 'Wrong source OPL channel index');
 
 			assert.ok(events[4], 'Missing event');
 			assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
 
 			assert.ok(patches[0], 'Failed to supply patch');
-			assert.ok(patches[0].slot[1], 'Slot/operator 1 settings missing from patch');
-			assert.ok(!patches[0].slot[0], 'Slot/operator 0 settings incorrectly present in patch');
-			assert.equal(patches[0].slot[1].attackRate, 0x4);
+			assert.ok(patches[0].slot[0], 'Slot/operator 0 settings missing from patch');
+			assert.ok(!patches[0].slot[1], 'Slot/operator 1 settings incorrectly present in patch');
+			assert.equal(patches[0].slot[0].attackRate, 0x4);
 		});
 
 		it('should handle tom-tom (TT)', function() {
@@ -1156,7 +1158,8 @@ describe('parseOPL() tests', function() {
 			assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
 			TestUtil.almostEqual(events[2].freq, 169.928);
 			TestUtil.almostEqual(events[2].velocity, 1);
-			assert.equal(events[2].custom.oplChannel, 8, 'Wrong source OPL channel');
+			assert.equal(events[2].custom.oplChannelType, Music.ChannelType.OPLR, 'Wrong source OPL channel type');
+			assert.equal(events[2].custom.oplChannelIndex, UtilOPL.Rhythm.TT, 'Wrong source OPL channel index');
 
 			assert.ok(events[4], 'Missing event');
 			assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
@@ -1192,15 +1195,16 @@ describe('parseOPL() tests', function() {
 			assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
 			TestUtil.almostEqual(events[2].freq, 169.928);
 			TestUtil.almostEqual(events[2].velocity, 1);
-			assert.equal(events[2].custom.oplChannel, 7, 'Wrong source OPL channel');
+			assert.equal(events[2].custom.oplChannelType, Music.ChannelType.OPLR, 'Wrong source OPL channel type');
+			assert.equal(events[2].custom.oplChannelIndex, UtilOPL.Rhythm.SD, 'Wrong source OPL channel index');
 
 			assert.ok(events[4], 'Missing event');
 			assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
 
 			assert.ok(patches[0], 'Failed to supply patch');
-			assert.ok(patches[0].slot[1], 'Slot/operator 1 settings missing from patch');
-			assert.ok(!patches[0].slot[0], 'Slot/operator 0 settings incorrectly present in patch');
-			assert.equal(patches[0].slot[1].attackRate, 0x4);
+			assert.ok(patches[0].slot[0], 'Slot/operator 0 settings missing from patch');
+			assert.ok(!patches[0].slot[1], 'Slot/operator 1 settings incorrectly present in patch');
+			assert.equal(patches[0].slot[0].attackRate, 0x4);
 		});
 
 		it('should handle bass drum (BD)', function() {
@@ -1234,7 +1238,8 @@ describe('parseOPL() tests', function() {
 			assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
 			TestUtil.almostEqual(events[2].freq, 169.928);
 			TestUtil.almostEqual(events[2].velocity, 1);
-			assert.equal(events[2].custom.oplChannel, 6, 'Wrong source OPL channel');
+			assert.equal(events[2].custom.oplChannelType, Music.ChannelType.OPLR, 'Wrong source OPL channel type');
+			assert.equal(events[2].custom.oplChannelIndex, UtilOPL.Rhythm.BD, 'Wrong source OPL channel index');
 
 			assert.ok(events[4], 'Missing event');
 			assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');

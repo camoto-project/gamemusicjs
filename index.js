@@ -121,5 +121,6 @@ class GameMusic
 GameMusic.Music = require('./src/music.js');
 GameMusic.UtilMusic = require('./src/utl-music.js');
 GameMusic.UtilMIDI = require('./src/utl-midi.js');
+GameMusic.UtilOPL = require('./src/utl-opl.js');
 
 module.exports = GameMusic;

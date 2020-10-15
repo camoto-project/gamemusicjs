@@ -26,7 +26,7 @@ describe('generateOPL() tests', function() {
 
 	const trackConfig = [
 		new Music.TrackConfiguration({
-			channelType: Music.ChannelType.OPL,
+			channelType: Music.ChannelType.OPLT,
 			channelIndex: 0,
 		}),
 	];
@@ -51,7 +51,7 @@ describe('generateOPL() tests', function() {
 				new Music.DelayEvent({ticks: 10}),
 			];
 			for (const ev of events) ev.custom.idxTrack = 0;
-			const oplData = UtilOPL.generateOPL(events, trackConfig);
+			const { oplData } = UtilOPL.generateOPL(events, [], trackConfig);
 
 			assert.equal(oplData.length, 4, 'Incorrect number of register writes produced');
 
@@ -79,7 +79,7 @@ describe('generateOPL() tests', function() {
 				}),
 			];
 			for (const ev of events) ev.custom.idxTrack = 0;
-			const oplData = UtilOPL.generateOPL(events, trackConfig);
+			const { oplData } = UtilOPL.generateOPL(events, [], trackConfig);
 
 			assert.equal(oplData.length, 3, 'Incorrect number of register writes produced');
 
@@ -112,7 +112,7 @@ describe('generateOPL() tests', function() {
 			new Music.DelayEvent({ticks: 30}),
 		];
 		for (const ev of events) ev.custom.idxTrack = 0;
-		const oplData = UtilOPL.generateOPL(events, trackConfig);
+		const { oplData } = UtilOPL.generateOPL(events, [], trackConfig);
 
 		// First delay should be unchanged.
 		assert.equal(oplData[1].delay, 10, 'Wrong delay');
@@ -150,7 +150,7 @@ describe('generateOPL() tests', function() {
 			}),
 		];
 		for (const ev of events) ev.custom.idxTrack = 0;
-		const oplData = UtilOPL.generateOPL(events, trackConfig);
+		const { oplData } = UtilOPL.generateOPL(events, [], trackConfig);
 
 		assert.equal(oplData[0].tempo.usPerTick, 1000, 'Wrong tempo value');
 		assert.equal(oplData[2].delay, 10, 'Wrong delay');
@@ -194,7 +194,7 @@ describe('generateOPL() tests', function() {
 			new Music.NoteOffEvent(),
 		];
 		for (const ev of events) ev.custom.idxTrack = 0;
-		const oplData = UtilOPL.generateOPL(events, trackConfig);
+		const { oplData } = UtilOPL.generateOPL(events, [], trackConfig);
 
 		assert.equal(oplData[0].tempo.usPerTick, 1000, 'Wrong tempo value');
 
@@ -227,6 +227,100 @@ describe('generateOPL() tests', function() {
 		assert.equal(oplData[12].delay, 80, 'Wrong delay');
 
 		assert.equal(oplData[13].reg, 0xB0, 'Wrong register for NoteOffEvent');
+	});
+
+	it('should handle 2-op patches', function() {
+		const patches = [
+			new Music.Patch.OPL({
+				slot: [
+					{
+						enableTremolo: true,
+						enableVibrato: false,
+						enableSustain: true,
+						enableKSR: false,
+						waveSelect: 1,
+						freqMult: 2,
+						scaleLevel: 3,
+						outputLevel: 4,
+						attackRate: 5,
+						decayRate: 6,
+						sustainRate: 7,
+						releaseRate: 8,
+					}, {
+						enableTremolo: false,
+						enableVibrato: true,
+						enableSustain: false,
+						enableKSR: true,
+						waveSelect: 2,
+						freqMult: 3,
+						scaleLevel: 2,
+						outputLevel: 5,
+						attackRate: 6,
+						decayRate: 7,
+						sustainRate: 8,
+						releaseRate: 9,
+					},
+				],
+				feedback: 2,
+				connection: 1,
+				rhythm: 0,
+			}),
+		];
+
+		const events = [
+			new Music.TempoEvent({ usPerTick: 1000 }),
+			new Music.NoteOnEvent({
+				frequency: 440,
+				velocity: 1,
+				instrument: 0,
+			}),
+		];
+		for (const ev of events) ev.custom.idxTrack = 0;
+		const { oplData } = UtilOPL.generateOPL(events, patches, trackConfig);
+
+		let oplState = [];
+		function advanceToNextDelay() {
+			oplData.shift(); // discard oplData[0] we looked at before this function
+			while (oplData[0] && (oplData[0].reg !== undefined)) {
+				const o = oplData.shift();
+				oplState[o.reg] = o.val;
+			}
+		}
+
+		advanceToNextDelay();
+
+		assert.equal(oplState[0xB0] & 0x20, 0x20, 'Keyon missing');
+		assert.equal(oplState[0x20] & 0x80, 0x80, 'slot[0].enableTremolo incorrect');
+		assert.equal(oplState[0x23] & 0x80, 0x00, 'slot[1].enableTremolo incorrect');
+		assert.equal(oplState[0x20] & 0x40, 0x00, 'slot[0].enableVibrato incorrect');
+		assert.equal(oplState[0x23] & 0x40, 0x40, 'slot[1].enableVibrato incorrect');
+		assert.equal(oplState[0x20] & 0x20, 0x20, 'slot[0].enableSustain incorrect');
+		assert.equal(oplState[0x23] & 0x20, 0x00, 'slot[1].enableSustain incorrect');
+		assert.equal(oplState[0x20] & 0x10, 0x00, 'slot[0].enableKSR incorrect');
+		assert.equal(oplState[0x23] & 0x10, 0x10, 'slot[1].enableKSR incorrect');
+		assert.equal(oplState[0x20] & 0x0F, 0x02, 'slot[0].freqMult incorrect');
+		assert.equal(oplState[0x23] & 0x0F, 0x03, 'slot[1].freqMult incorrect');
+
+		assert.equal(oplState[0x40] & 0xC0, 3 << 6, 'slot[0].scaleLevel incorrect');
+		assert.equal(oplState[0x43] & 0xC0, 2 << 6, 'slot[1].scaleLevel incorrect');
+		assert.equal(oplState[0x40] & 0x3F, 4, 'slot[0].outputLevel incorrect');
+		assert.equal(oplState[0x43] & 0x3F, 5, 'slot[1].outputLevel incorrect');
+
+		assert.equal(oplState[0x60] & 0xF0, 5 << 4, 'slot[0].attackRate incorrect');
+		assert.equal(oplState[0x63] & 0xF0, 6 << 4, 'slot[1].attackRate incorrect');
+		assert.equal(oplState[0x60] & 0x0F, 6, 'slot[0].decayRate incorrect');
+		assert.equal(oplState[0x63] & 0x0F, 7, 'slot[1].decayRate incorrect');
+
+		assert.equal(oplState[0x80] & 0xF0, 7 << 4, 'slot[0].sustainRate incorrect');
+		assert.equal(oplState[0x83] & 0xF0, 8 << 4, 'slot[1].sustainRate incorrect');
+		assert.equal(oplState[0x80] & 0x0F, 8, 'slot[0].releaseRate incorrect');
+		assert.equal(oplState[0x83] & 0x0F, 9, 'slot[1].releaseRate incorrect');
+
+		assert.equal(oplState[0xE0] & 0x07, 1, 'slot[0].waveSelect incorrect');
+		assert.equal(oplState[0xE3] & 0x07, 2, 'slot[1].waveSelect incorrect');
+
+		assert.equal(oplState[0xC0] & 0x01, 1, 'patch.connection incorrect');
+		assert.equal(oplState[0xC0] & 0x0E, 2 << 1, 'patch.feedback incorrect');
 	});
 
 }); // generateOPL() tests

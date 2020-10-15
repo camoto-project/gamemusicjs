@@ -119,24 +119,29 @@ Music.ChannelType = {
 	Any: 0,
 
 	/**
-	 * OPL2 or OPL3 melodic channel.
+	 * OPL2 or OPL3 Rhythm/percussive channel (1-operator).
 	 */
-	OPL: 1,
+	OPLR: 1,
 
 	/**
-	 * OPL2 or OPL3 percussive/rhythm channel.
+	 * OPL2 or OPL3 Two-operator melodic channel.
 	 */
-	OPLPerc: 2,
+	OPLT: 2,
+
+	/**
+	 * OPL3 Four-operator melodic channel.
+	 */
+	OPLF: 3,
 
 	/**
 	 * Standard MIDI channel.
 	 */
-	MIDI: 3,
+	MIDI: 4,
 
 	/**
 	 * Digitised audio channel for playing samples like in a .mod file.
 	 */
-	PCM: 4,
+	PCM: 5,
 };
 
 Music.ChannelType.toString = v => Object.keys(Music.ChannelType)[v] || '?';
