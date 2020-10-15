@@ -231,8 +231,11 @@ allHandlers.forEach(handler => {
 			describe('identify()', function() {
 
 				it('should not negatively identify itself', function() {
-					const result = handler.identify(content.default.main, content.default.main.filename);
-					assert.ok(result === true || result === undefined);
+					const result = handler.identify(
+						content.default.main,
+						content.default.main.filename
+					);
+					assert.ok(result.valid === true || result.valid === undefined);
 				});
 
 				it('should not break on empty data', function() {
@@ -267,7 +270,7 @@ allHandlers.forEach(handler => {
 					} else {
 						it(`should not be positively identified by ${submd.id} handler`, function() {
 							const result = subhandler.identify(content.default.main, content.default.main.filename);
-							assert.notEqual(result, true);
+							assert.notEqual(result.valid, true);
 						});
 					}
 				});

@@ -92,12 +92,12 @@ class GameMusic
 		let handlers = [];
 		fileTypes.some(x => {
 			const metadata = x.metadata();
-			const confidence = x.identify(content, filename);
-			if (confidence === true) {
+			const ident = x.identify(content, filename);
+			if (ident.valid === true) {
 				handlers = [x];
 				return true; // exit loop early
 			}
-			if (confidence === undefined) {
+			if (ident.valid === undefined) {
 				handlers.push(x);
 				// keep going to look for a better match
 			}

@@ -129,8 +129,6 @@ class Music_IMF_IDSoftware_Common extends MusicHandler
 	 * This is used when autodetecting the file format.
 	 */
 	static verifyContent(buffer, contentLength) {
-		const debug = Debug.extend('verifyContent');
-
 		for (let pos = 0; pos < contentLength; pos += 4) {
 			const event = buffer.readRecord(recordTypes.event);
 
@@ -141,18 +139,24 @@ class Music_IMF_IDSoftware_Common extends MusicHandler
 			}
 
 			if (!UtilOPL.validRegister(event.reg)) {
-				debug(`Register 0x${event.reg.toString(16)} is not a valid OPL register => not this format`);
-				return false;
+				return {
+					valid: false,
+					reason: `Register 0x${event.reg.toString(16).toUpperCase()} is not a valid OPL register.`,
+				};
 			}
 
 			// It's unlikely a delay would be legitimately this large.
 			if (event.delay >= 0x8000) {
-				debug(`Delay value is unreasonably large => not this format`);
-				return false;
+				return {
+					valid: false,
+					reason: `Delay value ${event.delay} is unreasonably large.`,
+				};
 			}
 		}
 
-		return true;
+		return {
+			valid: true,
+		};
 	}
 
 	static parse(content) {
@@ -311,34 +315,26 @@ class Music_IMF_IDSoftware_Type0 extends Music_IMF_IDSoftware_Common
 	}
 
 	static identify(content) {
-		const debug = Debug.extend('type0:identify');
-
-		if (content.length === 0) {
-			debug(`File length is zero => not this format`);
-			return false;
-		}
-
 		// Files must contain at least one event.
 		const minLength = 4;
 		if (content.length < minLength) {
-			debug(`File length ${content.length} is less than minimum valid size of ${minLength} => not this format`);
-			return false;
+			return {
+				valid: false,
+				reason: `File length ${content.length} is less than minimum valid size of ${minLength}.`,
+			};
 		}
 
 		// Files must contain one or more complete 4-byte reg/val/delay blocks.
 		if (content.length % 4 != 0) {
-			debug(`File length is not a multiple of 4 => not this format`);
-			return false;
+			return {
+				valid: false,
+				reason: `File length is not a multiple of 4.`,
+			};
 		}
 
 		let buffer = new RecordBuffer(content);
 
-		if (!this.verifyContent(buffer, content.length)) {
-			return false;
-		}
-
-		debug(`All data seems valid => is this format`);
-		return true;
+		return this.verifyContent(buffer, content.length);
 	}
 
 	static getTempo() {
@@ -385,18 +381,13 @@ class Music_IMF_IDSoftware_Type1 extends Music_IMF_IDSoftware_Common
 	}
 
 	static identify(content) {
-		const debug = Debug.extend('type1:identify');
-
-		if (content.length === 0) {
-			debug(`File length is zero => not this format`);
-			return false;
-		}
-
 		// Files must contain at least one event.
-		const minLength = 4;
+		const minLength = 6;
 		if (content.length < minLength) {
-			debug(`File length ${content.length} is less than minimum valid size of ${minLength} => not this format`);
-			return false;
+			return {
+				valid: false,
+				reason: `File length ${content.length} is less than minimum valid size of ${minLength}.`,
+			};
 		}
 
 		let buffer = new RecordBuffer(content);
@@ -404,27 +395,30 @@ class Music_IMF_IDSoftware_Type1 extends Music_IMF_IDSoftware_Common
 		const contentLength = buffer.read(RecordType.int.u16le);
 
 		if (contentLength === 0) {
-			debug(`Length field is zero => not this format`);
-			return false;
+			return {
+				valid: false,
+				reason: 'Length field is zero.',
+			};
 		}
 
 		// Length (plus size of length field itself) must be shorter than the
 		// actual file.
 		if (content.length < contentLength + 2) {
-			debug(`Content length ${content.length - 2} is shorter than length given in header ${contentLength}`);
-			return false;
+			return {
+				valid: false,
+				reason: `Content length ${content.length - 2} is shorter than length ${contentLength} given in header.`,
+			};
 		}
 
 		// Files must contain one or more complete 4-byte reg/val/delay blocks.
 		if (contentLength % 4 != 0) {
-			debug(`File length is not a multiple of 4 => not this format`);
-			return false;
+			return {
+				valid: false,
+				reason: `File length ${content.length} is not a multiple of 4.`,
+			};
 		}
 
-		this.verifyContent(buffer, contentLength);
-
-		debug(`All data seems valid => is this format`);
-		return true;
+		return this.verifyContent(buffer, contentLength);
 	}
 
 	static getTempo() {
@@ -491,7 +485,7 @@ class Music_IMF_IDSoftware_Nukem2 extends Music_IMF_IDSoftware_Type0
 		return content.length;
 	}
 
-	static generate(music, outMessages) {
+	static generate(music) {
 		const { binOPL, warnings } = super.generateOPLBuffer(music);
 		return {
 			content: {
@@ -520,15 +514,14 @@ class Music_WLF_IDSoftware_Type0 extends Music_IMF_IDSoftware_Type0
 	}
 
 	static identify(content, filename) {
-		const debug = Debug.extend('type0-wlf:identify');
-
 		// Exclude an incorrect extension if one was given to check.
 		const ext = filename.substr(-4).toLowerCase();
 		if (ext != '.wlf') {
-			debug(`File extension "${ext}" doesn't match required ".wlf"`);
-			return false;
+			return {
+				valid: false,
+				reason: `File extension "${ext}" doesn't match required ".wlf".`,
+			};
 		}
-		debug(`File extension is "${ext}", continuing with checks`);
 
 		return super.identify(content, filename);
 	}
@@ -564,15 +557,14 @@ class Music_WLF_IDSoftware_Type1 extends Music_IMF_IDSoftware_Type1
 	}
 
 	static identify(content, filename) {
-		const debug = Debug.extend('type1-wlf:identify');
-
 		// Exclude an incorrect extension if one was given to check.
 		const ext = filename.substr(-4).toLowerCase();
 		if (ext != '.wlf') {
-			debug(`File extension "${ext}" doesn't match required ".wlf"`);
-			return false;
+			return {
+				valid: false,
+				reason: `File extension "${ext}" doesn't match required ".wlf".`,
+			};
 		}
-		debug(`File extension is "${ext}", continuing with checks`);
 
 		return super.identify(content, filename);
 	}
