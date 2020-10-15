@@ -187,8 +187,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[0].enableTremolo, 1);
 				assert.equal(patches[1].slot[0].enableTremolo, 0);
 			});
@@ -218,8 +216,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[0].enableVibrato, 1);
 				assert.equal(patches[1].slot[0].enableVibrato, 0);
 			});
@@ -249,8 +245,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[0].enableSustain, 1);
 				assert.equal(patches[1].slot[0].enableSustain, 0);
 			});
@@ -280,8 +274,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[0].enableKSR, 1);
 				assert.equal(patches[1].slot[0].enableKSR, 0);
 			});
@@ -311,8 +303,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[0].freqMult, 0xF);
 				assert.equal(patches[1].slot[0].freqMult, 0x1);
 			});
@@ -342,8 +332,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[0].scaleLevel, 0x3);
 				assert.equal(patches[1].slot[0].scaleLevel, 0x0);
 			});
@@ -373,8 +361,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[0].outputLevel, 0x3F);
 				assert.equal(patches[1].slot[0].outputLevel, 0x00);
 			});
@@ -404,8 +390,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[0].attackRate, 0xF);
 				assert.equal(patches[1].slot[0].attackRate, 0x1);
 			});
@@ -435,8 +419,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[0].decayRate, 0xF);
 				assert.equal(patches[1].slot[0].decayRate, 0x1);
 			});
@@ -466,8 +448,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[0].sustainRate, 0xF);
 				assert.equal(patches[1].slot[0].sustainRate, 0x1);
 			});
@@ -497,8 +477,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[0].releaseRate, 0xF);
 				assert.equal(patches[1].slot[0].releaseRate, 0x1);
 			});
@@ -528,8 +506,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[0].waveSelect, 0x7);
 				assert.equal(patches[1].slot[0].waveSelect, 0x1);
 			});
@@ -547,8 +523,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[0].attackRate, 0xF);
 				assert.equal(patches[1].slot[0].attackRate, 0x1);
 			});
@@ -566,8 +540,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[1].attackRate, 0xF);
 				assert.equal(patches[1].slot[1].attackRate, 0x1);
 			});
@@ -585,8 +557,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[0].attackRate, 0xF);
 				assert.equal(patches[1].slot[0].attackRate, 0x1);
 			});
@@ -604,8 +574,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[1].attackRate, 0xF);
 				assert.equal(patches[1].slot[1].attackRate, 0x1);
 			});
@@ -623,8 +591,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[0].attackRate, 0xF);
 				assert.equal(patches[1].slot[0].attackRate, 0x1);
 			});
@@ -642,8 +608,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[1].attackRate, 0xF);
 				assert.equal(patches[1].slot[1].attackRate, 0x1);
 			});
@@ -662,8 +626,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[0].attackRate, 0xF);
 				assert.equal(patches[1].slot[0].attackRate, 0x1);
 			});
@@ -682,8 +644,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[1].attackRate, 0xF);
 				assert.equal(patches[1].slot[1].attackRate, 0x1);
 			});
@@ -702,8 +662,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[0].attackRate, 0xF);
 				assert.equal(patches[1].slot[0].attackRate, 0x1);
 			});
@@ -722,8 +680,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[1].attackRate, 0xF);
 				assert.equal(patches[1].slot[1].attackRate, 0x1);
 			});
@@ -741,8 +697,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[0].attackRate, 0xF);
 				assert.equal(patches[1].slot[0].attackRate, 0x1);
 			});
@@ -760,8 +714,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[1].attackRate, 0xF);
 				assert.equal(patches[1].slot[1].attackRate, 0x1);
 			});
@@ -781,8 +733,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[3].attackRate, 0xF);
 				assert.equal(patches[1].slot[3].attackRate, 0x1);
 			});
@@ -802,8 +752,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[2].attackRate, 0xF);
 				assert.equal(patches[1].slot[2].attackRate, 0x1);
 			});
@@ -823,8 +771,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[3].attackRate, 0xF);
 				assert.equal(patches[1].slot[3].attackRate, 0x1);
 			});
@@ -850,8 +796,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].slot[0].attackRate, 0xF);
 				assert.equal(patches[0].slot[1].attackRate, 0xF);
 				assert.equal(patches[0].slot[2].attackRate, 0xF);
@@ -890,8 +834,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].feedback, 0x7);
 				assert.equal(patches[1].feedback, 0x1);
 			});
@@ -921,8 +863,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].connection, 0x1);
 				assert.equal(patches[1].connection, 0x0);
 			});
@@ -952,8 +892,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches[0].feedback, 0x7);
 				assert.equal(patches[1].feedback, 0x1);
 			});
@@ -1003,8 +941,6 @@ describe('parseOPL() tests', function() {
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
-				assert.equal(patches[1].channelType, Music.ChannelType.OPL);
 				assert.equal(patches.length, 2, 'Wrong number of patches read');
 
 				assert.ok(events[1], 'Missing event');
@@ -1045,7 +981,6 @@ describe('parseOPL() tests', function() {
 				], defaultTempo);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
-				assert.equal(patches[0].channelType, Music.ChannelType.OPL);
 				assert.equal(patches.length, 1, 'Wrong number of patches read');
 
 				assert.ok(events[1], 'Missing event');
@@ -1096,7 +1031,6 @@ describe('parseOPL() tests', function() {
 		assert.equal(events.length, 4, 'Incorrect number of events produced');
 
 		assert.ok(patches[0], 'Failed to supply patch');
-		assert.equal(patches[0].channelType, Music.ChannelType.OPL);
 		assert.equal(patches[0].slot[0].enableTremolo, 0);
 		assert.equal(patches[0].slot[0].attackRate, 0x4);
 		assert.equal(patches[0].slot[0].decayRate, 0x5);
@@ -1156,7 +1090,6 @@ describe('parseOPL() tests', function() {
 			assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
 
 			assert.ok(patches[0], 'Failed to supply patch');
-			assert.equal(patches[0].channelType, Music.ChannelType.OPL);
 			assert.ok(patches[0].slot[0], 'Slot/operator 0 settings missing from patch');
 			assert.ok(!patches[0].slot[1], 'Slot/operator 1 settings incorrectly present in patch');
 			assert.equal(patches[0].slot[0].attackRate, 0x4);
@@ -1193,7 +1126,6 @@ describe('parseOPL() tests', function() {
 			assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
 
 			assert.ok(patches[0], 'Failed to supply patch');
-			assert.equal(patches[0].channelType, Music.ChannelType.OPL);
 			assert.ok(patches[0].slot[1], 'Slot/operator 1 settings missing from patch');
 			assert.ok(!patches[0].slot[0], 'Slot/operator 0 settings incorrectly present in patch');
 			assert.equal(patches[0].slot[1].attackRate, 0x4);
@@ -1230,7 +1162,6 @@ describe('parseOPL() tests', function() {
 			assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
 
 			assert.ok(patches[0], 'Failed to supply patch');
-			assert.equal(patches[0].channelType, Music.ChannelType.OPL);
 			assert.ok(patches[0].slot[0], 'Slot/operator 0 settings missing from patch');
 			assert.ok(!patches[0].slot[1], 'Slot/operator 1 settings incorrectly present in patch');
 			assert.equal(patches[0].slot[0].attackRate, 0x4);
@@ -1267,7 +1198,6 @@ describe('parseOPL() tests', function() {
 			assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
 
 			assert.ok(patches[0], 'Failed to supply patch');
-			assert.equal(patches[0].channelType, Music.ChannelType.OPL);
 			assert.ok(patches[0].slot[1], 'Slot/operator 1 settings missing from patch');
 			assert.ok(!patches[0].slot[0], 'Slot/operator 0 settings incorrectly present in patch');
 			assert.equal(patches[0].slot[1].attackRate, 0x4);
@@ -1310,7 +1240,6 @@ describe('parseOPL() tests', function() {
 			assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
 
 			assert.ok(patches[0], 'Failed to supply patch');
-			assert.equal(patches[0].channelType, Music.ChannelType.OPL);
 			assert.ok(patches[0].slot[0], 'Slot/operator 0 settings missing from patch');
 			assert.ok(patches[0].slot[1], 'Slot/operator 1 settings missing from patch');
 			assert.equal(patches[0].slot[0].attackRate, 0x4);

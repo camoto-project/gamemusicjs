@@ -26,9 +26,8 @@ const UtilOPL = require('./utl-opl.js');
  */
 class Patch
 {
-	constructor(channelType, params) {
+	constructor(params) {
 		this.custom = params.custom || {};
-		this.channelType = channelType;
 		this.title = params.title || null;
 	}
 
@@ -43,7 +42,7 @@ class Patch
 
 class PatchOPL extends Patch {
 	constructor(params = {}) {
-		super(Music.ChannelType.OPL, params);
+		super(params);
 
 		this.slot = params.slot || [];
 		this.feedback = params.feedback || 0;
@@ -140,8 +139,6 @@ class PatchOPL extends Patch {
 
 class PatchMIDI extends Patch {
 	constructor(params = {}) {
-		super(Music.ChannelType.MIDI, params);
-
 		this.midiBank = params.midiBank || 0;
 		this.midiPatch = params.midiPatch || 0;
 	}
@@ -163,8 +160,6 @@ class PatchMIDI extends Patch {
 
 class PatchPCM extends Patch {
 	constructor(params = {}) {
-		super(Music.ChannelType.PCM, params);
-
 		this.sampleRate = params.sampleRate || 8000;
 	}
 
