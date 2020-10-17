@@ -150,9 +150,14 @@ Music.ChannelType = {
 	MIDI: 4,
 
 	/**
+	 * Standard MIDI percussion channel.
+	 */
+	MIDIP: 5,
+
+	/**
 	 * Digitised audio channel for playing samples like in a .mod file.
 	 */
-	PCM: 5,
+	PCM: 6,
 };
 
 Music.ChannelType.toString = v => Object.keys(Music.ChannelType)[v] || '?';

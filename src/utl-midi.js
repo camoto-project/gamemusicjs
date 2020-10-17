@@ -18,6 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+const { RecordBuffer, RecordType } = require('@malvineous/record-io-buffer');
+
 const Debug = require('./utl-debug.js')('utl-midi');
 const Music = require('./music.js');
 
@@ -29,6 +31,13 @@ const MIDI_PITCHBEND_MAX = 16383;
  */
 class UtilMIDI
 {
+	static defaultTempo() {
+		return new Music.TempoEvent({
+			ticksPerQuarterNote: 48,
+			usPerQuarterNote: 500000,
+		});
+	}
+
 	static midiToFrequency(midiNote) {
 		return 440 * Math.pow(2, (midiNote - 69.0) / 12.0);
 	}
@@ -89,6 +98,60 @@ class UtilMIDI
 			basename: noteNames[noteIndex],
 		};
 	}
+
+	/**
+	 * Callback function for `UtilMusic.splitEvents()` for standard MIDI split.
+	 *
+	 * If MIDI data was parsed with `UtilOPL.parseMIDI()` then when it is split
+	 * into tracks with `UtilMusic.splitEvents()`, this function can be passed as
+	 * the callback parameter.
+	 *
+	 * It will split events up into one or more tracks per MIDI channel, to ensure
+	 * each track only plays one note at a time.
+	 */
+	static standardTrackSplitConfig(trackOffset, ev) {
+		let tc = new Music.TrackConfiguration({
+			channelType:
+				(ev.custom.midiChannelIndex === 9)
+				? Music.ChannelType.MIDIP
+				: Music.ChannelType.MIDI,
+			channelIndex: ev.custom.midiChannelIndex || 0,
+		});
+		tc.trackIndex = trackOffset + ev.custom.subtrack || 0;
+		return tc;
+	}
+
+	/**
+	 * Replace any MIDI events of type "tempo" with "meta" events of type 0x51.
+	 *
+	 * This will allow tempo changes to be embedded in MIDI data compatible with
+	 * General MIDI.
+	 */
+	static tempoAsMetaEvent(midiEvents) {
+		return midiEvents.map(mev => {
+			if (mev.type !== 'tempo') return mev;
+			let value = new RecordBuffer(3);
+			value.write(RecordType.int.u24be, mev.tempo.usPerQuarterNote);
+			return {
+				type: 'meta',
+				metaType: 0x51,
+				data: value.getU8(),
+				/*Uint8Array.from([
+					// UINT24BE
+					(value >> 16) & 0xFF,
+					(value >> 8) & 0xFF,
+					value & 0xFF,
+				]),
+				*/
+			};
+		});
+	}
 }
 
 module.exports = UtilMIDI;
+
+// These must go after module.exports due to cyclic dependencies.
+UtilMIDI.parseSMF = require('./utl-midi-parsesmf.js');
+UtilMIDI.parseMIDI = require('./utl-midi-parsemidi.js');
+UtilMIDI.generateMIDI = require('./utl-midi-generatemidi.js');
+UtilMIDI.generateSMF = require('./utl-midi-generatesmf.js');
