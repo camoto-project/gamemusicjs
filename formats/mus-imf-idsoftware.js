@@ -214,7 +214,7 @@ class Music_IMF_IDSoftware_Common extends MusicHandler
 		}
 
 		let initialTempoEvent = new Music.TempoEvent();
-		initialTempoEvent.hertz(this.getTempo());
+		initialTempoEvent.hertz = this.getTempo();
 
 		const { events, patches } = UtilOPL.parseOPL(oplData, initialTempoEvent);
 		music.patches = patches;
