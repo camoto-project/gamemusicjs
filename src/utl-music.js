@@ -236,6 +236,41 @@ class UtilMusic
 
 		return output;
 	}
+
+	/**
+	 * Iterate through all the initial events in a song.
+	 *
+	 * This finds the first pattern that will be played, then goes through each
+	 * track looking for any events that happen before any delay.  These are the
+	 * events that trigger immediately upon playback with no delay at all.  Each
+	 * event is passed to the callback until it returns true or the available
+	 * events are exhausted.
+	 *
+	 * @param {Music} music
+	 *   The song to examine.
+	 *
+	 * @param {function} cb
+	 *   The callback of type `function cb(ev) {}` where `ev` is the Event
+	 *   instance found to occur at the very beginning of the song.
+	 *
+	 * @return `true` if the callback returned `true`, `false` if the events were
+	 *   all processed but the callback never returned `true` for any of them.
+	 */
+	static initialEvents(music, cb) {
+		// TODO: Take into account pattern order
+		const firstPattern = music.patterns[0];
+		for (const track of firstPattern.tracks) {
+			for (const ev of track.events) {
+				// As soon as we hit a delay, any following event will no longer be an
+				// initial one, so we can skip to the next track.
+				if ((ev.type === Music.DelayEvent) && (ev.ticks > 0)) break;
+
+				// Call the callback, and finish if it returns true.
+				if (cb(ev)) return true;
+			}
+		}
+		return false;
+	}
 }
 
 module.exports = UtilMusic;
