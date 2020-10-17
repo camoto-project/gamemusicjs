@@ -84,6 +84,7 @@ class Operations
 	}
 
 	dump(params) {
+		process.stdout.write(`Initial tempo: ${this.music.initialTempo}\n`);
 		for (const idxPattern in this.music.patterns) {
 			const pat = this.music.patterns[idxPattern];
 			process.stdout.write(`\nPattern #${idxPattern}:\n`);

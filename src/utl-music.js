@@ -209,6 +209,9 @@ class UtilMusic
 	 * @param {Array<Event>} Events to adjust.  These are copied and this
 	 *   parameter is not modified upon return.
 	 *
+	 * @param {TempoEvent} initialTempo
+	 *   Song's default tempo unless overridden by additional TempoEvents later.
+	 *
 	 * @param {Number} usPerTick
 	 *   Number of microseconds each tick should represent in the returned delay
 	 *   values.  This is the target tempo and the event timings will be adjusted
@@ -216,9 +219,9 @@ class UtilMusic
 	 *   `1000000 / 700` as this parameter to convert the value into microseconds
 	 *   per tick.
 	 */
-	static fixedTempo(events, usPerTick) {
+	static fixedTempo(events, initialTempo, usPerTick) {
 		let output = [];
-		let factor = 1;
+		let factor = initialTempo.usPerTick / usPerTick;
 		for (const evSrc of events) {
 			if (evSrc.type === Music.TempoEvent) {
 				factor = evSrc.usPerTick / usPerTick;
@@ -251,22 +254,33 @@ class UtilMusic
 	 *
 	 * @param {function} cb
 	 *   The callback of type `function cb(ev) {}` where `ev` is the Event
-	 *   instance found to occur at the very beginning of the song.
+	 *   instance found to occur at the very beginning of the song.  This function
+	 *   should return `false` to continue with the next event, `true` to finish
+	 *   and not process any more events, or `null` to delete the current event
+	 *   and then finish.
 	 *
-	 * @return `true` if the callback returned `true`, `false` if the events were
-	 *   all processed but the callback never returned `true` for any of them.
+	 * @return `true` if the callback returned `true` or `null`, `false` if the
+	 *   events were all processed but the callback never returned `true` or
+	 *   `null` for any of them.
 	 */
 	static initialEvents(music, cb) {
 		// TODO: Take into account pattern order
 		const firstPattern = music.patterns[0];
 		for (const track of firstPattern.tracks) {
-			for (const ev of track.events) {
+			for (let i = 0; i < track.events.length; i++) {
+				const ev = track.events[i];
+				//for (const ev of track.events) {
 				// As soon as we hit a delay, any following event will no longer be an
 				// initial one, so we can skip to the next track.
 				if ((ev.type === Music.DelayEvent) && (ev.ticks > 0)) break;
 
 				// Call the callback, and finish if it returns true.
-				if (cb(ev)) return true;
+				const r = cb(ev);
+				if (r === true) return true;
+				if (r === null) {
+					delete track.events[i];
+					return true;
+				}
 			}
 		}
 		return false;

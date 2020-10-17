@@ -271,6 +271,17 @@ class Music_MID_Type1 extends MusicHandler
 			];
 		}
 
+		// See if there's an initial tempo event.
+		UtilMusic.initialEvents(music, ev => {
+			if (ev.type === Music.TempoEvent) {
+				// Found one, scrap the default tempo and use this instead.
+				debug('Found an existing initial tempo event:', ev);
+				music.initialTempo = ev;
+				return null; // delete the event from the track
+			}
+			return false; // keep going
+		});
+
 		return music;
 	}
 
@@ -280,7 +291,7 @@ class Music_MID_Type1 extends MusicHandler
 
 		// Only need to write an extra tempo event if the usPerQuarterNote value is
 		// not the default.
-		let outTempo = music.initialTempo.usPerQuarterNote === 500000;
+		let outTempo = Math.round(music.initialTempo.usPerQuarterNote) !== 500000;
 
 		if (outTempo) {
 			// Find the first tempo event, if one already exists
@@ -288,6 +299,7 @@ class Music_MID_Type1 extends MusicHandler
 				if (ev.type === Music.TempoEvent) {
 					// There is already an early tempo event, so we don't have to insert
 					// one.
+					debug('Found an existing tempo event:', ev);
 					outTempo = false;
 					return true; // done
 				}
@@ -310,14 +322,19 @@ class Music_MID_Type1 extends MusicHandler
 			ticksPerQuarterNote: music.initialTempo.ticksPerQuarterNote,
 		};
 		binMID.writeRecord(recordTypes.mthd, mthd);
-		debug('ticksPerQuarterNote:', mthd.ticksPerQuarterNote);
 
 		let allWarnings = [];
 
 		if (outTempo) {
+			debug(`Adding initial tempo event: `
+			+ `${music.initialTempo.usPerQuarterNote.toFixed(2)} µs/qn, `
+			+ `${music.initialTempo.ticksPerQuarterNote} t/qn, `
+			+ `${music.initialTempo.usPerTick.toFixed(2)} µs/t`);
 			// There was no initial tempo event, and the song starts with a
 			// nonstandard tempo, so set that as an initial event now.
 			pattern.tracks[0].events.unshift(music.initialTempo);
+		} else {
+			debug('Not adding any extra tempo events');
 		}
 
 		// Run through each track and write it as an MTrk block to the .mid file.

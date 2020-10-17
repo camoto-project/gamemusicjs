@@ -241,7 +241,11 @@ class Music_IMF_IDSoftware_Common extends MusicHandler
 
 		// Remove any tempo events and adjust timing so the song will play at a
 		// fixed speed.
-		events = UtilMusic.fixedTempo(events, 1000000 / this.getTempo());
+		events = UtilMusic.fixedTempo(
+			events,
+			music.initialTempo,
+			1000000 / this.getTempo()
+		);
 
 		const { oplData, warnings } = UtilOPL.generateOPL(
 			events,
