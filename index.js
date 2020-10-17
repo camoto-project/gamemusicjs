@@ -29,6 +29,7 @@ const fileTypes = [
 	// These file formats all have signatures so the autodetection is
 	// fast and they are listed first.
 	require('./formats/mus-dro-dosbox-v1.js'),
+	require('./formats/mus-mid-type1.js'),
 
 	// These formats require enumeration, sometimes all the way to the
 	// end of the file, so they are next.
