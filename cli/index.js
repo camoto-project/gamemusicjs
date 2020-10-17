@@ -100,9 +100,18 @@ class Operations
 	list(params) {
 		const debug = Debug.extend('list');
 
-		const trackCount = this.music.trackConfig.length;
-		process.stdout.write(chalk`{green.bold ${trackCount}} tracks.\n`);
+		const defaultPrint = Object.keys(params).length === 0;
+		let print = {
+			events: defaultPrint,
+			trackConfig: defaultPrint,
+			patches: defaultPrint,
+		};
 
+		print.events = print.events || params.events;
+		print.trackConfig = print.trackConfig || params.trackcfg;
+		print.patches = print.patches || params.patches;
+
+		const trackCount = this.music.trackConfig.length;
 		let t = 0;
 
 		function printEvents(cachedEvents) {
@@ -190,44 +199,52 @@ class Operations
 			}
 		}
 
-		for (const pat of this.music.patterns) {
-			let events = [];
-			GameMusic.UtilMusic.mergeTracks(events, pat.tracks);
+		if (print.events) {
+			process.stdout.write(chalk`{green.bold ${trackCount}} tracks.\n`);
 
-			t = 0;
-			let cachedEvents = [];
-			for (const ev of events) {
-				if (ev.type === Music.DelayEvent) {
-					if (cachedEvents.length) {
-						printEvents(cachedEvents);
-						cachedEvents = [];
+			for (const pat of this.music.patterns) {
+				let events = [];
+				GameMusic.UtilMusic.mergeTracks(events, pat.tracks);
+
+				t = 0;
+				let cachedEvents = [];
+				for (const ev of events) {
+					if (ev.type === Music.DelayEvent) {
+						if (cachedEvents.length) {
+							printEvents(cachedEvents);
+							cachedEvents = [];
+						}
+						t += ev.ticks;
+						continue;
 					}
-					t += ev.ticks;
-					continue;
+					cachedEvents.push(ev);
 				}
-				cachedEvents.push(ev);
-			}
-			if (cachedEvents.length) {
-				printEvents(cachedEvents);
+				if (cachedEvents.length) {
+					printEvents(cachedEvents);
+				}
 			}
 		}
 
-		process.stdout.write('\n');
-		for (const t in this.music.trackConfig) {
-			const tc = this.music.trackConfig[t];
-			const channelTitle = `${Music.ChannelType.toString(tc.channelType)}-${tc.channelIndex}`;
-			process.stdout.write(
-				chalk`Track {yellow.bold ${t}}: {white.bold ${channelTitle}}\n`
-			);
+		if (print.trackConfig) {
+			process.stdout.write(`\nConfiguration for ${trackCount} tracks:\n`);
+			for (const t in this.music.trackConfig) {
+				const tc = this.music.trackConfig[t];
+				const channelTitle = `${Music.ChannelType.toString(tc.channelType)}-${tc.channelIndex}`;
+				process.stdout.write(
+					chalk`Track {yellow.bold ${t}}: {white.bold ${channelTitle}}\n`
+				);
+			}
 		}
 
-		process.stdout.write('\n');
-		for (const p in this.music.patches) {
-			const patch = this.music.patches[p];
-			const title = patch.title ? chalk`{cyan.bold ${patch.title}}` : chalk`{grey Untitled}`;
-			process.stdout.write(
-				chalk`Patch {yellow.bold ${p}}: {green.bold ${patch}} {grey // }${title}\n`
-			);
+		if (print.patches) {
+			process.stdout.write(`\n${this.music.patches.length} patches:\n`);
+			for (const p in this.music.patches) {
+				const patch = this.music.patches[p];
+				const title = patch.title ? chalk`{cyan.bold ${patch.title}}` : chalk`{grey Untitled}`;
+				process.stdout.write(
+					chalk`Patch {yellow.bold ${p}}: {green.bold ${patch}} {grey // }${title}\n`
+				);
+			}
 		}
 	}
 
@@ -346,6 +363,9 @@ Operations.names = {
 	],
 	dump: [],
 	list: [
+		{ name: 'events', alias: 'e', type: Boolean },
+		{ name: 'trackcfg', alias: 'g', type: Boolean },
+		{ name: 'patches', alias: 'i', type: Boolean },
 		{ name: 'channel', alias: 'c' },
 		{ name: 'pattern', alias: 'p' },
 		{ name: 'track',   alias: 't' },
