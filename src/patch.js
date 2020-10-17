@@ -139,6 +139,8 @@ class PatchOPL extends Patch {
 
 class PatchMIDI extends Patch {
 	constructor(params = {}) {
+		super(params);
+
 		this.midiBank = params.midiBank || 0;
 		this.midiPatch = params.midiPatch || 0;
 	}
@@ -160,6 +162,8 @@ class PatchMIDI extends Patch {
 
 class PatchPCM extends Patch {
 	constructor(params = {}) {
+		super(params);
+
 		this.sampleRate = params.sampleRate || 8000;
 	}
 
