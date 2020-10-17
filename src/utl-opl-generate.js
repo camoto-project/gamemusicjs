@@ -153,7 +153,8 @@ function generateOPL(events, patches, trackConfig)
 						break;
 
 					default:
-						throw new Error(`ConfigurationEvent option ${ev.option} not implemented in eventsToOPL()`);
+						warnings.push(`ConfigurationEvent option ${ConfigurationEvent.optionNameToString(ev.option)} not implemented in generateOPL().`);
+						break;
 				}
 				break;
 
@@ -288,7 +289,7 @@ function generateOPL(events, patches, trackConfig)
 				break;
 
 			default:
-				throw new Error(`Events of type ${ev.type} not implemented in eventsToOPL()`);
+				throw new Error(`Events of type ${ev.type} not implemented in generateOPL().`);
 		}
 	}
 	// In case there were events with no final delay, do one final reg write.
