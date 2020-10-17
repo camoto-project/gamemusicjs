@@ -61,30 +61,31 @@ class UtilMusic
 				throw new Error('fnGetTrackConfig failed to return a track index.');
 			}
 			if (!pattern.tracks[tc.trackIndex]) {
-				pattern.tracks[tc.trackIndex] = {
-					absTimeLastEvent: 0,
-					events: [],
-				};
+				pattern.tracks[tc.trackIndex] = new Music.Track({
+					custom: {
+						absTimeLastEvent: 0,
+					},
+				});
 				trackConfig[tc.trackIndex] = tc;
 			}
 
 			let track = pattern.tracks[tc.trackIndex];
 
-			const eventPreDelay = absTime - track.absTimeLastEvent;
+			const eventPreDelay = absTime - track.custom.absTimeLastEvent;
 			if (eventPreDelay) {
 				track.events.push(new Music.DelayEvent({ticks: eventPreDelay}));
 			}
 			//let cpEvent = ev.clone();
 			track.events.push(ev);
 
-			track.absTimeLastEvent = absTime;
+			track.custom.absTimeLastEvent = absTime;
 		}
 
 		// Tidy up.
 		let cleanTracks = [], cleanTrackConfig = [];
 		for (let idxTrack in pattern.tracks) {
 			if (!pattern.tracks[idxTrack]) continue;
-			delete pattern.tracks[idxTrack].absTimeLastEvent;
+			delete pattern.tracks[idxTrack].custom.absTimeLastEvent;
 			cleanTracks.push(pattern.tracks[idxTrack]);
 			cleanTrackConfig.push(trackConfig[idxTrack]);
 		}
