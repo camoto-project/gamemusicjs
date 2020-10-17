@@ -45,9 +45,12 @@ function generateMIDI(events, patches, trackConfig)
 
 			case Music.ConfigurationEvent:
 				switch (ev.option) {
-					default:
-						warnings.push(`ConfigurationEvent option ${ConfigurationEvent.optionNameToString(ev.option)} not implemented in generateOPL().`);
+					default: {
+						const name = ConfigurationEvent.optionNameToString(ev.option);
+						warnings.push(`ConfigurationEvent option ${name} not implemented `
+							+ `in generateOPL().`);
 						break;
+					}
 				}
 				break;
 
@@ -56,6 +59,23 @@ function generateMIDI(events, patches, trackConfig)
 					type: 'delay',
 					delay: ev.ticks,
 				});
+				break;
+
+			case Music.EffectEvent:
+				if (ev.pitchbend !== undefined) {
+					midiEvents.push({
+						type: 'pitchbend',
+						pitchbend: 8192 + Math.round(ev.pitchbend * 8192), // 0..16383
+						channel: trackConfig.channelIndex,
+					});
+				}
+				if (ev.volume !== undefined) {
+					midiEvents.push({
+						type: 'channelPressure',
+						pressure: Math.round(ev.volume * 127),
+						channel: trackConfig.channelIndex,
+					});
+				}
 				break;
 
 			case Music.NoteOnEvent: {

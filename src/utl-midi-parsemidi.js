@@ -89,6 +89,16 @@ function parseMIDI(midiEvents, patches, lastTempo)
 		return p;
 	}
 
+	function forEachChannel(channel, cb) {
+		// Figure out what track we put the event on.
+		for (let idxTrack = 0; idxTrack < tracks.length; idxTrack++) {
+			if (!tracks[idxTrack]) continue;
+			if (tracks[idxTrack].channel === channel) {
+				if (cb(idxTrack)) break;
+			}
+		}
+	}
+
 	for (const mev of midiEvents) {
 		switch (mev.type) {
 			case 'delay':
@@ -144,31 +154,45 @@ function parseMIDI(midiEvents, patches, lastTempo)
 				}
 
 			case 'noteOff':
-				// Figure out what track we put the event on.
-				for (let t = 0; t < tracks.length; t++) {
-					if (!tracks[t]) continue;
-					if (
-						(tracks[t].channel === mev.channel)
-						&& (tracks[t].note === mev.note)
-					) {
-						events.push(new Music.NoteOffEvent({
-							custom: {
-								midiChannelIndex: mev.channel,
-								subtrack: t,
-							},
-						}));
-						tracks[t].note = null;
-						break;
-					}
-				}
+				forEachChannel(mev.channel, idxTrack => {
+					if (tracks[idxTrack].note !== mev.note) return false;
+
+					events.push(new Music.NoteOffEvent({
+						custom: {
+							midiChannelIndex: mev.channel,
+							subtrack: idxTrack,
+						},
+					}));
+					tracks[idxTrack].note = null;
+
+					return true;
+				});
 				break;
 
 			case 'notePressure':
-debug('TODO');
+				forEachChannel(mev.channel, idxTrack => {
+					if (tracks[idxTrack].note !== mev.note) return false;
+
+					events.push(new Music.EffectEvent({
+						volume: mev.pressure / 127,
+						custom: {
+							midiChannelIndex: mev.channel,
+							subtrack: idxTrack,
+						},
+					}));
+
+					return true;
+				});
 				break;
 
 			case 'controller':
-debug('TODO');
+				// These controller numbers are ignored.
+				if ([
+					 1, // Modulation MSB
+					33, // Modulation LSB
+				].includes(mev.controller)) break;
+
+				debug(`TODO: controller ${mev.controller} = ${mev.value}`);
 				break;
 
 			case 'patch':
@@ -176,11 +200,27 @@ debug('TODO');
 				break;
 
 			case 'channelPressure':
-debug('TODO');
+				forEachChannel(mev.channel, idxTrack => {
+					events.push(new Music.EffectEvent({
+						volume: mev.pressure / 127,
+						custom: {
+							midiChannelIndex: mev.channel,
+							subtrack: idxTrack,
+						},
+					}));
+				});
 				break;
 
 			case 'pitchbend':
-debug('TODO');
+				forEachChannel(mev.channel, idxTrack => {
+					events.push(new Music.EffectEvent({
+						pitchbend: (mev.pitchbend / 8192) - 1, // -8192..8181
+						custom: {
+							midiChannelIndex: mev.channel,
+							subtrack: idxTrack,
+						},
+					}));
+				});
 				break;
 
 			case 'meta':

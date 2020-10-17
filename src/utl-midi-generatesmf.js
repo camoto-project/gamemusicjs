@@ -72,12 +72,22 @@ function generateSMF(midiEvents, options = { useRunningStatus: true })
 		switch (mev.type) {
 
 			case 'channelPressure':
+				if (mev.channel === undefined) {
+					debug('Tried to write MIDI-event with no channel:', mev);
+					throw new Error(`Tried to write MIDI-event with no channel.`);
+				}
+
 				flushDelay();
 				writeCommand(0xD0, mev.channel);
 				bin.write(RecordType.int.u8, mev.pressure);
 				break;
 
 			case 'controller':
+				if (mev.channel === undefined) {
+					debug('Tried to write MIDI-event with no channel:', mev);
+					throw new Error(`Tried to write MIDI-event with no channel.`);
+				}
+
 				flushDelay();
 				writeCommand(0xB0, mev.channel);
 				bin.write(RecordType.int.u8, mev.controller);
@@ -99,6 +109,11 @@ function generateSMF(midiEvents, options = { useRunningStatus: true })
 				break;
 
 			case 'noteOff': {
+				if (mev.channel === undefined) {
+					debug('Tried to write MIDI-event with no channel:', mev);
+					throw new Error(`Tried to write MIDI-event with no channel.`);
+				}
+
 				flushDelay();
 				let velocity;
 				if (options.useRunningStatus && (lastCommand === (0x90 | mev.channel))) {
@@ -115,6 +130,11 @@ function generateSMF(midiEvents, options = { useRunningStatus: true })
 			}
 
 			case 'noteOn':
+				if (mev.channel === undefined) {
+					debug('Tried to write MIDI-event with no channel:', mev);
+					throw new Error(`Tried to write MIDI-event with no channel.`);
+				}
+
 				flushDelay();
 				writeCommand(0x90, mev.channel);
 				bin.write(RecordType.int.u8, mev.note);
@@ -122,6 +142,11 @@ function generateSMF(midiEvents, options = { useRunningStatus: true })
 				break;
 
 			case 'notePressure':
+				if (mev.channel === undefined) {
+					debug('Tried to write MIDI-event with no channel:', mev);
+					throw new Error(`Tried to write MIDI-event with no channel.`);
+				}
+
 				flushDelay();
 				writeCommand(0xA0, mev.channel);
 				bin.write(RecordType.int.u8, mev.pressure);
@@ -129,16 +154,26 @@ function generateSMF(midiEvents, options = { useRunningStatus: true })
 				break;
 
 			case 'patch':
+				if (mev.channel === undefined) {
+					debug('Tried to write MIDI-event with no channel:', mev);
+					throw new Error(`Tried to write MIDI-event with no channel.`);
+				}
+
 				flushDelay();
 				writeCommand(0xC0, mev.channel);
 				bin.write(RecordType.int.u8, mev.patch);
 				break;
 
 			case 'pitchbend':
+				if (mev.channel === undefined) {
+					debug('Tried to write MIDI-event with no channel:', mev);
+					throw new Error(`Tried to write MIDI-event with no channel.`);
+				}
+
 				flushDelay();
 				writeCommand(0xE0, mev.channel);
-				bin.write(RecordType.int.u8, mev.lsb);
-				bin.write(RecordType.int.u8, mev.msb);
+				bin.write(RecordType.int.u8, mev.pitchbend & 0x7F);
+				bin.write(RecordType.int.u8, (mev.pitchbend >> 7) & 0x7F);
 				break;
 
 			case 'sysex':

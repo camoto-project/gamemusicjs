@@ -262,5 +262,6 @@ Music.DelayEvent = require('./event-delay.js');
 Music.NoteOffEvent = require('./event-noteoff.js');
 Music.NoteOnEvent = require('./event-noteon.js');
 Music.TempoEvent = require('./event-tempo.js');
+Music.EffectEvent = require('./event-effect.js');
 
 Music.Patch = require('./patch.js');

@@ -131,14 +131,16 @@ function parseSMF(midiData)
 				});
 				break;
 
-			case 0xE0:
+			case 0xE0: {
+				const lsb = buffer.read(RecordType.int.u8) & 0x7F;
+				const msb = buffer.read(RecordType.int.u8) & 0x7F;
 				midiEvents.push({
 					type: 'pitchbend',
 					channel: channel,
-					lsb: buffer.read(RecordType.int.u8),
-					msb: buffer.read(RecordType.int.u8),
+					pitchbend: (msb << 7) | lsb, // 0..16383
 				});
 				break;
+			}
 
 			case 0xF0: {
 				let ev = {};
