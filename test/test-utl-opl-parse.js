@@ -24,8 +24,6 @@ const UtilOPL = require('../src/utl-opl.js');
 
 const TestUtil = require('./util.js');
 
-const defaultTempo = new Music.TempoEvent({usPerTick: 1000});
-
 describe('parseOPL() tests', function() {
 
 	describe('should handle global registers', function() {
@@ -40,28 +38,25 @@ describe('parseOPL() tests', function() {
 				{delay: 10},
 				{reg: 0x01, val: 0x00},
 				{delay: 10},
-			], defaultTempo);
+			]);
 
 			assert.ok(events[0]);
-			assert.equal(events[0].usPerTick, 1000, 'Wrong tempo');
+			assert.equal(events[0].type, Music.ConfigurationEvent, 'Wrong event type');
+			assert.equal(events[0].option, Music.ConfigurationEvent.Option.EnableWaveSel, 'Wrong ConfigurationEvent option');
+			assert.equal(events[0].value, true, 'Wrong ConfigurationEvent value');
 
 			assert.ok(events[1]);
-			assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
-			assert.equal(events[1].option, Music.ConfigurationEvent.Option.EnableWaveSel, 'Wrong ConfigurationEvent option');
-			assert.equal(events[1].value, true, 'Wrong ConfigurationEvent value');
+			assert.equal(events[1].ticks, 10 + 10, 'Wrong delay value');
 
 			assert.ok(events[2]);
-			assert.equal(events[2].ticks, 10 + 10, 'Wrong delay value');
+			assert.equal(events[2].type, Music.ConfigurationEvent, 'Wrong event type');
+			assert.equal(events[2].option, Music.ConfigurationEvent.Option.EnableWaveSel, 'Wrong ConfigurationEvent option');
+			assert.equal(events[2].value, false, 'Wrong ConfigurationEvent value');
 
 			assert.ok(events[3]);
-			assert.equal(events[3].type, Music.ConfigurationEvent, 'Wrong event type');
-			assert.equal(events[3].option, Music.ConfigurationEvent.Option.EnableWaveSel, 'Wrong ConfigurationEvent option');
-			assert.equal(events[3].value, false, 'Wrong ConfigurationEvent value');
+			assert.equal(events[3].ticks, 10 + 10, 'Wrong delay value');
 
-			assert.ok(events[4]);
-			assert.equal(events[4].ticks, 10 + 10, 'Wrong delay value');
-
-			assert.equal(events.length, 5, 'Incorrect number of events produced');
+			assert.equal(events.length, 4, 'Incorrect number of events produced');
 		});
 
 		it('should handle 0x105/enableOPL3', function() {
@@ -69,22 +64,22 @@ describe('parseOPL() tests', function() {
 				{reg: 0x105, val: 0x01},
 				{delay: 10},
 				{reg: 0x105, val: 0x00},
-			], defaultTempo);
+			]);
+
+			assert.ok(events[0]);
+			assert.equal(events[0].type, Music.ConfigurationEvent, 'Wrong event type');
+			assert.equal(events[0].option, Music.ConfigurationEvent.Option.EnableOPL3, 'Wrong ConfigurationEvent option');
+			assert.equal(events[0].value, true, 'Wrong ConfigurationEvent value');
 
 			assert.ok(events[1]);
-			assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
-			assert.equal(events[1].option, Music.ConfigurationEvent.Option.EnableOPL3, 'Wrong ConfigurationEvent option');
-			assert.equal(events[1].value, true, 'Wrong ConfigurationEvent value');
+			assert.equal(events[1].ticks, 10, 'Wrong delay value');
 
 			assert.ok(events[2]);
-			assert.equal(events[2].ticks, 10, 'Wrong delay value');
+			assert.equal(events[2].type, Music.ConfigurationEvent, 'Wrong event type');
+			assert.equal(events[2].option, Music.ConfigurationEvent.Option.EnableOPL3, 'Wrong ConfigurationEvent option');
+			assert.equal(events[2].value, false, 'Wrong ConfigurationEvent value');
 
-			assert.ok(events[3]);
-			assert.equal(events[3].type, Music.ConfigurationEvent, 'Wrong event type');
-			assert.equal(events[3].option, Music.ConfigurationEvent.Option.EnableOPL3, 'Wrong ConfigurationEvent option');
-			assert.equal(events[3].value, false, 'Wrong ConfigurationEvent value');
-
-			assert.equal(events.length, 4, 'Incorrect number of events produced');
+			assert.equal(events.length, 3, 'Incorrect number of events produced');
 		});
 
 		it('should handle 0xBD/tremolo', function() {
@@ -92,22 +87,22 @@ describe('parseOPL() tests', function() {
 				{reg: 0xBD, val: 0x80},
 				{delay: 10},
 				{reg: 0xBD, val: 0x00},
-			], defaultTempo);
+			]);
+
+			assert.ok(events[0]);
+			assert.equal(events[0].type, Music.ConfigurationEvent, 'Wrong event type');
+			assert.equal(events[0].option, Music.ConfigurationEvent.Option.EnableDeepTremolo, 'Wrong ConfigurationEvent option');
+			assert.equal(events[0].value, true, 'Wrong ConfigurationEvent value');
 
 			assert.ok(events[1]);
-			assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
-			assert.equal(events[1].option, Music.ConfigurationEvent.Option.EnableDeepTremolo, 'Wrong ConfigurationEvent option');
-			assert.equal(events[1].value, true, 'Wrong ConfigurationEvent value');
+			assert.equal(events[1].ticks, 10, 'Wrong delay value');
 
 			assert.ok(events[2]);
-			assert.equal(events[2].ticks, 10, 'Wrong delay value');
+			assert.equal(events[2].type, Music.ConfigurationEvent, 'Wrong event type');
+			assert.equal(events[2].option, Music.ConfigurationEvent.Option.EnableDeepTremolo, 'Wrong ConfigurationEvent option');
+			assert.equal(events[2].value, false, 'Wrong ConfigurationEvent value');
 
-			assert.ok(events[3]);
-			assert.equal(events[3].type, Music.ConfigurationEvent, 'Wrong event type');
-			assert.equal(events[3].option, Music.ConfigurationEvent.Option.EnableDeepTremolo, 'Wrong ConfigurationEvent option');
-			assert.equal(events[3].value, false, 'Wrong ConfigurationEvent value');
-
-			assert.equal(events.length, 4, 'Incorrect number of events produced');
+			assert.equal(events.length, 3, 'Incorrect number of events produced');
 		});
 
 		it('should handle 0xBD/vibrato', function() {
@@ -115,22 +110,22 @@ describe('parseOPL() tests', function() {
 				{reg: 0xBD, val: 0x40},
 				{delay: 10},
 				{reg: 0xBD, val: 0x00},
-			], defaultTempo);
+			]);
+
+			assert.ok(events[0]);
+			assert.equal(events[0].type, Music.ConfigurationEvent, 'Wrong event type');
+			assert.equal(events[0].option, Music.ConfigurationEvent.Option.EnableDeepVibrato, 'Wrong ConfigurationEvent option');
+			assert.equal(events[0].value, true, 'Wrong ConfigurationEvent value');
 
 			assert.ok(events[1]);
-			assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
-			assert.equal(events[1].option, Music.ConfigurationEvent.Option.EnableDeepVibrato, 'Wrong ConfigurationEvent option');
-			assert.equal(events[1].value, true, 'Wrong ConfigurationEvent value');
+			assert.equal(events[1].ticks, 10, 'Wrong delay value');
 
 			assert.ok(events[2]);
-			assert.equal(events[2].ticks, 10, 'Wrong delay value');
+			assert.equal(events[2].type, Music.ConfigurationEvent, 'Wrong event type');
+			assert.equal(events[2].option, Music.ConfigurationEvent.Option.EnableDeepVibrato, 'Wrong ConfigurationEvent option');
+			assert.equal(events[2].value, false, 'Wrong ConfigurationEvent value');
 
-			assert.ok(events[3]);
-			assert.equal(events[3].type, Music.ConfigurationEvent, 'Wrong event type');
-			assert.equal(events[3].option, Music.ConfigurationEvent.Option.EnableDeepVibrato, 'Wrong ConfigurationEvent option');
-			assert.equal(events[3].value, false, 'Wrong ConfigurationEvent value');
-
-			assert.equal(events.length, 4, 'Incorrect number of events produced');
+			assert.equal(events.length, 3, 'Incorrect number of events produced');
 		});
 
 		it('should handle 0xBD/rhythm', function() {
@@ -138,22 +133,22 @@ describe('parseOPL() tests', function() {
 				{reg: 0xBD, val: 0x20},
 				{delay: 10},
 				{reg: 0xBD, val: 0x00},
-			], defaultTempo);
+			]);
+
+			assert.ok(events[0]);
+			assert.equal(events[0].type, Music.ConfigurationEvent, 'Wrong event type');
+			assert.equal(events[0].option, Music.ConfigurationEvent.Option.EnableRhythm, 'Wrong ConfigurationEvent option');
+			assert.equal(events[0].value, true, 'Wrong ConfigurationEvent value');
 
 			assert.ok(events[1]);
-			assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
-			assert.equal(events[1].option, Music.ConfigurationEvent.Option.EnableRhythm, 'Wrong ConfigurationEvent option');
-			assert.equal(events[1].value, true, 'Wrong ConfigurationEvent value');
+			assert.equal(events[1].ticks, 10, 'Wrong delay value');
 
 			assert.ok(events[2]);
-			assert.equal(events[2].ticks, 10, 'Wrong delay value');
+			assert.equal(events[2].type, Music.ConfigurationEvent, 'Wrong event type');
+			assert.equal(events[2].option, Music.ConfigurationEvent.Option.EnableRhythm, 'Wrong ConfigurationEvent option');
+			assert.equal(events[2].value, false, 'Wrong ConfigurationEvent value');
 
-			assert.ok(events[3]);
-			assert.equal(events[3].type, Music.ConfigurationEvent, 'Wrong event type');
-			assert.equal(events[3].option, Music.ConfigurationEvent.Option.EnableRhythm, 'Wrong ConfigurationEvent option');
-			assert.equal(events[3].value, false, 'Wrong ConfigurationEvent value');
-
-			assert.equal(events.length, 4, 'Incorrect number of events produced');
+			assert.equal(events.length, 3, 'Incorrect number of events produced');
 		});
 
 	}); // global registers
@@ -183,7 +178,7 @@ describe('parseOPL() tests', function() {
 					{reg: 0xE0, val: 0xFF},
 					{reg: 0xC0, val: 0xFF},
 					{reg: 0xB0, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -212,7 +207,7 @@ describe('parseOPL() tests', function() {
 					{reg: 0xE0, val: 0xFF},
 					{reg: 0xC0, val: 0xFF},
 					{reg: 0xB0, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -241,7 +236,7 @@ describe('parseOPL() tests', function() {
 					{reg: 0xE0, val: 0xFF},
 					{reg: 0xC0, val: 0xFF},
 					{reg: 0xB0, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -270,7 +265,7 @@ describe('parseOPL() tests', function() {
 					{reg: 0xE0, val: 0xFF},
 					{reg: 0xC0, val: 0xFF},
 					{reg: 0xB0, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -299,7 +294,7 @@ describe('parseOPL() tests', function() {
 					{reg: 0xE0, val: 0xFF},
 					{reg: 0xC0, val: 0xFF},
 					{reg: 0xB0, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -328,7 +323,7 @@ describe('parseOPL() tests', function() {
 					{reg: 0xE0, val: 0xFF},
 					{reg: 0xC0, val: 0xFF},
 					{reg: 0xB0, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -357,7 +352,7 @@ describe('parseOPL() tests', function() {
 					{reg: 0xE0, val: 0xFF},
 					{reg: 0xC0, val: 0xFF},
 					{reg: 0xB0, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -386,7 +381,7 @@ describe('parseOPL() tests', function() {
 					{reg: 0xE0, val: 0xFF},
 					{reg: 0xC0, val: 0xFF},
 					{reg: 0xB0, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -415,7 +410,7 @@ describe('parseOPL() tests', function() {
 					{reg: 0xE0, val: 0xFF},
 					{reg: 0xC0, val: 0xFF},
 					{reg: 0xB0, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -444,7 +439,7 @@ describe('parseOPL() tests', function() {
 					{reg: 0xE0, val: 0xFF},
 					{reg: 0xC0, val: 0xFF},
 					{reg: 0xB0, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -473,7 +468,7 @@ describe('parseOPL() tests', function() {
 					{reg: 0xE0, val: 0xFF},
 					{reg: 0xC0, val: 0xFF},
 					{reg: 0xB0, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -502,7 +497,7 @@ describe('parseOPL() tests', function() {
 					{reg: 0xE0, val: 0xF9},
 					{reg: 0xC0, val: 0xFF},
 					{reg: 0xB0, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -519,7 +514,7 @@ describe('parseOPL() tests', function() {
 					{delay: 10},
 					{reg: 0x60, val: 0x1F},
 					{reg: 0xB0, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -536,7 +531,7 @@ describe('parseOPL() tests', function() {
 					{delay: 10},
 					{reg: 0x63, val: 0x1F},
 					{reg: 0xB0, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -553,7 +548,7 @@ describe('parseOPL() tests', function() {
 					{delay: 10},
 					{reg: 0x61, val: 0x1F},
 					{reg: 0xB1, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -570,7 +565,7 @@ describe('parseOPL() tests', function() {
 					{delay: 10},
 					{reg: 0x64, val: 0x1F},
 					{reg: 0xB1, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -587,7 +582,7 @@ describe('parseOPL() tests', function() {
 					{delay: 10},
 					{reg: 0x72, val: 0x1F},
 					{reg: 0xB8, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -604,7 +599,7 @@ describe('parseOPL() tests', function() {
 					{delay: 10},
 					{reg: 0x75, val: 0x1F},
 					{reg: 0xB8, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -622,7 +617,7 @@ describe('parseOPL() tests', function() {
 					{delay: 10},
 					{reg: 0x160, val: 0x1F},
 					{reg: 0x1B0, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -640,7 +635,7 @@ describe('parseOPL() tests', function() {
 					{delay: 10},
 					{reg: 0x163, val: 0x1F},
 					{reg: 0x1B0, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -658,7 +653,7 @@ describe('parseOPL() tests', function() {
 					{delay: 10},
 					{reg: 0x161, val: 0x1F},
 					{reg: 0x1B1, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -676,7 +671,7 @@ describe('parseOPL() tests', function() {
 					{delay: 10},
 					{reg: 0x164, val: 0x1F},
 					{reg: 0x1B1, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -693,7 +688,7 @@ describe('parseOPL() tests', function() {
 					{delay: 10},
 					{reg: 0x172, val: 0x1F},
 					{reg: 0x1B8, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -710,7 +705,7 @@ describe('parseOPL() tests', function() {
 					{delay: 10},
 					{reg: 0x175, val: 0x1F},
 					{reg: 0x1B8, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -729,7 +724,7 @@ describe('parseOPL() tests', function() {
 					{delay: 10},
 					{reg: 0x6B, val: 0x1F},
 					{reg: 0xB0, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -748,7 +743,7 @@ describe('parseOPL() tests', function() {
 					{delay: 10},
 					{reg: 0x69, val: 0x1F},
 					{reg: 0xB1, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -767,7 +762,7 @@ describe('parseOPL() tests', function() {
 					{delay: 10},
 					{reg: 0x16B, val: 0x1F},
 					{reg: 0x1B0, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -792,7 +787,7 @@ describe('parseOPL() tests', function() {
 					{reg: 0x160 + 0x0A, val: 0x4F},
 					{reg: 0x160 + 0x0D, val: 0x5F},
 					{reg: 0x1B2, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -830,7 +825,7 @@ describe('parseOPL() tests', function() {
 					{reg: 0xE0, val: 0xFF},
 					{reg: 0xC0, val: 0xF3},
 					{reg: 0xB0, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -859,7 +854,7 @@ describe('parseOPL() tests', function() {
 					{reg: 0xE0, val: 0xFF},
 					{reg: 0xC0, val: 0xFE},
 					{reg: 0xB0, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -888,7 +883,7 @@ describe('parseOPL() tests', function() {
 					{reg: 0x1C0, val: 0xF3},
 					{reg: 0x1E0, val: 0xFF},
 					{reg: 0x1B0, val: 0x3F},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
@@ -937,23 +932,23 @@ describe('parseOPL() tests', function() {
 					{reg: 0xB0, val: 0x25},
 					{delay: 10},
 					{reg: 0xB0, val: 0x05},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.ok(patches[1], 'Failed to supply patch 1');
 				assert.equal(patches.length, 2, 'Wrong number of patches read');
 
-				assert.ok(events[1], 'Missing event');
-				assert.equal(events[1].type, Music.NoteOnEvent, 'Wrong event type');
-				assert.equal(events[1].instrument, 0);
+				assert.ok(events[0], 'Missing event');
+				assert.equal(events[0].type, Music.NoteOnEvent, 'Wrong event type');
+				assert.equal(events[0].instrument, 0);
 
-				assert.ok(events[5], 'Missing event');
-				assert.equal(events[5].type, Music.NoteOnEvent, 'Wrong event type');
-				assert.equal(events[5].instrument, 1);
+				assert.ok(events[4], 'Missing event');
+				assert.equal(events[4].type, Music.NoteOnEvent, 'Wrong event type');
+				assert.equal(events[4].instrument, 1);
 
-				assert.ok(events[9], 'Missing event');
-				assert.equal(events[9].type, Music.NoteOnEvent, 'Wrong event type');
-				assert.equal(events[9].instrument, 0);
+				assert.ok(events[8], 'Missing event');
+				assert.equal(events[8].type, Music.NoteOnEvent, 'Wrong event type');
+				assert.equal(events[8].instrument, 0);
 			});
 
 			it('should ignore outputLevel and use it as velocity', function() {
@@ -978,25 +973,25 @@ describe('parseOPL() tests', function() {
 					{reg: 0xB0, val: 0x25},
 					{delay: 10},
 					{reg: 0xB0, val: 0x05},
-				], defaultTempo);
+				]);
 
 				assert.ok(patches[0], 'Failed to supply patch 0');
 				assert.equal(patches.length, 1, 'Wrong number of patches read');
 
-				assert.ok(events[1], 'Missing event');
-				assert.equal(events[1].type, Music.NoteOnEvent, 'Wrong event type');
-				assert.equal(events[1].velocity, 1);
-				assert.equal(events[1].instrument, 0);
+				assert.ok(events[0], 'Missing event');
+				assert.equal(events[0].type, Music.NoteOnEvent, 'Wrong event type');
+				assert.equal(events[0].velocity, 1);
+				assert.equal(events[0].instrument, 0);
 
-				assert.ok(events[5], 'Missing event');
-				assert.equal(events[5].type, Music.NoteOnEvent, 'Wrong event type');
-				TestUtil.almostEqual(events[5].velocity, 0.4716);
-				assert.equal(events[5].instrument, 0);
+				assert.ok(events[4], 'Missing event');
+				assert.equal(events[4].type, Music.NoteOnEvent, 'Wrong event type');
+				TestUtil.almostEqual(events[4].velocity, 0.4716);
+				assert.equal(events[4].instrument, 0);
 
-				assert.ok(events[9], 'Missing event');
-				assert.equal(events[9].type, Music.NoteOnEvent, 'Wrong event type');
-				assert.equal(events[9].velocity, 0);
-				assert.equal(events[9].instrument, 0);
+				assert.ok(events[8], 'Missing event');
+				assert.equal(events[8].type, Music.NoteOnEvent, 'Wrong event type');
+				assert.equal(events[8].velocity, 0);
+				assert.equal(events[8].instrument, 0);
 			});
 
 		}); // patch handling
@@ -1015,20 +1010,20 @@ describe('parseOPL() tests', function() {
 			{reg: 0xB0, val: 0x38},
 			{delay: 10},
 			{reg: 0xB0, val: 0x18},
-		], defaultTempo);
+		]);
 
-		assert.ok(events[1], 'Missing event');
-		assert.equal(events[1].type, Music.NoteOnEvent, 'Wrong event type');
-		TestUtil.almostEqual(events[1].freq, 169.928);
-		TestUtil.almostEqual(events[1].velocity, 1);
+		assert.ok(events[0], 'Missing event');
+		assert.equal(events[0].type, Music.NoteOnEvent, 'Wrong event type');
+		TestUtil.almostEqual(events[0].freq, 169.928);
+		TestUtil.almostEqual(events[0].velocity, 1);
+
+		assert.ok(events[1]);
+		assert.equal(events[1].ticks, 10, 'Wrong delay value');
 
 		assert.ok(events[2]);
-		assert.equal(events[2].ticks, 10, 'Wrong delay value');
+		assert.equal(events[2].type, Music.NoteOffEvent, 'Wrong event type');
 
-		assert.ok(events[3]);
-		assert.equal(events[3].type, Music.NoteOffEvent, 'Wrong event type');
-
-		assert.equal(events.length, 4, 'Incorrect number of events produced');
+		assert.equal(events.length, 3, 'Incorrect number of events produced');
 
 		assert.ok(patches[0], 'Failed to supply patch');
 		assert.equal(patches[0].slot[0].enableTremolo, 0);
@@ -1042,19 +1037,19 @@ describe('parseOPL() tests', function() {
 			{reg: 0xB0, val: 0x20},
 			{delay: 10},
 			{reg: 0xB0, val: 0x00},
-		], defaultTempo);
+		]);
 
-		assert.ok(events[1], 'Missing event');
-		assert.equal(events[1].type, Music.NoteOnEvent, 'Wrong event type');
-		TestUtil.almostEqual(events[1].freq, 0);
+		assert.ok(events[0], 'Missing event');
+		assert.equal(events[0].type, Music.NoteOnEvent, 'Wrong event type');
+		TestUtil.almostEqual(events[0].freq, 0);
+
+		assert.ok(events[1]);
+		assert.equal(events[1].ticks, 10, 'Wrong delay value');
 
 		assert.ok(events[2]);
-		assert.equal(events[2].ticks, 10, 'Wrong delay value');
+		assert.equal(events[2].type, Music.NoteOffEvent, 'Wrong event type');
 
-		assert.ok(events[3]);
-		assert.equal(events[3].type, Music.NoteOffEvent, 'Wrong event type');
-
-		assert.equal(events.length, 4, 'Incorrect number of events produced');
+		assert.equal(events.length, 3, 'Incorrect number of events produced');
 	});
 
 	describe('should handle percussive notes', function() {
@@ -1073,22 +1068,22 @@ describe('parseOPL() tests', function() {
 				{reg: 0xBD, val: 0x21},
 				{delay: 10},
 				{reg: 0xBD, val: 0x20},
-			], defaultTempo);
+			]);
 
-			assert.ok(events[1]);
-			assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
-			assert.equal(events[1].option, Music.ConfigurationEvent.Option.EnableRhythm, 'Wrong ConfigurationEvent option');
-			assert.equal(events[1].value, true, 'Wrong ConfigurationEvent value');
+			assert.ok(events[0]);
+			assert.equal(events[0].type, Music.ConfigurationEvent, 'Wrong event type');
+			assert.equal(events[0].option, Music.ConfigurationEvent.Option.EnableRhythm, 'Wrong ConfigurationEvent option');
+			assert.equal(events[0].value, true, 'Wrong ConfigurationEvent value');
 
-			assert.ok(events[2], 'Missing event');
-			assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
-			TestUtil.almostEqual(events[2].freq, 169.928);
-			TestUtil.almostEqual(events[2].velocity, 1);
-			assert.equal(events[2].custom.oplChannelType, Music.ChannelType.OPLR, 'Wrong source OPL channel');
-			assert.equal(events[2].custom.oplChannelIndex, UtilOPL.Rhythm.HH, 'Wrong source OPL channel');
+			assert.ok(events[1], 'Missing event');
+			assert.equal(events[1].type, Music.NoteOnEvent, 'Wrong event type');
+			TestUtil.almostEqual(events[1].freq, 169.928);
+			TestUtil.almostEqual(events[1].velocity, 1);
+			assert.equal(events[1].custom.oplChannelType, Music.ChannelType.OPLR, 'Wrong source OPL channel');
+			assert.equal(events[1].custom.oplChannelIndex, UtilOPL.Rhythm.HH, 'Wrong source OPL channel');
 
-			assert.ok(events[4], 'Missing event');
-			assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
+			assert.ok(events[3], 'Missing event');
+			assert.equal(events[3].type, Music.NoteOffEvent, 'Wrong event type');
 
 			assert.ok(patches[0], 'Failed to supply patch');
 			assert.ok(patches[0].slot[0], 'Slot/operator 0 settings missing from patch');
@@ -1110,22 +1105,22 @@ describe('parseOPL() tests', function() {
 				{reg: 0xBD, val: 0x22},
 				{delay: 10},
 				{reg: 0xBD, val: 0x20},
-			], defaultTempo);
+			]);
 
-			assert.ok(events[1]);
-			assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
-			assert.equal(events[1].option, Music.ConfigurationEvent.Option.EnableRhythm, 'Wrong ConfigurationEvent option');
-			assert.equal(events[1].value, true, 'Wrong ConfigurationEvent value');
+			assert.ok(events[0]);
+			assert.equal(events[0].type, Music.ConfigurationEvent, 'Wrong event type');
+			assert.equal(events[0].option, Music.ConfigurationEvent.Option.EnableRhythm, 'Wrong ConfigurationEvent option');
+			assert.equal(events[0].value, true, 'Wrong ConfigurationEvent value');
 
-			assert.ok(events[2], 'Missing event');
-			assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
-			TestUtil.almostEqual(events[2].freq, 169.928);
-			TestUtil.almostEqual(events[2].velocity, 1);
-			assert.equal(events[2].custom.oplChannelType, Music.ChannelType.OPLR, 'Wrong source OPL channel type');
-			assert.equal(events[2].custom.oplChannelIndex, UtilOPL.Rhythm.CY, 'Wrong source OPL channel index');
+			assert.ok(events[1], 'Missing event');
+			assert.equal(events[1].type, Music.NoteOnEvent, 'Wrong event type');
+			TestUtil.almostEqual(events[1].freq, 169.928);
+			TestUtil.almostEqual(events[1].velocity, 1);
+			assert.equal(events[1].custom.oplChannelType, Music.ChannelType.OPLR, 'Wrong source OPL channel type');
+			assert.equal(events[1].custom.oplChannelIndex, UtilOPL.Rhythm.CY, 'Wrong source OPL channel index');
 
-			assert.ok(events[4], 'Missing event');
-			assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
+			assert.ok(events[3], 'Missing event');
+			assert.equal(events[3].type, Music.NoteOffEvent, 'Wrong event type');
 
 			assert.ok(patches[0], 'Failed to supply patch');
 			assert.ok(patches[0].slot[0], 'Slot/operator 0 settings missing from patch');
@@ -1147,22 +1142,22 @@ describe('parseOPL() tests', function() {
 				{reg: 0xBD, val: 0x24},
 				{delay: 10},
 				{reg: 0xBD, val: 0x20},
-			], defaultTempo);
+			]);
 
-			assert.ok(events[1]);
-			assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
-			assert.equal(events[1].option, Music.ConfigurationEvent.Option.EnableRhythm, 'Wrong ConfigurationEvent option');
-			assert.equal(events[1].value, true, 'Wrong ConfigurationEvent value');
+			assert.ok(events[0]);
+			assert.equal(events[0].type, Music.ConfigurationEvent, 'Wrong event type');
+			assert.equal(events[0].option, Music.ConfigurationEvent.Option.EnableRhythm, 'Wrong ConfigurationEvent option');
+			assert.equal(events[0].value, true, 'Wrong ConfigurationEvent value');
 
-			assert.ok(events[2], 'Missing event');
-			assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
-			TestUtil.almostEqual(events[2].freq, 169.928);
-			TestUtil.almostEqual(events[2].velocity, 1);
-			assert.equal(events[2].custom.oplChannelType, Music.ChannelType.OPLR, 'Wrong source OPL channel type');
-			assert.equal(events[2].custom.oplChannelIndex, UtilOPL.Rhythm.TT, 'Wrong source OPL channel index');
+			assert.ok(events[1], 'Missing event');
+			assert.equal(events[1].type, Music.NoteOnEvent, 'Wrong event type');
+			TestUtil.almostEqual(events[1].freq, 169.928);
+			TestUtil.almostEqual(events[1].velocity, 1);
+			assert.equal(events[1].custom.oplChannelType, Music.ChannelType.OPLR, 'Wrong source OPL channel type');
+			assert.equal(events[1].custom.oplChannelIndex, UtilOPL.Rhythm.TT, 'Wrong source OPL channel index');
 
-			assert.ok(events[4], 'Missing event');
-			assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
+			assert.ok(events[3], 'Missing event');
+			assert.equal(events[3].type, Music.NoteOffEvent, 'Wrong event type');
 
 			assert.ok(patches[0], 'Failed to supply patch');
 			assert.ok(patches[0].slot[0], 'Slot/operator 0 settings missing from patch');
@@ -1184,22 +1179,22 @@ describe('parseOPL() tests', function() {
 				{reg: 0xBD, val: 0x28},
 				{delay: 10},
 				{reg: 0xBD, val: 0x20},
-			], defaultTempo);
+			]);
 
-			assert.ok(events[1]);
-			assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
-			assert.equal(events[1].option, Music.ConfigurationEvent.Option.EnableRhythm, 'Wrong ConfigurationEvent option');
-			assert.equal(events[1].value, true, 'Wrong ConfigurationEvent value');
+			assert.ok(events[0]);
+			assert.equal(events[0].type, Music.ConfigurationEvent, 'Wrong event type');
+			assert.equal(events[0].option, Music.ConfigurationEvent.Option.EnableRhythm, 'Wrong ConfigurationEvent option');
+			assert.equal(events[0].value, true, 'Wrong ConfigurationEvent value');
 
-			assert.ok(events[2], 'Missing event');
-			assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
-			TestUtil.almostEqual(events[2].freq, 169.928);
-			TestUtil.almostEqual(events[2].velocity, 1);
-			assert.equal(events[2].custom.oplChannelType, Music.ChannelType.OPLR, 'Wrong source OPL channel type');
-			assert.equal(events[2].custom.oplChannelIndex, UtilOPL.Rhythm.SD, 'Wrong source OPL channel index');
+			assert.ok(events[1], 'Missing event');
+			assert.equal(events[1].type, Music.NoteOnEvent, 'Wrong event type');
+			TestUtil.almostEqual(events[1].freq, 169.928);
+			TestUtil.almostEqual(events[1].velocity, 1);
+			assert.equal(events[1].custom.oplChannelType, Music.ChannelType.OPLR, 'Wrong source OPL channel type');
+			assert.equal(events[1].custom.oplChannelIndex, UtilOPL.Rhythm.SD, 'Wrong source OPL channel index');
 
-			assert.ok(events[4], 'Missing event');
-			assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
+			assert.ok(events[3], 'Missing event');
+			assert.equal(events[3].type, Music.NoteOffEvent, 'Wrong event type');
 
 			assert.ok(patches[0], 'Failed to supply patch');
 			assert.ok(patches[0].slot[0], 'Slot/operator 0 settings missing from patch');
@@ -1227,22 +1222,22 @@ describe('parseOPL() tests', function() {
 				{reg: 0xBD, val: 0x30},
 				{delay: 10},
 				{reg: 0xBD, val: 0x20},
-			], defaultTempo);
+			]);
 
-			assert.ok(events[1]);
-			assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
-			assert.equal(events[1].option, Music.ConfigurationEvent.Option.EnableRhythm, 'Wrong ConfigurationEvent option');
-			assert.equal(events[1].value, true, 'Wrong ConfigurationEvent value');
+			assert.ok(events[0]);
+			assert.equal(events[0].type, Music.ConfigurationEvent, 'Wrong event type');
+			assert.equal(events[0].option, Music.ConfigurationEvent.Option.EnableRhythm, 'Wrong ConfigurationEvent option');
+			assert.equal(events[0].value, true, 'Wrong ConfigurationEvent value');
 
-			assert.ok(events[2], 'Missing event');
-			assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
-			TestUtil.almostEqual(events[2].freq, 169.928);
-			TestUtil.almostEqual(events[2].velocity, 1);
-			assert.equal(events[2].custom.oplChannelType, Music.ChannelType.OPLR, 'Wrong source OPL channel type');
-			assert.equal(events[2].custom.oplChannelIndex, UtilOPL.Rhythm.BD, 'Wrong source OPL channel index');
+			assert.ok(events[1], 'Missing event');
+			assert.equal(events[1].type, Music.NoteOnEvent, 'Wrong event type');
+			TestUtil.almostEqual(events[1].freq, 169.928);
+			TestUtil.almostEqual(events[1].velocity, 1);
+			assert.equal(events[1].custom.oplChannelType, Music.ChannelType.OPLR, 'Wrong source OPL channel type');
+			assert.equal(events[1].custom.oplChannelIndex, UtilOPL.Rhythm.BD, 'Wrong source OPL channel index');
 
-			assert.ok(events[4], 'Missing event');
-			assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
+			assert.ok(events[3], 'Missing event');
+			assert.equal(events[3].type, Music.NoteOffEvent, 'Wrong event type');
 
 			assert.ok(patches[0], 'Failed to supply patch');
 			assert.ok(patches[0].slot[0], 'Slot/operator 0 settings missing from patch');
@@ -1263,28 +1258,28 @@ describe('parseOPL() tests', function() {
 			{tempo: new Music.TempoEvent({usPerTick: 3000})},
 			{delay: 30},
 			{tempo: new Music.TempoEvent({usPerTick: 4000})},
-		], defaultTempo);
+		]);
 
+		// Ensure there's no initial tempo event.
 		assert.ok(events[0]);
-		assert.equal(events[0].type, Music.TempoEvent, 'Wrong event type');
-		assert.equal(events[0].usPerTick, 1000, 'Wrong tempo value');
+		assert.equal(events[0].type, Music.ConfigurationEvent, 'Wrong event type');
 
-		assert.ok(events[3]);
-		assert.equal(events[3].type, Music.TempoEvent, 'Wrong event type');
-		assert.equal(events[3].usPerTick, 2000, 'Wrong tempo value');
+		assert.ok(events[2]);
+		assert.equal(events[2].type, Music.TempoEvent, 'Wrong event type');
+		assert.equal(events[2].usPerTick, 2000, 'Wrong tempo value');
+
+		assert.ok(events[4]);
+		assert.equal(events[4].type, Music.TempoEvent, 'Wrong event type');
+		assert.equal(events[4].usPerTick, 3000, 'Wrong tempo value');
 
 		assert.ok(events[5]);
-		assert.equal(events[5].type, Music.TempoEvent, 'Wrong event type');
-		assert.equal(events[5].usPerTick, 3000, 'Wrong tempo value');
+		assert.equal(events[5].ticks, 30, 'Wrong delay value');
 
 		assert.ok(events[6]);
-		assert.equal(events[6].ticks, 30, 'Wrong delay value');
+		assert.equal(events[6].type, Music.TempoEvent, 'Wrong event type');
+		assert.equal(events[6].usPerTick, 4000, 'Wrong tempo value');
 
-		assert.ok(events[7]);
-		assert.equal(events[7].type, Music.TempoEvent, 'Wrong event type');
-		assert.equal(events[7].usPerTick, 4000, 'Wrong tempo value');
-
-		assert.equal(events.length, 8, 'Incorrect number of events produced');
+		assert.equal(events.length, 7, 'Incorrect number of events produced');
 	});
 
 	it('should ignore zero-delay keyons', function() {
@@ -1301,23 +1296,23 @@ describe('parseOPL() tests', function() {
 			{reg: 0xB0, val: 0x20},
 			{reg: 0xB0, val: 0x00},
 			{delay: 10},
-		], defaultTempo);
+		]);
 
-		assert.ok(events[1], 'Missing event');
-		assert.equal(events[1].type, Music.NoteOnEvent, 'Wrong event type');
+		assert.ok(events[0], 'Missing event');
+		assert.equal(events[0].type, Music.NoteOnEvent, 'Wrong event type');
 
-		assert.ok(events[2]);
-		assert.equal(events[2].type, Music.DelayEvent, 'Wrong event type');
-		assert.equal(events[2].ticks, 10, 'Wrong delay value');
+		assert.ok(events[1]);
+		assert.equal(events[1].type, Music.DelayEvent, 'Wrong event type');
+		assert.equal(events[1].ticks, 10, 'Wrong delay value');
 
-		assert.ok(events[3], 'Missing event');
-		assert.equal(events[3].type, Music.NoteOffEvent, 'Wrong event type');
+		assert.ok(events[2], 'Missing event');
+		assert.equal(events[2].type, Music.NoteOffEvent, 'Wrong event type');
 
-		assert.ok(events[4]);
-		assert.equal(events[4].type, Music.DelayEvent, 'Wrong event type');
-		assert.equal(events[4].ticks, 30, 'Wrong delay value');
+		assert.ok(events[3]);
+		assert.equal(events[3].type, Music.DelayEvent, 'Wrong event type');
+		assert.equal(events[3].ticks, 30, 'Wrong delay value');
 
-		assert.equal(events.length, 5, 'Incorrect number of events produced');
+		assert.equal(events.length, 4, 'Incorrect number of events produced');
 	});
 
 	it('should handle zero-delay keyoffs for melodic instruments', function() {
@@ -1333,7 +1328,59 @@ describe('parseOPL() tests', function() {
 			{reg: 0xB0, val: 0x20}, // another immediate re-keyon
 			{delay: 10},
 			{reg: 0xB0, val: 0x00},
-		], defaultTempo);
+		]);
+
+		assert.ok(events[0], 'Missing event');
+		assert.equal(events[0].type, Music.NoteOnEvent, 'Wrong event type');
+
+		assert.ok(events[1]);
+		assert.equal(events[1].type, Music.DelayEvent, 'Wrong event type');
+		assert.equal(events[1].ticks, 10, 'Wrong delay value');
+
+		assert.ok(events[2], 'Missing event');
+		assert.equal(events[2].type, Music.NoteOffEvent, 'Wrong event type');
+
+		assert.ok(events[3], 'Missing event');
+		assert.equal(events[3].type, Music.NoteOnEvent, 'Wrong event type');
+
+		assert.ok(events[4]);
+		assert.equal(events[4].type, Music.DelayEvent, 'Wrong event type');
+		assert.equal(events[4].ticks, 10, 'Wrong delay value');
+
+		assert.ok(events[5], 'Missing event');
+		assert.equal(events[5].type, Music.NoteOffEvent, 'Wrong event type');
+
+		assert.ok(events[6], 'Missing event');
+		assert.equal(events[6].type, Music.NoteOnEvent, 'Wrong event type');
+
+		assert.ok(events[7]);
+		assert.equal(events[7].type, Music.DelayEvent, 'Wrong event type');
+		assert.equal(events[7].ticks, 10, 'Wrong delay value');
+
+		assert.ok(events[8], 'Missing event');
+		assert.equal(events[8].type, Music.NoteOffEvent, 'Wrong event type');
+
+		assert.equal(events.length, 9, 'Incorrect number of events produced');
+	});
+
+	it('should handle zero-delay keyoffs for rhythm instruments', function() {
+		const { events } = UtilOPL.parseOPL([
+			{reg: 0xBD, val: 0x20},
+			{reg: 0xBD, val: 0x21},
+			{delay: 10},
+			{reg: 0xBD, val: 0x20},
+			{reg: 0xBD, val: 0x21}, // immediate re-keyon
+			{delay: 10},
+			{reg: 0xBD, val: 0x20},
+			{reg: 0xBD, val: 0x21}, // should be ignored (overridden below)
+			{reg: 0xBD, val: 0x20},
+			{reg: 0xBD, val: 0x21}, // another immediate re-keyon
+			{delay: 10},
+			{reg: 0xBD, val: 0x20},
+		]);
+
+		assert.ok(events[0], 'Missing event');
+		assert.equal(events[0].type, Music.ConfigurationEvent, 'Wrong event type');
 
 		assert.ok(events[1], 'Missing event');
 		assert.equal(events[1].type, Music.NoteOnEvent, 'Wrong event type');
@@ -1366,58 +1413,6 @@ describe('parseOPL() tests', function() {
 		assert.equal(events[9].type, Music.NoteOffEvent, 'Wrong event type');
 
 		assert.equal(events.length, 10, 'Incorrect number of events produced');
-	});
-
-	it('should handle zero-delay keyoffs for rhythm instruments', function() {
-		const { events } = UtilOPL.parseOPL([
-			{reg: 0xBD, val: 0x20},
-			{reg: 0xBD, val: 0x21},
-			{delay: 10},
-			{reg: 0xBD, val: 0x20},
-			{reg: 0xBD, val: 0x21}, // immediate re-keyon
-			{delay: 10},
-			{reg: 0xBD, val: 0x20},
-			{reg: 0xBD, val: 0x21}, // should be ignored (overridden below)
-			{reg: 0xBD, val: 0x20},
-			{reg: 0xBD, val: 0x21}, // another immediate re-keyon
-			{delay: 10},
-			{reg: 0xBD, val: 0x20},
-		], defaultTempo);
-
-		assert.ok(events[1], 'Missing event');
-		assert.equal(events[1].type, Music.ConfigurationEvent, 'Wrong event type');
-
-		assert.ok(events[2], 'Missing event');
-		assert.equal(events[2].type, Music.NoteOnEvent, 'Wrong event type');
-
-		assert.ok(events[3]);
-		assert.equal(events[3].type, Music.DelayEvent, 'Wrong event type');
-		assert.equal(events[3].ticks, 10, 'Wrong delay value');
-
-		assert.ok(events[4], 'Missing event');
-		assert.equal(events[4].type, Music.NoteOffEvent, 'Wrong event type');
-
-		assert.ok(events[5], 'Missing event');
-		assert.equal(events[5].type, Music.NoteOnEvent, 'Wrong event type');
-
-		assert.ok(events[6]);
-		assert.equal(events[6].type, Music.DelayEvent, 'Wrong event type');
-		assert.equal(events[6].ticks, 10, 'Wrong delay value');
-
-		assert.ok(events[7], 'Missing event');
-		assert.equal(events[7].type, Music.NoteOffEvent, 'Wrong event type');
-
-		assert.ok(events[8], 'Missing event');
-		assert.equal(events[8].type, Music.NoteOnEvent, 'Wrong event type');
-
-		assert.ok(events[9]);
-		assert.equal(events[9].type, Music.DelayEvent, 'Wrong event type');
-		assert.equal(events[9].ticks, 10, 'Wrong delay value');
-
-		assert.ok(events[10], 'Missing event');
-		assert.equal(events[10].type, Music.NoteOffEvent, 'Wrong event type');
-
-		assert.equal(events.length, 11, 'Incorrect number of events produced');
 	});
 
 }); // parseOPL() tests

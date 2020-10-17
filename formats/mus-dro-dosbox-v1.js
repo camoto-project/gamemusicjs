@@ -411,10 +411,10 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 			debug(`Not reading tags, only ${buffer.distFromEnd()} bytes left in file`);
 		}
 
-		let initialTempoEvent = new Music.TempoEvent();
-		initialTempoEvent.usPerTick = 1000;
+		music.initialTempo = new Music.TempoEvent();
+		music.initialTempo.usPerTick = 1000;
 
-		const { events, patches } = UtilOPL.parseOPL(oplData, initialTempoEvent);
+		const { events, patches } = UtilOPL.parseOPL(oplData);
 		music.patches = patches;
 
 		// Split the single long list of events into tracks.

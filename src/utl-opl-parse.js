@@ -241,25 +241,17 @@ function appendOPLEvents(patches, events, oplState, oplStatePrev, hasKeyOn)
  *   is ambiguous and doesn't indicate whether the delay should happen before
  *   or after the reg/val pair.
  *
- * @param {Music.TempoEvent} initialTempoEvent
- *   Starting tempo of the song.
- *
  * @return {Object} `{events: [], patches: []}` where Events is a list of
  *   `Event` instances and `patches` is a list of instruments as `Patch`
  *   instances.
  *
  * @alias UtilOPL.parseOPL
  */
-function parseOPL(oplData, initialTempoEvent)
+function parseOPL(oplData)
 {
 	const debug = Debug.extend('parseOPL');
 
 	let events = [], patches = [];
-
-	if (!initialTempoEvent || initialTempoEvent.type !== Music.TempoEvent) {
-		throw new Error('parseOPL(): initialTempoEvent must be a TempoEvent.');
-	}
-	events.push(initialTempoEvent);
 
 	// * 2 for two chips (OPL3)
 	let oplState = new Array(256 * 2).fill(0);

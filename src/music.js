@@ -74,11 +74,12 @@
 class Music
 {
 	constructor() {
-		this.patches = [];
-		this.tags = {};
+		this.initialTempo = new Music.TempoEvent();
 		this.trackConfig = [];
+		this.patches = [];
 		this.patterns = [];
 		this.patternSequence = [];
+		this.tags = {};
 	}
 }
 

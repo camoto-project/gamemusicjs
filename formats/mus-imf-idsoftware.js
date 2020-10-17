@@ -213,10 +213,10 @@ class Music_IMF_IDSoftware_Common extends MusicHandler
 			debug(`Not reading tags, only ${buffer.length - contentLength} bytes left in file`);
 		}
 
-		let initialTempoEvent = new Music.TempoEvent();
-		initialTempoEvent.hertz = this.getTempo();
+		music.initialTempo = new Music.TempoEvent();
+		music.initialTempo.hertz = this.getTempo();
 
-		const { events, patches } = UtilOPL.parseOPL(oplData, initialTempoEvent);
+		const { events, patches } = UtilOPL.parseOPL(oplData);
 		music.patches = patches;
 
 		// Split the single long list of events into tracks.
