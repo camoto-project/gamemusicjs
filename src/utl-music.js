@@ -133,7 +133,32 @@ class UtilMusic
 		}
 	}
 
+	/**
+	 * Merge only the patterns together, returning one long multi-track pattern.
+	 */
 	static mergePatterns(patterns) {
+		if (patterns.length === 0) return new Pattern();
+
+		let finalPattern = patterns[0].clone();
+
+		for (let idxPattern = 1; idxPattern < patterns.length; idxPattern++) {
+			const pattern = patterns[idxPattern];
+
+			for (let idxTrack = 0; idxTrack < pattern.tracks.length; idxTrack++) {
+				const track = pattern.tracks[idxTrack];
+				const finalTrack = finalPattern.tracks[idxTrack];
+
+				for (const ev of track.events) {
+					const evc = ev.clone();
+					finalTrack.push(evc);
+				}
+			}
+		}
+
+		return finalPattern;
+	}
+
+	static mergePatternsAndTracks(patterns) {
 		let events = [];
 
 		for (let idxPattern = 0; idxPattern < patterns.length; idxPattern++) {

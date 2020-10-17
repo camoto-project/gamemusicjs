@@ -237,7 +237,7 @@ class Music_IMF_IDSoftware_Common extends MusicHandler
 	{
 		// Convert all the events across all tracks in all patterns into a single
 		// event list.
-		let events = UtilMusic.mergePatterns(music.patterns);
+		let events = UtilMusic.mergePatternsAndTracks(music.patterns);
 
 		// Remove any tempo events and adjust timing so the song will play at a
 		// fixed speed.
