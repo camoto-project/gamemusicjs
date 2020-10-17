@@ -104,6 +104,16 @@ Music.Pattern = class Pattern {
 	constructor(params = {}) {
 		this.tracks = params.tracks || [];
 	}
+
+	clone() {
+		let n = new Pattern();
+		for (const t of this.tracks) {
+			const tc = t.clone();
+			n.tracks.push(tc);
+		}
+
+		return n;
+	}
 };
 
 /**
@@ -224,6 +234,19 @@ Music.TrackConfiguration = class TrackConfiguration {
 Music.Track = class Track {
 	constructor(params = {}) {
 		this.events = params.events || [];
+		this.custom = params.custom;
+	}
+
+	clone() {
+		let t = new Track({
+			custom: this.custom,
+		});
+		for (const ev of this.events) {
+			const evc = ev.clone();
+			t.events.push(evc);
+		}
+
+		return t;
 	}
 };
 
