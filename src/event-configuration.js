@@ -50,6 +50,10 @@ class ConfigurationEvent extends Event {
 		const optionName = Object.keys(ConfigurationEvent.Option).find(k => ConfigurationEvent.Option[k] === this.option) || '?';
 		return `[ConfigurationEvent O:${this.option}/${optionName} V:${this.value}]`;
 	}
+
+	static optionNameToString(o) {
+		return Object.keys(ConfigurationEvent.Option).find(k => ConfigurationEvent.Option[k] === o);
+	}
 };
 
 /**
