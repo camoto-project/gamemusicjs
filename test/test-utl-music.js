@@ -173,6 +173,7 @@ describe(`UtilMusic tests`, function() {
 				option: Music.ConfigurationEvent.Option.EnableWaveSel,
 				value: true,
 			});
+			const initialTempo = new Music.TempoEvent({usPerTick: 1000});
 
 			let srcEvents = [
 				new Music.TempoEvent({usPerTick: 1000}),
@@ -186,7 +187,11 @@ describe(`UtilMusic tests`, function() {
 				new Music.DelayEvent({ticks: 10}),
 			];
 
-			const dstEvents = UtilMusic.fixedTempo(srcEvents, 1000);
+			const dstEvents = UtilMusic.fixedTempo(
+				srcEvents,
+				initialTempo,
+				new Music.TempoEvent({usPerTick: 1000})
+			);
 
 			assert.ok(dstEvents[0]);
 			assert.equal(dstEvents[1].ticks, 10);
@@ -200,6 +205,7 @@ describe(`UtilMusic tests`, function() {
 				option: Music.ConfigurationEvent.Option.EnableWaveSel,
 				value: true,
 			});
+			const initialTempo = new Music.TempoEvent({usPerTick: 1000});
 
 			let srcEvents = [
 				new Music.TempoEvent({usPerTick: 1000}),
@@ -213,7 +219,11 @@ describe(`UtilMusic tests`, function() {
 				new Music.DelayEvent({ticks: 10}),
 			];
 
-			const dstEvents = UtilMusic.fixedTempo(srcEvents, 500);
+			const dstEvents = UtilMusic.fixedTempo(
+				srcEvents,
+				initialTempo,
+				new Music.TempoEvent({usPerTick: 500})
+			);
 
 			assert.ok(dstEvents[0]);
 			assert.equal(dstEvents[1].ticks, 20);
@@ -227,6 +237,7 @@ describe(`UtilMusic tests`, function() {
 				option: Music.ConfigurationEvent.Option.EnableWaveSel,
 				value: true,
 			});
+			const initialTempo = new Music.TempoEvent({usPerTick: 1000});
 
 			let srcEvents = [
 				new Music.TempoEvent({usPerTick: 1000}),
@@ -240,7 +251,11 @@ describe(`UtilMusic tests`, function() {
 				new Music.DelayEvent({ticks: 10}),
 			];
 
-			const dstEvents = UtilMusic.fixedTempo(srcEvents, 500);
+			const dstEvents = UtilMusic.fixedTempo(
+				srcEvents,
+				initialTempo,
+				new Music.TempoEvent({usPerTick: 500})
+			);
 
 			assert.ok(dstEvents[0]);
 			assert.equal(dstEvents[1].ticks, 20);
@@ -255,6 +270,7 @@ describe(`UtilMusic tests`, function() {
 				value: true,
 				custom: 'a',
 			});
+			const initialTempo = new Music.TempoEvent({usPerTick: 1000});
 
 			let srcEvents = [
 				new Music.TempoEvent({usPerTick: 1000}),
@@ -268,7 +284,11 @@ describe(`UtilMusic tests`, function() {
 				new Music.DelayEvent({ticks: 10}),
 			];
 
-			const dstEvents = UtilMusic.fixedTempo(srcEvents, 500);
+			const dstEvents = UtilMusic.fixedTempo(
+				srcEvents,
+				initialTempo,
+				new Music.TempoEvent({usPerTick: 500})
+			);
 
 			assert.ok(dstEvents[0]);
 			assert.equal(dstEvents[0].custom, 'a');

@@ -212,19 +212,28 @@ class UtilMusic
 	 * @param {TempoEvent} initialTempo
 	 *   Song's default tempo unless overridden by additional TempoEvents later.
 	 *
-	 * @param {Number} usPerTick
-	 *   Number of microseconds each tick should represent in the returned delay
-	 *   values.  This is the target tempo and the event timings will be adjusted
-	 *   to match this rate.  For a tick rate of 700 ticks per second, pass
-	 *   `1000000 / 700` as this parameter to convert the value into microseconds
-	 *   per tick.
+	 * @param {TempoEvent} targetTempo
+	 *   All the DelayEvents will be adjusted so that the song plays at the
+	 *   correct speed, when played at `targetTempo`.
 	 */
-	static fixedTempo(events, initialTempo, usPerTick) {
+	static fixedTempo(events, initialTempo, targetTempo) {
+		const debug = Debug.extend('fixedTempo');
+
+		debug(`initialTempo=${Math.round(initialTempo.usPerTick)}us targetTempo=${Math.round(targetTempo.usPerTick)}us`);
+
+		if (!initialTempo || (initialTempo.type !== Music.TempoEvent)) {
+			throw new Error('fixedTempo(): Bad initialTempo parameter');
+		}
+		if (!targetTempo || (targetTempo.type !== Music.TempoEvent)) {
+			throw new Error('fixedTempo(): Bad targetTempo parameter');
+		}
+
 		let output = [];
-		let factor = initialTempo.usPerTick / usPerTick;
+		const newFactor = newTempo => newTempo.usPerTick / targetTempo.usPerTick;
+		let factor = newFactor(initialTempo);
 		for (const evSrc of events) {
 			if (evSrc.type === Music.TempoEvent) {
-				factor = evSrc.usPerTick / usPerTick;
+				factor = newFactor(evSrc);
 				// Don't copy tempo events across.
 				continue;
 			}

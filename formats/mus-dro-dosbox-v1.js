@@ -436,7 +436,11 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 
 		// Remove any tempo events and adjust timing so the song will play at a
 		// fixed speed.
-		events = UtilMusic.fixedTempo(events, 1000);
+		events = UtilMusic.fixedTempo(
+			events,
+			music.initialTempo,
+			new Music.TempoEvent({usPerTick: 1000})
+		);
 
 		const { oplData, warnings } = UtilOPL.generateOPL(
 			events,

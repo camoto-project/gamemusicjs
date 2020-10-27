@@ -213,8 +213,9 @@ class Music_IMF_IDSoftware_Common extends MusicHandler
 			debug(`Not reading tags, only ${buffer.length - contentLength} bytes left in file`);
 		}
 
-		music.initialTempo = new Music.TempoEvent();
-		music.initialTempo.hertz = this.getTempo();
+		music.initialTempo = new Music.TempoEvent({
+			hertz: this.getTempo(),
+		});
 
 		const { events, patches } = UtilOPL.parseOPL(oplData);
 		music.patches = patches;
@@ -244,7 +245,7 @@ class Music_IMF_IDSoftware_Common extends MusicHandler
 		events = UtilMusic.fixedTempo(
 			events,
 			music.initialTempo,
-			1000000 / this.getTempo()
+			new Music.TempoEvent({hertz: this.getTempo()})
 		);
 
 		const { oplData, warnings } = UtilOPL.generateOPL(
