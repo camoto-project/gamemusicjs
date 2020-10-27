@@ -346,6 +346,7 @@ allHandlers.forEach(handler => {
 
 				it('should have the expected events', function() {
 					const events = music.patterns[0].tracks[0].events;
+					assert.ok(events[0], 'parse() returned patterns[0].tracks[0].events[0] as invalid');
 					assert.equal(events[0].type, Music.NoteOnEvent);
 					assert.equal(events[1].type, Music.DelayEvent);
 					assert.equal(events[2].type, Music.NoteOffEvent);

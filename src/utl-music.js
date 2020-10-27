@@ -278,7 +278,6 @@ class UtilMusic
 		for (const track of firstPattern.tracks) {
 			for (let i = 0; i < track.events.length; i++) {
 				const ev = track.events[i];
-				//for (const ev of track.events) {
 				// As soon as we hit a delay, any following event will no longer be an
 				// initial one, so we can skip to the next track.
 				if ((ev.type === Music.DelayEvent) && (ev.ticks > 0)) break;
@@ -287,7 +286,8 @@ class UtilMusic
 				const r = cb(ev);
 				if (r === true) return true;
 				if (r === null) {
-					delete track.events[i];
+					// Remove this event from the event list.
+					track.events.splice(i, 1);
 					return true;
 				}
 			}

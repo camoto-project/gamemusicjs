@@ -297,4 +297,51 @@ describe(`UtilMusic tests`, function() {
 		});
 	}); // fixedTempo()
 
+	describe('initialEvents()', function() {
+		it('removing event works', function() {
+			const genericEvent = new Music.ConfigurationEvent({
+				option: Music.ConfigurationEvent.Option.EnableWaveSel,
+				value: true,
+			});
+
+			let srcEvents = [
+				new Music.TempoEvent({usPerTick: 1000}),
+				genericEvent,
+				new Music.DelayEvent({ticks: 10}),
+				genericEvent,
+				new Music.DelayEvent({ticks: 10}),
+				new Music.TempoEvent({usPerTick: 1000}),
+				new Music.DelayEvent({ticks: 10}),
+				genericEvent,
+				new Music.DelayEvent({ticks: 10}),
+			];
+
+			let music = new Music();
+			music.initialTempo.usPerTick = 500;
+			music.patterns.push(new Music.Pattern());
+			music.patterns[0].tracks.push(new Music.Track());
+			music.patterns[0].tracks[0].events = srcEvents;
+
+			UtilMusic.initialEvents(music, ev => {
+				if (ev.type === Music.TempoEvent) {
+					// Remove initial tempo event, updating the initialTempo.
+					music.initialTempo = ev;
+					return null; // delete the event from the track
+				}
+				return false; // keep going
+			});
+
+			assert.equal(music.initialTempo.usPerTick, 1000, 'initialTempo not updated');
+
+			const dstEvents = music.patterns[0].tracks[0].events;
+			assert.ok(dstEvents[0], 'First TempoEvent not removed correctly');
+			assert.notEqual(dstEvents[0].type, Music.TempoEvent, 'TempoEvent not removed');
+			assert.equal(dstEvents[0].type, Music.ConfigurationEvent, 'New first event is wrong type');
+			assert.equal(dstEvents[1].ticks, 10);
+			assert.equal(dstEvents[3].ticks, 10);
+			assert.equal(dstEvents[5].ticks, 10);
+			assert.equal(dstEvents[7].ticks, 10);
+		});
+	}); // initialEvents()
+
 }); // UtilMIDI tests
