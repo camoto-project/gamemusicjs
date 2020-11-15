@@ -72,6 +72,13 @@ allHandlers.forEach(handler => {
 		// Test the metadata first because we need it for the test file.
 		describe('metadata()', function() {
 
+			before('reset flag', function() {
+				// This means md.pass = false if the metadata tests ran but failed, or
+				// undefined if the tests didn't run, e.g. `-g generate` was used to
+				// only run the generate() tests.
+				md.pass = false;
+			});
+
 			it('should provide a filename glob, even if empty', function() {
 				assert.ok(md.glob);
 			});
@@ -96,7 +103,7 @@ allHandlers.forEach(handler => {
 			before('load test data from local filesystem', function() {
 
 				// Skip all these tests if the metadata() one above failed.
-				if (!md.pass) this.skip();
+				if (md.pass === false) this.skip();
 
 				content = testutil.loadContent(handler, [
 					'default',
