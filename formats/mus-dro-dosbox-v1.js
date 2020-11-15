@@ -22,7 +22,7 @@
 
 const { RecordBuffer, RecordType } = require('@malvineous/record-io-buffer');
 
-const Debug = require('../src/utl-debug.js')('mus-imf-idsoftware');
+const Debug = require('../src/utl-debug.js')('mus-dro-dosbox-v1');
 const Music = require('../src/music.js');
 const MusicHandler = require('../src/musicHandler.js');
 const UtilMusic = require('../src/utl-music.js');

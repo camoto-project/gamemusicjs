@@ -230,8 +230,12 @@ class UtilOPL
 	 *   OPL channel to extract, 0..8 for OPL2/3 channels 1..9, 9..17 for OPL3
 	 *   channels 10..18.
 	 *
-	 * For rhythm-mode, the caller will need to extract the relevant operator from
-	 * the returned object's `slot[0]` or `slot[1]` property.
+	 * @param {Array<Number>} slots
+	 *   Array of 1 to 4 slots to read, with the value controlling which slot
+	 *   is read into which.  `[0, 1, 2, 3]` will read a 4-op OPL3 instrument,
+	 *   [-1, 0, -1, -1] will read the second operator into the first
+	 *   instrument's slot.  Swapping slots like this is only useful for rhythm
+	 *   mode percussion instruments.
 	 *
 	 * @return {Object} Current channel settings.
 	 */
