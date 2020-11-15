@@ -431,6 +431,21 @@ UtilOPL.BASE_RHYTHM     = 0xBD;
 UtilOPL.BASE_WAVE       = 0xE0;
 UtilOPL.BASE_FEED_CONN  = 0xC0;
 
+// Values for MusicHandler.metadata().caps.supportedEvents for songs that use
+// the standard OPL parse()/generate() functions.
+UtilOPL.oplSupportedEvents = [
+  new Music.ConfigurationEvent({option: Music.ConfigurationEvent.Option.EmptyEvent}),
+  new Music.ConfigurationEvent({option: Music.ConfigurationEvent.Option.EnableOPL3}),
+  new Music.ConfigurationEvent({option: Music.ConfigurationEvent.Option.EnableDeepTremolo}),
+  new Music.ConfigurationEvent({option: Music.ConfigurationEvent.Option.EnableDeepVibrato}),
+  new Music.ConfigurationEvent({option: Music.ConfigurationEvent.Option.EnableRhythm}),
+  new Music.ConfigurationEvent({option: Music.ConfigurationEvent.Option.EnableWaveSel}),
+  new Music.DelayEvent(),
+  new Music.EffectEvent({pitchbend: 1, volume: 1}), // both supported
+  new Music.NoteOffEvent(),
+  new Music.NoteOnEvent({frequency: 1, velocity: 1, instrument: 1}), // velocity supported
+];
+
 module.exports = UtilOPL;
 
 // These must go after module.exports due to cyclic dependencies.

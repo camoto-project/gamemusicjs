@@ -174,6 +174,7 @@ class Music_MID_Type1 extends MusicHandler
 					},
 				],
 				tags: {},
+				supportedEvents: UtilMIDI.midiSupportedEvents,
 			},
 		};
 

@@ -68,6 +68,15 @@ class MusicHandler
 		 *   The key is the internal property name to use when specifying the tag,
 		 *   and the value is a user-readable string explaining the tag name.
 		 *
+		 * @property {Array<Event>} caps.supportedEvents
+		 *   Zero or more events that this format can store.  This will be an
+		 *   empty array for instrument formats, which don't support any musical
+		 *   notation events at all.  Other formats may have a varying number of
+		 *   events they support, so only some Event instances may be in this
+		 *   array.  Some Event instances may be listed more than one, such as the
+		 *   ConfigurationEvent, which has multiple subtypes so will be listed
+		 *   once for each supported ConfigurationEvent subtype.
+		 *
 		 * @example
 		 * // console.log(metadata());
 		 * {
