@@ -136,14 +136,6 @@ function generateOPL(events, patches, trackConfig)
 			case Music.ConfigurationEvent:
 				switch (ev.option) {
 
-					case Music.ConfigurationEvent.Option.EnableWaveSel:
-						if (ev.value) {
-							oplState[0x01] |= 0x20;
-						} else {
-							oplState[0x01] &= ~0x20;
-						}
-						break;
-
 					case Music.ConfigurationEvent.Option.EnableOPL3:
 						if (ev.value) {
 							oplState[0x105] |= 0x01;
@@ -152,8 +144,40 @@ function generateOPL(events, patches, trackConfig)
 						}
 						break;
 
+					case Music.ConfigurationEvent.Option.EnableDeepTremolo:
+						if (ev.value) {
+							oplState[0xBD] |= 0x80;
+						} else {
+							oplState[0xBD] &= ~0x80;
+						}
+						break;
+
+					case Music.ConfigurationEvent.Option.EnableDeepVibrato:
+						if (ev.value) {
+							oplState[0xBD] |= 0x40;
+						} else {
+							oplState[0xBD] &= ~0x40;
+						}
+						break;
+
+					case Music.ConfigurationEvent.Option.EnableRhythm:
+						if (ev.value) {
+							oplState[0xBD] |= 0x20;
+						} else {
+							oplState[0xBD] &= ~0x20;
+						}
+						break;
+
+					case Music.ConfigurationEvent.Option.EnableWaveSel:
+						if (ev.value) {
+							oplState[0x01] |= 0x20;
+						} else {
+							oplState[0x01] &= ~0x20;
+						}
+						break;
+
 					default:
-						warnings.push(`ConfigurationEvent option ${ConfigurationEvent.optionNameToString(ev.option)} not implemented in generateOPL().`);
+						warnings.push(`ConfigurationEvent option ${Music.ConfigurationEvent.optionNameToString(ev.option)} not implemented in generateOPL().`);
 						break;
 				}
 				break;
