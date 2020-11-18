@@ -478,11 +478,12 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 						lastchip = 0;
 					}
 				}
+				const targetReg = d.reg & 0xFF;
 
-				if (d.reg <= 0x04) {
+				if (targetReg <= 0x04) {
 					binOPL.write(RecordType.int.u8, DRO_ESCAPE);
 				}
-				binOPL.write(RecordType.int.u8, d.reg);
+				binOPL.write(RecordType.int.u8, targetReg);
 				binOPL.write(RecordType.int.u8, d.val);
 
 			} else {
