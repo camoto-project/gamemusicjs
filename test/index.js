@@ -71,6 +71,8 @@ function createDefaultMusic(md)
 	// This is what we expect the default song in any given format to
 	// look like.
 
+	const hasNoteOn = md.caps.supportedEvents.some(ev => ev instanceof Music.NoteOnEvent);
+
 	/**
 	 * Add a new track with some notes using the specified instrument.
 	 *
@@ -175,17 +177,21 @@ function createDefaultMusic(md)
 		});
 		defaultMusic.patches.push(inst);
 
-		defaultMusic.trackConfig.push(new Music.TrackConfiguration({
-			channelType: Music.ChannelType.OPLT,
-			channelIndex: 0,
-		}));
+		// If the format has note-on events, add some.
+		if (hasNoteOn) {
+			defaultMusic.trackConfig.push(new Music.TrackConfiguration({
+				channelType: Music.ChannelType.OPLT,
+				channelIndex: 0,
+			}));
 
-		// Add some notes using this instrument to a new track.
-		let track = createTrack(
-			defaultMusic.patches.length - 1,
-			Music.ChannelType.OPLT
-		);
-		pattern.tracks.push(track);
+			// Add some notes using this instrument to a new track.
+			let track = createTrack(
+				defaultMusic.patches.length - 1,
+				Music.ChannelType.OPLT
+			);
+
+			pattern.tracks.push(track);
+		}
 	}
 
 	if (channelTypes[Music.ChannelType.OPLF]) {
@@ -250,35 +256,38 @@ function createDefaultMusic(md)
 		});
 		defaultMusic.patches.push(inst);
 
-		defaultMusic.trackConfig.push(new Music.TrackConfiguration({
-			channelType: Music.ChannelType.OPLF,
-			channelIndex: 1,
-		}));
+		// If the format has note-on events, add some.
+		if (hasNoteOn) {
+			defaultMusic.trackConfig.push(new Music.TrackConfiguration({
+				channelType: Music.ChannelType.OPLF,
+				channelIndex: 1,
+			}));
 
-		// Add some notes using this instrument to a new track.
-		let track = createTrack(
-			defaultMusic.patches.length - 1,
-			Music.ChannelType.OPLF
-		);
+			// Add some notes using this instrument to a new track.
+			let track = createTrack(
+				defaultMusic.patches.length - 1,
+				Music.ChannelType.OPLF
+			);
 
-		pattern.tracks.push(track);
+			pattern.tracks.push(track);
 
-		// Do the next step in a new track so it's easier to match the track count,
-		// since parseOPL() splits global events into their own tracks.
-		track = new Music.Track();
+			// Do the next step in a new track so it's easier to match the track
+			// count, since parseOPL() splits global events into their own tracks.
+			track = new Music.Track();
 
-		// We have to enable OPL3 mode to use 4-op instruments, so add this event
-		// in front of the note events.
-		track.events.unshift(new Music.ConfigurationEvent({
-			option: Music.ConfigurationEvent.Option.EnableOPL3,
-			value: true,
-		}));
+			// We have to enable OPL3 mode to use 4-op instruments, so add this event
+			// in front of the note events.
+			track.events.unshift(new Music.ConfigurationEvent({
+				option: Music.ConfigurationEvent.Option.EnableOPL3,
+				value: true,
+			}));
 
-		defaultMusic.trackConfig.push(new Music.TrackConfiguration({
-			channelType: Music.ChannelType.OPLT,
-			channelIndex: 0,
-		}));
-		pattern.tracks.push(track);
+			defaultMusic.trackConfig.push(new Music.TrackConfiguration({
+				channelType: Music.ChannelType.OPLT,
+				channelIndex: 0,
+			}));
+			pattern.tracks.push(track);
+		}
 	}
 
 	if (channelTypes[Music.ChannelType.OPLR]) {
@@ -304,25 +313,28 @@ function createDefaultMusic(md)
 		});
 		defaultMusic.patches.push(inst);
 
-		defaultMusic.trackConfig.push(new Music.TrackConfiguration({
-			channelType: Music.ChannelType.OPLR,
-			channelIndex: GameMusic.UtilOPL.Rhythm.HH,
-		}));
+		// If the format has note-on events, add some.
+		if (hasNoteOn) {
+			defaultMusic.trackConfig.push(new Music.TrackConfiguration({
+				channelType: Music.ChannelType.OPLR,
+				channelIndex: GameMusic.UtilOPL.Rhythm.HH,
+			}));
 
-		// Add some notes using this instrument to a new track.
-		let track = createTrack(
-			defaultMusic.patches.length - 1,
-			Music.ChannelType.OPLR
-		);
+			// Add some notes using this instrument to a new track.
+			let track = createTrack(
+				defaultMusic.patches.length - 1,
+				Music.ChannelType.OPLR
+			);
 
-		// We have to enable rhythm mode to use rhythm instruments, so add this
-		// event in front of the note events.
-		track.events.unshift(new Music.ConfigurationEvent({
-			option: Music.ConfigurationEvent.Option.EnableRhythm,
-			value: true,
-		}));
+			// We have to enable rhythm mode to use rhythm instruments, so add this
+			// event in front of the note events.
+			track.events.unshift(new Music.ConfigurationEvent({
+				option: Music.ConfigurationEvent.Option.EnableRhythm,
+				value: true,
+			}));
 
-		pattern.tracks.push(track);
+			pattern.tracks.push(track);
+		}
 	}
 
 	if (channelTypes[Music.ChannelType.MIDI]) {
@@ -332,17 +344,21 @@ function createDefaultMusic(md)
 		});
 		defaultMusic.patches.push(inst);
 
-		defaultMusic.trackConfig.push(new Music.TrackConfiguration({
-			channelType: Music.ChannelType.MIDI,
-			channelIndex: 0,
-		}));
+		// If the format has note-on events, add some.
+		if (hasNoteOn) {
+			defaultMusic.trackConfig.push(new Music.TrackConfiguration({
+				channelType: Music.ChannelType.MIDI,
+				channelIndex: 0,
+			}));
 
-		// Add some notes using this instrument to a new track.
-		let track = createTrack(
-			defaultMusic.patches.length - 1,
-			Music.ChannelType.MIDI
-		);
-		pattern.tracks.push(track);
+			// Add some notes using this instrument to a new track.
+			let track = createTrack(
+				defaultMusic.patches.length - 1,
+				Music.ChannelType.MIDI
+			);
+
+			pattern.tracks.push(track);
+		}
 	}
 
 	if (channelTypes[Music.ChannelType.PCM]) {
@@ -351,17 +367,21 @@ function createDefaultMusic(md)
 		});
 		defaultMusic.patches.push(inst);
 
-		defaultMusic.trackConfig.push(new Music.TrackConfiguration({
-			channelType: Music.ChannelType.PCM,
-			channelIndex: 0,
-		}));
+		// If the format has note-on events, add some.
+		if (hasNoteOn) {
+			defaultMusic.trackConfig.push(new Music.TrackConfiguration({
+				channelType: Music.ChannelType.PCM,
+				channelIndex: 0,
+			}));
 
-		// Add some notes using this instrument to a new track.
-		let track = createTrack(
-			defaultMusic.patches.length - 1,
-			Music.ChannelType.PCM
-		);
-		pattern.tracks.push(track);
+			// Add some notes using this instrument to a new track.
+			let track = createTrack(
+				defaultMusic.patches.length - 1,
+				Music.ChannelType.PCM
+			);
+
+			pattern.tracks.push(track);
+		}
 	}
 
 	// Add our pattern with all the tracks and notes to the song.
