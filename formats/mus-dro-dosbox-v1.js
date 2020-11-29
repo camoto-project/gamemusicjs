@@ -273,6 +273,7 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 				],
 				tags: {},
 				supportedEvents: UtilOPL.oplSupportedEvents,
+				patchNames: false,
 			},
 		};
 

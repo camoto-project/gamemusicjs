@@ -77,6 +77,9 @@ class MusicHandler
 		 *   ConfigurationEvent, which has multiple subtypes so will be listed
 		 *   once for each supported ConfigurationEvent subtype.
 		 *
+		 * @property {boolean} caps.patchNames
+		 *   `true` if the patches can have names, `false` if not.
+		 *
 		 * @example
 		 * // console.log(metadata());
 		 * {

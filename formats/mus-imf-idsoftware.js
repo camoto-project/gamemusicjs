@@ -118,6 +118,7 @@ class Music_IMF_IDSoftware_Common extends MusicHandler
 				],
 				tags: {},
 				supportedEvents: UtilOPL.oplSupportedEvents,
+				patchNames: false,
 			},
 		};
 

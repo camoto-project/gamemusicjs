@@ -92,6 +92,7 @@ allHandlers.forEach(handler => {
 				// than replacing them entirely.
 				assert.ok(md.caps);
 				assert.ok(md.caps.tags);
+				assert.equal(!!md.caps.patchNames, md.caps.patchNames, 'caps.patchNames must be boolean');
 
 				// Ok to proceed with I/O tests below.
 				md.pass = true;
