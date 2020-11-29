@@ -228,7 +228,7 @@ Music.ChannelType.toString = v => (
  */
 Music.TrackConfiguration = class TrackConfiguration {
 	constructor(params = {}) {
-		this.channelType = params.channelType || Music.ChannelType.Unknown;
+		this.channelType = params.channelType;
 		this.channelIndex = params.channelIndex;
 	}
 };
