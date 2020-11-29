@@ -78,7 +78,15 @@ class Music
 		this.trackConfig = [];
 		this.patches = [];
 		this.patterns = [];
+
+		// Array of numbers, first element is the index of the pattern to play
+		// first, second element is the index of the pattern to play second, etc.
 		this.patternSequence = [];
+
+		// Index into patternOrder to jump to once the end of the song has been
+		// reached.
+		this.loopDest = null;
+
 		this.tags = {};
 	}
 }
