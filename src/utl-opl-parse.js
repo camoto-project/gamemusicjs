@@ -101,7 +101,7 @@ function appendOPLEvents(patches, events, oplState, oplStatePrev, hasKeyOn)
 		oplStatePrev[0xBD] |= oplState[0xBD] & mask;
 	}
 
-	function calcCustom(channel, rhythm, slots) {
+	function calcCustom(channel, slots, rhythm) {
 		if (rhythm > 0) {
 			return {
 				oplChannelType: Music.ChannelType.OPLR,
@@ -162,7 +162,7 @@ function appendOPLEvents(patches, events, oplState, oplStatePrev, hasKeyOn)
 		if (!keyOn || keyOnImmediate) {
 			// Note was just switched off
 			let ev = new Music.NoteOffEvent();
-			ev.custom = calcCustom(channel, rhythm, slots);
+			ev.custom = calcCustom(channel, slots, rhythm);
 			events.push(ev);
 
 			if (!keyOn) {
@@ -191,7 +191,7 @@ function appendOPLEvents(patches, events, oplState, oplStatePrev, hasKeyOn)
 			velocity: UtilOPL.log_volume_to_lin_velocity(63 - outputLevel, 63),
 			instrument: idxInstrument,
 		});
-		ev.custom = calcCustom(channel, rhythm, slots);
+		ev.custom = calcCustom(channel, slots, rhythm);
 		events.push(ev);
 		setPrevState(); // mark registers as processed
 	}
