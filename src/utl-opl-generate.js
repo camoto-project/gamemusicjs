@@ -94,7 +94,7 @@ function generateOPL(events, patches, trackConfig)
 				oplState[0x104] &= ~(1 << op4bit(trackCfg.channelIndex));
 
 				if ((trackCfg.channelIndex >= 6) && (trackCfg.channelIndex <= 8)) {
-					// Clear rhythm mode (no effect if already set).
+					// Clear rhythm mode (no effect if already unset).
 					oplState[0xBD] &= ~0x20;
 				}
 				break;
@@ -109,7 +109,7 @@ function generateOPL(events, patches, trackConfig)
 				oplState[0x104] |= 1 << op4bit(trackCfg.channelIndex);
 
 				if ((trackCfg.channelIndex >= 6) && (trackCfg.channelIndex <= 8)) {
-					// Clear rhythm mode (no effect if already set).
+					// Clear rhythm mode (no effect if already unset).
 					oplState[0xBD] &= ~0x20;
 				}
 				break;
@@ -202,8 +202,60 @@ function generateOPL(events, patches, trackConfig)
 				break;
 
 			case Music.NoteOnEvent: {
-				const chipOffset = 0x100 * Math.floor(trackCfg.channelIndex / 9);
-				const chipChannel = trackCfg.channelIndex % 9;
+				// Figure out which OPL channel and slots we'll be using.
+				let slots, targetChannel;
+				switch (trackCfg.channelType) {
+					case Music.ChannelType.OPLR: // Rhythm
+						switch (trackCfg.channelIndex) {
+							case UtilOPL.Rhythm.HH:
+								targetChannel = 7;
+								slots = [0]; // load op0 into op0
+								break;
+
+							case UtilOPL.Rhythm.TT:
+								targetChannel = 8;
+								slots = [0]; // load op0 into op0
+								break;
+
+							case UtilOPL.Rhythm.SD:
+								targetChannel = 7;
+								slots = [1]; // load op0 into op1
+								break;
+
+							case UtilOPL.Rhythm.CY:
+								targetChannel = 8;
+								slots = [1]; // load op0 into op1
+								break;
+
+							case UtilOPL.Rhythm.BD: // fall through
+							default:
+								// Two operator, load as for 2op melodic
+								targetChannel = 6;
+								slots = [0, 1];
+								break;
+						}
+						break;
+					case Music.ChannelType.OPLT: // Two op
+						targetChannel = trackCfg.channelIndex;
+						slots = [0, 1];
+						break;
+
+					case Music.ChannelType.OPLF: // Four op
+						targetChannel = trackCfg.channelIndex;
+						slots = [0, 1, 2, 3];
+						break;
+
+					default:
+						// Ignore other track types.  We're not adding a message here,
+						// because formats that use multiple synth types will call us and
+						// expect us to ignore non-OPL tracks.
+						// The UI is expected to pick this up from the format capability
+						// list and warn the user prior to saving.
+						return;
+				}
+
+				const chipOffset = 0x100 * Math.floor(targetChannel / 9);
+				const chipChannel = targetChannel % 9;
 				const regOffset = chipOffset + chipChannel;
 
 				const curBlock = (oplState[UtilOPL.BASE_KEYON_FREQ + regOffset] >> 2) & 0x7;
@@ -223,47 +275,7 @@ function generateOPL(events, patches, trackConfig)
 					patch = patches[0];
 				}
 				if (patch) {
-					switch (trackCfg.channelType) {
-						case Music.ChannelType.OPLR: // Rhythm
-							let slots, chan;
-							switch (trackCfg.channelIndex) {
-								case UtilOPL.Rhythm.HH:
-									chan = 7;
-									slots = [0]; // load op0 into op0
-									break;
-
-								case UtilOPL.Rhythm.TT:
-									chan = 8;
-									slots = [0]; // load op0 into op0
-									break;
-
-								case UtilOPL.Rhythm.SD:
-									chan = 7;
-									slots = [1]; // load op0 into op1
-									break;
-
-								case UtilOPL.Rhythm.CY:
-									chan = 8;
-									slots = [1]; // load op0 into op1
-									break;
-
-								case UtilOPL.Rhythm.BD: // fall through
-								default:
-									// Two operator, load as for 2op melodic
-									chan = 6;
-									slots = [0, 1];
-									break;
-							}
-							UtilOPL.setPatch(oplState, chan, slots, patches[ev.instrument]);
-							break;
-						case Music.ChannelType.OPLT: // Two op
-							UtilOPL.setPatch(oplState, trackCfg.channelIndex, [0, 1], patches[ev.instrument]);
-							break;
-
-						case Music.ChannelType.OPLF: // Four op
-							UtilOPL.setPatch(oplState, trackCfg.channelIndex, [0, 1, 2, 3], patches[ev.instrument]);
-							break;
-					}
+					UtilOPL.setPatch(oplState, targetChannel, slots, patches[ev.instrument]);
 				}
 
 				// Set frequency
