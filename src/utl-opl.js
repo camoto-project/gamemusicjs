@@ -395,11 +395,23 @@ class UtilOPL
 	 * OPL rhythm mode and four-operator channels.
 	 */
 	static standardTrackSplitConfig(ev) {
+		if (
+			(ev.custom.oplChannelType === undefined)
+			|| (ev.custom.oplChannelIndex === undefined)
+		) {
+			let tc = new Music.TrackConfiguration({
+				channelType: Music.ChannelType.OPLT, // should be 'any OPL' really
+				channelIndex: 0,
+			});
+			tc.trackIndex = 0;
+			return tc;
+		}
 		let tc = new Music.TrackConfiguration({
-			channelType: ev.custom.oplChannelType || Music.ChannelType.OPLT,
-			channelIndex: ev.custom.oplChannelIndex || 1,
+			channelType: ev.custom.oplChannelType,
+			channelIndex: ev.custom.oplChannelIndex,
 		});
-		tc.trackIndex = ev.custom.oplChannelIndex || 1;
+		// Add 1 to leave trackIndex 0 clear for global events.
+		tc.trackIndex = ev.custom.oplChannelIndex + 1;
 		if (ev.custom.oplChannelType === Music.ChannelType.OPLR) {
 			// Bump the rhythm instruments to tracks following the usual 18 melodic
 			// channels.  Empty tracks will be removed later.
