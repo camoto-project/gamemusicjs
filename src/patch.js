@@ -158,6 +158,15 @@ class PatchMIDI extends Patch {
 		const p = this.midiPatch.toString(16).padStart(2, '0');
 		return `[PATCH:MIDI:${b}.${p}]`;
 	}
+
+	equalTo(b) {
+		const a = this;
+
+		return (
+			(a.midiBank === b.midiBank)
+			&& (a.midiPatch === b.midiPatch)
+		);
+	}
 }
 
 class PatchPCM extends Patch {
@@ -176,6 +185,14 @@ class PatchPCM extends Patch {
 
 	toString() {
 		return `[PCM:${this.sampleRate}Hz]`;
+	}
+
+	equalTo(b) {
+		const a = this;
+
+		return (
+			(a.sampleRate === b.sampleRate)
+		);
 	}
 }
 
