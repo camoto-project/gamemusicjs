@@ -168,7 +168,11 @@ Music.ChannelType = {
 	PCM: 6,
 };
 
-Music.ChannelType.toString = v => Object.keys(Music.ChannelType)[v] || '?';
+Music.ChannelType.toString = v => (
+  Object.entries(Music.ChannelType).find(
+	 n => n[1] === v
+  ) ?? ['?']
+)[0];
 
 /**
  * Channel allocation for each track in the song.
