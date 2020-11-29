@@ -291,6 +291,30 @@ class UtilOPL
 	// rhythm mode.
 	static setPatch(oplState, channel, slots, patch) {
 		function setOp(chipOperOffset, op) {
+			if (op.freqMult & ~0x0F) {
+				throw new Error(`Slot freqMult is out of range (${op.freqMult} > 15).`);
+			}
+			if (op.scaleLevel & ~0x03) {
+				throw new Error(`Slot scaleLevel is out of range (${op.scaleLevel} > 3).`);
+			}
+			if (op.outputLevel & ~0x3F) {
+				throw new Error(`Slot outputLevel is out of range (${op.outputLevel} > 63).`);
+			}
+			if (op.attackRate & ~0x0F) {
+				throw new Error(`Slot attackRate is out of range (${op.attackRate} > 15).`);
+			}
+			if (op.decayRate & ~0x0F) {
+				throw new Error(`Slot decayRate is out of range (${op.decayRate} > 15).`);
+			}
+			if (op.sustainRate & ~0x0F) {
+				throw new Error(`Slot sustainRate is out of range (${op.sustainRate} > 15).`);
+			}
+			if (op.releaseRate & ~0x0F) {
+				throw new Error(`Slot releaseRate is out of range (${op.releaseRate} > 15).`);
+			}
+			if (op.waveSelect & ~0x07) {
+				throw new Error(`waveSelect is out of range (${op.waveSelect} > 7).`);
+			}
 			oplState[UtilOPL.BASE_CHAR_MULT + chipOperOffset] =
 				(op.enableTremolo ? 0x80 : 0)
 				| (op.enableVibrato ? 0x40 : 0)
