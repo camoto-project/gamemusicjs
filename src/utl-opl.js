@@ -313,7 +313,7 @@ class UtilOPL
 			oplState[UtilOPL.BASE_WAVE + chipOperOffset] = op.waveSelect & 0x07;
 		}
 
-		for (let s = 0; s < 3; s++) {
+		for (let s = 0; s < 4; s++) {
 			if (slots[s] >= 0) {
 				if (!patch.slot[slots[s]]) {
 					const hasSlots = Object.keys(patch.slot).join(', ');
