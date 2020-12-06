@@ -83,6 +83,7 @@ class Operations
 		});
 	}
 
+	/*eslint no-unused-vars: ["error", { "args": "none" }]*/
 	dump(params) {
 		process.stdout.write(`Initial tempo: ${this.music.initialTempo}\n`);
 		for (const idxPattern in this.music.patterns) {
