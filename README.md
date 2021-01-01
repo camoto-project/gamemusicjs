@@ -1,5 +1,5 @@
 # gamemusic.js
-Copyright 2010-2020 Adam Nielsen <<malvineous@shikadi.net>>  
+Copyright 2010-2021 Adam Nielsen <<malvineous@shikadi.net>>  
 
 This is a Javascript library that can read and write music files used by a
 number of MS-DOS games from the 1990s.  This library is an attempt to provide
