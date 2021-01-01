@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const Debug = require('debug')('gamemusicjs');
+const Debug = require('debug')('gamemusic');
 
 /**
  * Generic debug function.

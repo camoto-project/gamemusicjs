@@ -26,7 +26,7 @@ Files in the following formats can be read and written:
 If you wish to use the command-line `gamemus` utility to work with music files
 directly, you can install the library globally on your system:
 
-    npm install -g @malvineous/gamemusic
+    npm install -g @camoto/gamemusic
 
 ### Command line interface
 
@@ -48,7 +48,7 @@ with when saving files, run:
 If you wish to make use of the library in your own project, install it
 in the usual way:
 
-    npm install @malvineous/gamemusic
+    npm install @camoto/gamemusic
 
 See `cli/index.js` for example use.
 
@@ -94,10 +94,10 @@ algorithms are available to be used by any music format in this library.
 During development you can test your code like this:
 
     # Read a sample song and list its details, with debug messages on
-    $ DEBUG='gamemusicjs:*' ./bin/gamemus open -f mus-myformat example.dat list
+    $ DEBUG='gamemusic:*' ./bin/gamemus open -f mus-myformat example.dat list
 
     # Make sure the format is identified correctly or if not why not
-    $ DEBUG='gamemusicjs:*' ./bin/gamemus identify example.dat
+    $ DEBUG='gamemusic:*' ./bin/gamemus identify example.dat
 
 If you use `debug()` rather than `console.log()` in your code then these
 messages can be left in for future diagnosis as they will only appear when the

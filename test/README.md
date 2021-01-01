@@ -15,4 +15,4 @@ overwrite the old testdata file.
 
 To run only some tests, and with debugging info, use:
 
-  DEBUG='gamemusicjs:*' npm -s run test -- -g mus-imf-idsoftware-type0
+  DEBUG='gamemusic:*' npm -s run test -- -g mus-imf-idsoftware-type0
