@@ -226,7 +226,7 @@ class MusicHandler
 	 * @param {Uint8Array} content
 	 *   Music content.
 	 *
-	 * @return {null} if there are no supplementary files, otherwise an {Object}
+	 * @return `null` if there are no supplementary files, otherwise an `object`
 	 *   where each key is an identifier specific to the handler, and the value
 	 *   is the expected case-insensitive filename.  Don't convert passed names
 	 *   to lowercase, but any changes (e.g. appending a filename extension)
@@ -238,24 +238,37 @@ class MusicHandler
 	}
 
 	/**
-	 * See if the given archive is in the format supported by this handler.
+	 * See if the given song is in the format supported by this handler.
 	 *
 	 * This is used for format autodetection.
 	 *
 	 * @note More than one handler might report that it supports a file format,
-	 *   such as the case of an empty file, which is a valid empty archive in a
-	 *   number of different file formats.
+	 *   such as the case of an empty file, which is a valid silent song in a
+	 *   number of different formats.
 	 *
 	 * @param {Uint8Array} content
-	 *   The archive to examine.
+	 *   The file data to examine.
 	 *
-	 * @return {Boolean} true if the data is definitely in this format, false if
-	 *   it is definitely not in this format, and undefined if the data could not
-	 *   be positively identified but it's possible it is in this format.
+	 * @param {string} filename
+	 *   The song's filename in case it is relevant, for those formats where
+	 *   the filename extension is significant.
+	 *
+	 * @return {object} with a `.valid` property, set to `true` if the data is
+	 *   definitely in this format, `false` if it is definitely not in this
+	 *   format, and `undefined` if it's possible the data is in this format but
+	 *   there is not enough information to know for certain one way or the other.
+	 *   The returned object also has a `.reason` property containing a technical
+	 *   although user-friendly explanation as to why the data was decreed to be
+	 *   or not be in this format.  This is most useful when uncertain or
+	 *   rejecting content, as the user can then be informed why.
 	 */
 	// eslint-disable-next-line no-unused-vars
-	static identify(content) {
-		return false;
+	static identify(content, filename) {
+		return {
+			valid: false,
+			reason: 'This function has not been implemented by the format handler, '
+				+ 'so autodetecting this format is not possible.',
+		};
 	}
 
 	/**
