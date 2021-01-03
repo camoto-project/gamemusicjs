@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+export { default as ins_sbi_creativelabs } from './ins-sbi-creativelabs.js';
 export { default as mus_dro_dosbox_v1 } from './mus-dro-dosbox-v1.js';
 export { default as mus_imf_idsoftware_nukem2 } from './mus-imf-idsoftware-nukem2.js';
 export { default as mus_imf_idsoftware_type0 } from './mus-imf-idsoftware-type0.js';

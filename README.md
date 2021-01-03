@@ -20,6 +20,7 @@ Files in the following formats can be read and written:
 * .dro: [DOSBox Raw OPL](http://www.shikadi.net/moddingwiki/DRO_Format)
 * .imf: [id Software Music Format](http://www.shikadi.net/moddingwiki/IMF_Format)
 * .mid: [Standard MIDI Format](http://www.shikadi.net/moddingwiki/MID_Format)
+* .sbi: [SoundBlaster Instrument](http://www.shikadi.net/moddingwiki/SBI_Format)
 
 ## Installation as an end-user
 
