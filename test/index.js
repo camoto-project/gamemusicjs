@@ -64,11 +64,11 @@ colors['error stack'] = '1;37';
 // Amount to transpose each note by depending on track.  This is so we can find
 // the notes again even if the format handler moves them to a different track.
 const transpose = {
-	[Music.TrackConfiguration.ChannelType.OPLT]: 0,
-	[Music.TrackConfiguration.ChannelType.OPLF]: 25,
-	[Music.TrackConfiguration.ChannelType.OPLR]: 60,
-	[Music.TrackConfiguration.ChannelType.MIDI]: 90,
-	[Music.TrackConfiguration.ChannelType.PCM]: 145,
+	[Music.TrackConfiguration.ChannelType.OPLT]: 1,
+	[Music.TrackConfiguration.ChannelType.OPLF]: 2,
+	[Music.TrackConfiguration.ChannelType.OPLR]: 3,
+	[Music.TrackConfiguration.ChannelType.MIDI]: 4, // needs to be factor of 2 or rounding errors break the test
+	[Music.TrackConfiguration.ChannelType.PCM]: 5,
 };
 
 function createDefaultMusic(md)
@@ -92,7 +92,7 @@ function createDefaultMusic(md)
 
 		track.events.push(
 			new Events.NoteOn({
-				frequency: 440 + ts, // A-4
+				frequency: 440 * ts, // A-4
 				velocity: 1,
 				instrument: instrument,
 			})
@@ -110,7 +110,7 @@ function createDefaultMusic(md)
 
 		track.events.push(
 			new Events.NoteOn({
-				frequency: 92.5 + ts, // F#2
+				frequency: 92.5 * ts, // F#2
 				velocity: 0.5,
 				instrument: instrument,
 			})
@@ -510,16 +510,23 @@ for (const handler of gamemusicFormats) {
 
 						// Now we have one big long list of events and times.
 						it(`should have the correct events in ${channelTypeText} channel`, function() {
-							const freq = 440 + transpose[tcExp.channelType];
+							const freq = 440 * transpose[tcExp.channelType];
 							assert.ok(freq);
 
 							const ev = this.timedEvents.find(ev => (
 								(ev.type === Events.NoteOn)
-								&& (ev.frequency > freq - 0.5)
-								&& (ev.frequency < freq + 0.5)
+								&& (ev.frequency > freq - 5)
+								&& (ev.frequency < freq + 5)
 							));
 
-							assert.ok(ev, 'Missing expected NoteOnEvent');
+							// Work out which notes we did get to make the error message more
+							// informative.
+							const noteOns = this.timedEvents
+								.filter(ev => ev.type === Events.NoteOn)
+								.map(ev => Math.round(ev.frequency * 100) / 100)
+								.join(', ');
+
+							assert.ok(ev, `Missing expected NoteOnEvent @ ${freq} +/- 5 Hz (got notes: [${noteOns}])`);
 							assert.equal(ev.test_absTime, 0, 'NoteOnEvent occurred at wrong time.');
 						});
 

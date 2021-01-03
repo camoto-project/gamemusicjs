@@ -92,7 +92,7 @@ export default function generateMIDI(events, patches, trackConfig)
 					lastPatch = midiPatch;
 				}
 
-				lastNote = Math.floor(UtilMIDI.frequencyToMIDI(ev.frequency)); // TODO: handle pitchbend
+				lastNote = Math.round(UtilMIDI.frequencyToMIDI(ev.frequency)); // TODO: handle pitchbend
 				midiEvents.push({
 					type: 'noteOn',
 					note: lastNote,
