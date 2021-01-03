@@ -1,6 +1,6 @@
 {
   "name": "@camoto/gamemusic",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Read and write music files used by DOS games",
   "bin": {
     "gamemus": "./bin/gamemus.js"
