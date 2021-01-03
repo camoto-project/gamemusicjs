@@ -458,7 +458,7 @@ Examples:
   gamemus open example.dro save -f mus-mid-type1 output.mid
 
   # The DEBUG environment variable can be used for troubleshooting.
-  DEBUG='gamemusicjs:*' gamemus ...
+  DEBUG='gamemusic:*' gamemus ...
 `);
 		return;
 	}

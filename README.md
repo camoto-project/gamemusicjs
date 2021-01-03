@@ -29,6 +29,8 @@ directly, you can install the library globally on your system:
 
     npm install -g @camoto/gamemusic
 
+For Arch Linux users the AUR package `gamemusicjs` is also available.
+
 ### Command line interface
 
 The `gamemus` utility can be used to read and write music files in any
