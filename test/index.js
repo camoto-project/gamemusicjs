@@ -526,9 +526,13 @@ for (const handler of gamemusicFormats) {
 					});
 				}
 
+				/* Can't really do this as OPL puts the config events on a separate
+				 * track so we end up with an extra one compared to MIDI.
+				 *
 				it('should have the expected number of tracks', function() {
 					assert.equal(music.trackConfig.length, defaultMusic.trackConfig.length, 'Wrong number of tracks.');
 				});
+				 */
 
 				it(`should have ${defaultMusic.patches.length} instruments`, function() {
 					assert.equal(music.patches.length, defaultMusic.patches.length, 'Wrong number of instruments.');
