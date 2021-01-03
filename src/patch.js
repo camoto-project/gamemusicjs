@@ -21,6 +21,15 @@
 const Music = require('./music.js');
 const UtilOPL = require('./utl-opl.js');
 
+// Compare PCM samples.
+function arrayEqual(a, b) {
+	if (a.length !== b.length) return false;
+	for (let i = 0; i < a.length; i++) {
+		if (a[i] ^ b[i]) return false;
+	}
+	return true;
+}
+
 /**
  * Base class for an instrument's settings.
  */
@@ -174,12 +183,19 @@ class PatchPCM extends Patch {
 		super(params);
 
 		this.sampleRate = params.sampleRate || 8000;
+		this.loopStart = params.loopStart || 0;
+		this.loopEnd = params.loopEnd || 0;
+		// loop type? fwd/back/pingpong
+		this.samples = params.samples || new Uint8Array(0);
 	}
 
 	clone() {
-		return new PatchMIDI({
+		return new PatchPCM({
 			custom: this.custom,
 			sampleRate: this.sampleRate,
+			loopStart: this.loopStart,
+			loopEnd: this.loopEnd,
+			samples: new Uint8Array(this.samples, 0, this.samples.length),
 		});
 	}
 
@@ -192,6 +208,9 @@ class PatchPCM extends Patch {
 
 		return (
 			(a.sampleRate === b.sampleRate)
+			&& (a.loopStart === b.loopStart)
+			&& (a.loopEnd === b.loopEnd)
+			&& arrayEqual(a.samples, b.samples)
 		);
 	}
 }
