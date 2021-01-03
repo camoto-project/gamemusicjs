@@ -44,6 +44,13 @@ function writeOPLChanges(oplData, oplStatePrev, oplState)
 }
 
 /**
+ * Convert channel 0, 1, 2, 9, 10, 11 => 4OP bits 0..5 for reg 0x104.
+ */
+function op4bit(ch) {
+	return Math.floor(ch / 9) * 2 + (ch % 3);
+}
+
+/**
  * Convert the given events into a set of OPL register values.
  *
  * Each event must have an `idxTrack` property added so we know which track it
@@ -80,62 +87,6 @@ export default function generateOPL(events, patches, trackConfig)
 			throw new Error('Encountered an event with an out of range `idxTrack` property.');
 		}
 		const trackCfg = trackConfig[ev.custom.idxTrack || 0]; // 0 for DelayEvents
-
-		// Convert channel 0, 1, 2, 9, 10, 11 => 4OP bits 0..5 for reg 0x104.
-		const op4bit = ch => Math.floor(ch / 9) * 2 + (ch % 3);
-		let channel;
-		switch (trackCfg.channelType) {
-			// Process these events
-			//case ChannelType.Any:
-				// Do nothing, no setup.
-				//break;
-
-			case ChannelType.OPLT:
-				channel = trackCfg.channelIndex;
-
-				// Clear channel 4-op mode (this won't generate any output events if
-				// it's already unset).
-				oplState[0x104] &= ~(1 << op4bit(trackCfg.channelIndex));
-
-				if ((trackCfg.channelIndex >= 6) && (trackCfg.channelIndex <= 8)) {
-					// Clear rhythm mode (no effect if already unset).
-					oplState[0xBD] &= ~0x20;
-				}
-				break;
-
-			case ChannelType.OPLF:
-				channel = trackCfg.channelIndex;
-
-				// Set channel to 4-op mode (this won't generate any output events if
-				// it's already set).
-				if (((trackCfg.channelIndex >= 3) && (trackCfg.channelIndex <= 5)) || (trackCfg.channelIndex > 11)) {
-					throw new Error(`Invalid channel index ${trackCfg.channelIndex} for OPLF channel type.`);
-				}
-				oplState[0x104] |= 1 << op4bit(trackCfg.channelIndex);
-
-				if ((trackCfg.channelIndex >= 6) && (trackCfg.channelIndex <= 8)) {
-					// Clear rhythm mode (no effect if already unset).
-					oplState[0xBD] &= ~0x20;
-				}
-				break;
-
-			case ChannelType.OPLR:
-				const map = [7, 8, 8, 7, 6]; // 0=HH .. 4=BD
-				channel = map[trackCfg.channelIndex - 1] || 0;
-				// Enable rhythm mode (no effect if already set).
-				oplState[0xBD] |= 0x20;
-				break;
-
-			default:
-				// Skip events that are for a channel type we don't have.
-				countUnsupportedChannel++;
-				continue;
-		}
-
-		// TODO: Perc
-		const chipOffset = 0x100 * (channel / 9 >>> 0);
-		const chipChannel = channel % 9;
-		const regOffset = chipOffset + chipChannel;
 
 		switch (ev.type) {
 
@@ -188,9 +139,8 @@ export default function generateOPL(events, patches, trackConfig)
 				}
 				break;
 
-			case Events.Delay:
+			case Events.Delay: {
 				// Write all the changed OPL data followed by this delay.
-				const oplDataBefore = oplData.length;
 				writeOPLChanges(oplData, oplStatePrev, oplState);
 				oplStatePrev = oplState.slice();
 
@@ -206,11 +156,13 @@ export default function generateOPL(events, patches, trackConfig)
 					});
 				}
 				break;
+			}
 
 			case Events.NoteOn: {
 				// Figure out which OPL channel and slots we'll be using.
 				let slots, targetChannel;
 				switch (trackCfg.channelType) {
+
 					case ChannelType.OPLR: // Rhythm
 						switch (trackCfg.channelIndex) {
 							case UtilOPL.Rhythm.HH:
@@ -240,15 +192,40 @@ export default function generateOPL(events, patches, trackConfig)
 								slots = [0, 1];
 								break;
 						}
+						// Enable rhythm mode (no effect if already set).
+						oplState[0xBD] |= 0x20;
 						break;
+
 					case ChannelType.OPLT: // Two op
 						targetChannel = trackCfg.channelIndex;
 						slots = [0, 1];
+
+						// Clear channel 4-op mode (this won't generate any output events if
+						// it's already unset).
+						oplState[0x104] &= ~(1 << op4bit(trackCfg.channelIndex));
+
+						if ((trackCfg.channelIndex >= 6) && (trackCfg.channelIndex <= 8)) {
+							// Clear rhythm mode (no effect if already unset).
+							oplState[0xBD] &= ~0x20;
+						}
 						break;
 
 					case ChannelType.OPLF: // Four op
 						targetChannel = trackCfg.channelIndex;
 						slots = [0, 1, 2, 3];
+
+						// Set channel to 4-op mode (this won't generate any output events if
+						// it's already set).
+						if (((trackCfg.channelIndex >= 3) && (trackCfg.channelIndex <= 5)) || (trackCfg.channelIndex > 11)) {
+							throw new Error(`Invalid channel index ${trackCfg.channelIndex} for OPLF channel type.`);
+						}
+
+						oplState[0x104] |= 1 << op4bit(trackCfg.channelIndex);
+
+						if ((trackCfg.channelIndex >= 6) && (trackCfg.channelIndex <= 8)) {
+							// Clear rhythm mode (no effect if already unset).
+							oplState[0xBD] &= ~0x20;
+						}
 						break;
 
 					default:

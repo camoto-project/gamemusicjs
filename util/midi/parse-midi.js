@@ -248,7 +248,7 @@ export default function parseMIDI(midiEvents, patches, lastTempo)
 				break;
 
 			case 'sysex':
-debug('TODO');
+				debug('TODO: Handle Sysex');
 				break;
 
 			default:

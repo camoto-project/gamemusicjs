@@ -170,7 +170,7 @@ export default class UtilMusic
 				throw new Error(`Music.patterns[${idxPattern}].tracks must be an array.`);
 			}
 
-			const tTrack = this.mergeTracks(events, pattern.tracks);
+			this.mergeTracks(events, pattern.tracks);
 		}
 
 		// Now all the DelayEvents have been removed but `absTime` exists on
