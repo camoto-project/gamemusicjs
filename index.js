@@ -68,7 +68,7 @@ class GameMusic
 	 *   Binary file data.
 	 *
 	 * @param {string} filename
-	 *   Filename where {content} was read from.  This is required for formats
+	 *   Filename where `content` was read from.  This is required for formats
 	 *   like IMF where the tempo is different depending on whether the filename
 	 *   extension is .imf or .wlf.
 	 *
@@ -92,16 +92,19 @@ class GameMusic
 			throw new Error('content parameter must be Uint8Array');
 		}
 		let handlers = [];
-		fileTypes.some(x => {
+		for (const x of fileTypes) {
 			const metadata = x.metadata();
-			const ident = x.identify(content, filename);
-			if (ident.valid === true) {
+			const confidence = x.identify(content, filename);
+			if (confidence.valid === true) {
+				debug(`Matched ${metadata.id}: ${confidence.reason}`);
 				handlers = [x];
-				return true; // exit loop early
-			}
-			if (ident.valid === undefined) {
+				break;
+			} else if (confidence.valid === undefined) {
+				debug(`Possible match for ${metadata.id}: ${confidence.reason}`);
 				handlers.push(x);
 				// keep going to look for a better match
+			} else {
+				debug(`Not ${metadata.id}: ${confidence.reason}`);
 			}
 		});
 		return handlers;
