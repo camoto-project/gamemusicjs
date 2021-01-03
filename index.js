@@ -1,6 +1,5 @@
-/**
- * @file Main library interface.
- * @private
+/*
+ * Main library interface.
  *
  * Copyright (C) 2010-2021 Adam Nielsen <malvineous@shikadi.net>
  *
@@ -18,114 +17,80 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import Debug from './util/debug.js';
+const debug = Debug.extend('index');
+
+import * as formats from './formats/index.js';
+
+export * from './formats/index.js';
+export { default as Music } from './interface/music/index.js';
+export { default as UtilMIDI } from './util/midi/index.js';
+export { default as UtilMusic } from './util/music.js';
+export { default as UtilOPL } from './util/opl/index.js';
+
+import * as Events from './interface/events/index.js';
+import * as Patch from './interface/patch/index.js';
+export { Events, Patch };
+
 /**
- * List of file format handlers available to the library.
+ * Get a list of all the available handlers.
  *
- * Add any new supported file formats to this list.
- *
- * @private
+ * This is preferable to `import *` because most libraries also export utility
+ * functions like the autodetection routine which would be included even though
+ * they are not format handlers.
  */
-const fileTypes = [
-	// These file formats all have signatures so the autodetection is
-	// fast and they are listed first.
-	require('./formats/mus-dro-dosbox-v1.js'),
-	require('./formats/mus-mid-type1.js'),
-
-	// These formats require enumeration, sometimes all the way to the
-	// end of the file, so they are next.
-	...require('./formats/mus-imf-idsoftware.js'),
-
-	// These formats are so ambiguous that they are often misidentified,
-	// so they are last.
-	// Coming soon :)
+export const all = [
+	...Object.values(formats),
 ];
 
 /**
- * Main library interface.
+ * Get a handler by examining the file content.
+ *
+ * Ensure the content has been decompressed first if necessary, e.g. by passing
+ * it through `decompressEXE()` first.
+ *
+ * @param {Uint8Array} content
+ *   Executable file content.
+ *
+ * @param {string} filename
+ *   Filename where `content` was read from.  This is required to identify
+ *   formats where the filename extension is significant.  This can be
+ *   omitted for less accurate autodetection.
+ *
+ * @return {Array<CodeHandler>} from formats/*.js that can handle the
+ *   format, or an empty array if the format could not be identified.
+ *
+ * @example
+ * import { findHandler as gameCodeFindHandler, decompressEXE } from '@camoto/gamecode';
+ * const content = decompressEXE(fs.readFileSync('cosmo1.exe'));
+ * const handler = gameCodeFindHandler(content, 'cosmo1.exe');
+ * if (handler.length === 0) {
+ *   console.log('Unable to identify file format.');
+ * } else {
+ *   const md = handler[0].metadata();
+ *   console.log('File is in ' + md.id + ' format');
+ * }
  */
-class GameMusic
-{
-	/**
-	 * Get a handler by ID directly.
-	 *
-	 * @param {string} type
-	 *   Identifier of desired file format.
-	 *
-	 * @return {MusicHandler} from formats/*.js matching requested code, or {null}
-	 *   if the code is invalid.
-	 *
-	 * @example const handler = GameMusic.getHandler('mus-cmf-creativelabs');
-	 */
-	static getHandler(type)
-	{
-		return fileTypes.find(x => type === x.metadata().id);
+export function findHandler(content, filename) {
+	if (content.length === undefined) {
+		throw new Error('content parameter must be Uint8Array');
 	}
-
-	/**
-	 * Get a handler by examining the file content.
-	 *
-	 * @param {Uint8Array} content
-	 *   Binary file data.
-	 *
-	 * @param {string} filename
-	 *   Filename where `content` was read from.  This is required for formats
-	 *   like IMF where the tempo is different depending on whether the filename
-	 *   extension is .imf or .wlf.
-	 *
-	 * @return {Array<MusicHandler>} Zero or more classes from `formats/*.js`
-	 *   that can handle the format.  An empty array means the format could not
-	 *   be identified.
-	 *
-	 * @example
-	 * const content = fs.readFileSync('jazz.cmf');
-	 * const handler = GameMusic.findHandler(content);
-	 * if (!handler) {
-	 *   console.log('Unable to identify file format.');
-	 * } else {
-	 *   const md = handler.metadata();
-	 *   console.log('File is in ' + md.id + ' format');
-	 * }
-	 */
-	static findHandler(content, filename)
-	{
-		if (content.length === undefined) {
-			throw new Error('content parameter must be Uint8Array');
+	let handlers = [];
+	for (const x of all) {
+		const metadata = x.metadata();
+		debug(`Trying format handler ${metadata.id} (${metadata.title})`);
+		const confidence = x.identify(content, filename);
+		if (confidence.valid === true) {
+			debug(`Matched ${metadata.id}: ${confidence.reason}`);
+			handlers = [x];
+			break;
+		} else if (confidence.valid === undefined) {
+			debug(`Possible match for ${metadata.id}: ${confidence.reason}`);
+			handlers.push(x);
+			// keep going to look for a better match
+		} else {
+			debug(`Not ${metadata.id}: ${confidence.reason}`);
 		}
-		let handlers = [];
-		for (const x of fileTypes) {
-			const metadata = x.metadata();
-			const confidence = x.identify(content, filename);
-			if (confidence.valid === true) {
-				debug(`Matched ${metadata.id}: ${confidence.reason}`);
-				handlers = [x];
-				break;
-			} else if (confidence.valid === undefined) {
-				debug(`Possible match for ${metadata.id}: ${confidence.reason}`);
-				handlers.push(x);
-				// keep going to look for a better match
-			} else {
-				debug(`Not ${metadata.id}: ${confidence.reason}`);
-			}
-		});
-		return handlers;
 	}
-
-	/**
-	 * Get a list of all the available handlers.
-	 *
-	 * This is probably only useful when testing the library.
-	 *
-	 * @return {Array} of file format handlers, with each element being just like
-	 *   the return value of {@link GameMusic.getHandler getHandler()}.
-	 */
-	static listHandlers() {
-		return fileTypes;
-	}
+	return handlers;
 };
-
-GameMusic.Music = require('./src/music.js');
-GameMusic.UtilMusic = require('./src/utl-music.js');
-GameMusic.UtilMIDI = require('./src/utl-midi.js');
-GameMusic.UtilOPL = require('./src/utl-opl.js');
-
-module.exports = GameMusic;

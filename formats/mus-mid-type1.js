@@ -20,14 +20,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const assert = require('assert');
-const { RecordBuffer, RecordType } = require('@malvineous/record-io-buffer');
+const FORMAT_ID = 'mus-mid-type1';
 
-const Debug = require('../src/utl-debug.js')('mus-mid-type1');
-const Music = require('../src/music.js');
-const MusicHandler = require('../src/musicHandler.js');
-const UtilMusic = require('../src/utl-music.js');
-const UtilMIDI = require('../src/utl-midi.js');
+import Debug from '../util/debug.js';
+const debug = Debug.extend(FORMAT_ID);
+
+import assert from 'assert';
+import { RecordBuffer, RecordType } from '@camoto/record-io-buffer';
+import MusicHandler from '../interface/musicHandler.js';
+import Music from '../interface/music/index.js';
+import UtilMusic from '../util/music.js';
+import {
+	default as UtilMIDI,
+	parseSMF,
+	parseMIDI,
+	generateSMF,
+	generateMIDI,
+} from '../util/midi/index.js';
 
 // Length of "MThd" header block.
 const MID_MTHD_LEN = 8 + 6;
@@ -48,12 +57,12 @@ const recordTypes = {
 	},
 };
 
-class Music_MID_Type1 extends MusicHandler
+export default class Music_MID_Type1 extends MusicHandler
 {
 	static metadata() {
 		let md = {
 			...super.metadata(),
-			id: 'mus-mid-type1',
+			id: FORMAT_ID,
 			title: 'Standard MIDI file (type-1 / multi-track)',
 			games: [],
 			glob: [
@@ -68,52 +77,52 @@ class Music_MID_Type1 extends MusicHandler
 								name: 'General MIDI (1..16, P10)',
 								channels: [
 									{
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 0,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 1,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 2,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 3,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 4,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 5,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 6,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 7,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 8,
 									}, {
-										type: Music.ChannelType.MIDIP,
+										type: Music.TrackConfiguration.ChannelType.MIDIP,
 										target: 9,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 10,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 11,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 12,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 13,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 14,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 15,
 									},
 								],
@@ -121,16 +130,16 @@ class Music_MID_Type1 extends MusicHandler
 								name: 'Microsoft Basic MIDI (13..16, P16)',
 								channels: [
 									{
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 12,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 13,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 14,
 									}, {
-										type: Music.ChannelType.MIDIP,
+										type: Music.TrackConfiguration.ChannelType.MIDIP,
 										target: 15,
 									},
 								],
@@ -138,34 +147,34 @@ class Music_MID_Type1 extends MusicHandler
 								name: 'Microsoft Extended MIDI (1..10, P10)',
 								channels: [
 									{
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 0,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 1,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 2,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 3,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 4,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 5,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 6,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 7,
 									}, {
-										type: Music.ChannelType.MIDI,
+										type: Music.TrackConfiguration.ChannelType.MIDI,
 										target: 8,
 									}, {
-										type: Music.ChannelType.MIDIP,
+										type: Music.TrackConfiguration.ChannelType.MIDIP,
 										target: 9,
 									},
 								],
@@ -254,8 +263,8 @@ class Music_MID_Type1 extends MusicHandler
 			const midiTrackData = buffer.getU8(buffer.getPos(), mtrk.len);
 			buffer.seekRel(mtrk.len);
 
-			const midiEvents = UtilMIDI.parseSMF(midiTrackData);
-			const { events } = UtilMIDI.parseMIDI(midiEvents, music.patches, music.initialTempo);
+			const midiEvents = parseSMF(midiTrackData);
+			const { events } = parseMIDI(midiEvents, music.patches, music.initialTempo);
 
 			// Split the single long list of events into tracks.
 			const fnTrackConfig = ev => UtilMIDI.standardTrackSplitConfig(idxNextTrack, ev);
@@ -348,7 +357,7 @@ class Music_MID_Type1 extends MusicHandler
 			// Event objects used by gamemusicjs are very generic, whereas the
 			// resulting MIDI-event list closely matches the structure of MIDI data,
 			// just as an array of objects rather than binary data.
-			let { midiEvents, warnings } = UtilMIDI.generateMIDI(
+			let { midiEvents, warnings } = generateMIDI(
 				track.events,
 				music.patches,
 				trackCfg
@@ -371,7 +380,7 @@ class Music_MID_Type1 extends MusicHandler
 
 			// Now convert the array of MIDI-events into actual binary MIDI data that
 			// can be written directly to a .mid file.
-			const trackContent = UtilMIDI.generateSMF(midiEvents, {
+			const trackContent = generateSMF(midiEvents, {
 				useRunningStatus: true,
 			});
 
@@ -392,5 +401,3 @@ class Music_MID_Type1 extends MusicHandler
 		};
 	}
 }
-
-module.exports = Music_MID_Type1;

@@ -1,5 +1,5 @@
-/**
- * @file Tests specific to mus-wlf-idsoftware-type1.
+/*
+ * Tests specific to mus-wlf-idsoftware-type1.
  *
  * Copyright (C) 2010-2021 Adam Nielsen <malvineous@shikadi.net>
  *
@@ -17,14 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const ID_FORMAT = 'mus-wlf-idsoftware-type1';
-
-const assert = require('assert');
-
-const TestUtil = require('./util.js');
-const GameMusic = require('../index.js');
-
-const handler = GameMusic.getHandler(ID_FORMAT);
+import assert from 'assert';
+import TestUtil from './util.js';
+import { mus_wlf_idsoftware_type1 as handler } from '../index.js';
 
 const md = handler.metadata();
 let testutil = new TestUtil(md.id);
@@ -35,7 +30,6 @@ describe(`Extra tests for ${md.title} [${md.id}]`, function() {
 	describe('I/O', function() {
 
 		before('load test data from local filesystem', function() {
-
 			content = testutil.loadContent(handler, [
 				'short',
 				'truncated',

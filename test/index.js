@@ -1,5 +1,5 @@
-/**
- * @file Standard tests.
+/*
+ * Standard tests.
  *
  * Copyright (C) 2010-2021 Adam Nielsen <malvineous@shikadi.net>
  *
@@ -17,12 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const assert = require('assert');
+import assert from 'assert';
+import TestUtil from './util.js';
 
-const TestUtil = require('./util.js');
-const UtilMusic = require('../src/utl-music.js');
-const GameMusic = require('../index.js');
-const Music = GameMusic.Music;
+import {
+	all as gamemusicFormats,
+	Events,
+	Music,
+	Patch,
+	UtilMusic,
+	UtilOPL,
+} from '../index.js';
 
 // These formats are skipped entirely.
 const skipFormats = [
@@ -48,7 +53,7 @@ const identifyConflicts = {
 };
 
 // Override the default colours so we can actually see them
-var colors = require('mocha/lib/reporters/base').colors;
+import { colors } from 'mocha/lib/reporters/base.js';
 colors['diff added'] = '1;32';
 colors['diff removed'] = '1;31';
 colors['green'] = '1;32';
@@ -59,11 +64,11 @@ colors['error stack'] = '1;37';
 // Amount to transpose each note by depending on track.  This is so we can find
 // the notes again even if the format handler moves them to a different track.
 const transpose = {
-	[Music.ChannelType.OPLT]: 0,
-	[Music.ChannelType.OPLF]: 25,
-	[Music.ChannelType.OPLR]: 60,
-	[Music.ChannelType.MIDI]: 90,
-	[Music.ChannelType.PCM]: 145,
+	[Music.TrackConfiguration.ChannelType.OPLT]: 0,
+	[Music.TrackConfiguration.ChannelType.OPLF]: 25,
+	[Music.TrackConfiguration.ChannelType.OPLR]: 60,
+	[Music.TrackConfiguration.ChannelType.MIDI]: 90,
+	[Music.TrackConfiguration.ChannelType.PCM]: 145,
 };
 
 function createDefaultMusic(md)
@@ -71,7 +76,7 @@ function createDefaultMusic(md)
 	// This is what we expect the default song in any given format to
 	// look like.
 
-	const hasNoteOn = md.caps.supportedEvents.some(ev => ev instanceof Music.NoteOnEvent);
+	const hasNoteOn = md.caps.supportedEvents.some(ev => ev instanceof Events.NoteOn);
 
 	/**
 	 * Add a new track with some notes using the specified instrument.
@@ -86,7 +91,7 @@ function createDefaultMusic(md)
 		let track = new Music.Track();
 
 		track.events.push(
-			new Music.NoteOnEvent({
+			new Events.NoteOn({
 				frequency: 440 + ts, // A-4
 				velocity: 1,
 				instrument: instrument,
@@ -94,17 +99,17 @@ function createDefaultMusic(md)
 		);
 
 		track.events.push(
-			new Music.DelayEvent({
+			new Events.Delay({
 				ticks: 10,
 			})
 		);
 
 		track.events.push(
-			new Music.NoteOffEvent()
+			new Events.NoteOff()
 		);
 
 		track.events.push(
-			new Music.NoteOnEvent({
+			new Events.NoteOn({
 				frequency: 92.5 + ts, // F#2
 				velocity: 0.5,
 				instrument: instrument,
@@ -112,13 +117,13 @@ function createDefaultMusic(md)
 		);
 
 		track.events.push(
-			new Music.DelayEvent({
+			new Events.Delay({
 				ticks: 10,
 			})
 		);
 
 		track.events.push(
-			new Music.NoteOffEvent()
+			new Events.NoteOff()
 		);
 
 		return track;
@@ -140,8 +145,8 @@ function createDefaultMusic(md)
 		}
 	}
 
-	if (channelTypes[Music.ChannelType.OPLT]) {
-		let inst = new Music.Patch.OPL({
+	if (channelTypes[Music.TrackConfiguration.ChannelType.OPLT]) {
+		let inst = new Patch.OPL({
 			title: 'TEST',
 			slot: [
 				{
@@ -180,22 +185,22 @@ function createDefaultMusic(md)
 		// If the format has note-on events, add some.
 		if (hasNoteOn) {
 			defaultMusic.trackConfig.push(new Music.TrackConfiguration({
-				channelType: Music.ChannelType.OPLT,
+				channelType: Music.TrackConfiguration.ChannelType.OPLT,
 				channelIndex: 0,
 			}));
 
 			// Add some notes using this instrument to a new track.
 			let track = createTrack(
 				defaultMusic.patches.length - 1,
-				Music.ChannelType.OPLT
+				Music.TrackConfiguration.ChannelType.OPLT
 			);
 
 			pattern.tracks.push(track);
 		}
 	}
 
-	if (channelTypes[Music.ChannelType.OPLF]) {
-		let inst = new Music.Patch.OPL({
+	if (channelTypes[Music.TrackConfiguration.ChannelType.OPLF]) {
+		let inst = new Patch.OPL({
 			slot: [
 				{
 					enableTremolo: 1,
@@ -259,14 +264,14 @@ function createDefaultMusic(md)
 		// If the format has note-on events, add some.
 		if (hasNoteOn) {
 			defaultMusic.trackConfig.push(new Music.TrackConfiguration({
-				channelType: Music.ChannelType.OPLF,
+				channelType: Music.TrackConfiguration.ChannelType.OPLF,
 				channelIndex: 1,
 			}));
 
 			// Add some notes using this instrument to a new track.
 			let track = createTrack(
 				defaultMusic.patches.length - 1,
-				Music.ChannelType.OPLF
+				Music.TrackConfiguration.ChannelType.OPLF
 			);
 
 			pattern.tracks.push(track);
@@ -277,21 +282,21 @@ function createDefaultMusic(md)
 
 			// We have to enable OPL3 mode to use 4-op instruments, so add this event
 			// in front of the note events.
-			track.events.unshift(new Music.ConfigurationEvent({
-				option: Music.ConfigurationEvent.Option.EnableOPL3,
+			track.events.unshift(new Events.Configuration({
+				option: Events.Configuration.Option.EnableOPL3,
 				value: true,
 			}));
 
 			defaultMusic.trackConfig.push(new Music.TrackConfiguration({
-				channelType: Music.ChannelType.OPLT,
+				channelType: Music.TrackConfiguration.ChannelType.OPLT,
 				channelIndex: 0,
 			}));
 			pattern.tracks.push(track);
 		}
 	}
 
-	if (channelTypes[Music.ChannelType.OPLR]) {
-		let inst = new Music.Patch.OPL({
+	if (channelTypes[Music.TrackConfiguration.ChannelType.OPLR]) {
+		let inst = new Patch.OPL({
 			slot: [
 				{
 					enableTremolo: 1,
@@ -316,20 +321,20 @@ function createDefaultMusic(md)
 		// If the format has note-on events, add some.
 		if (hasNoteOn) {
 			defaultMusic.trackConfig.push(new Music.TrackConfiguration({
-				channelType: Music.ChannelType.OPLR,
-				channelIndex: GameMusic.UtilOPL.Rhythm.HH,
+				channelType: Music.TrackConfiguration.ChannelType.OPLR,
+				channelIndex: UtilOPL.Rhythm.HH,
 			}));
 
 			// Add some notes using this instrument to a new track.
 			let track = createTrack(
 				defaultMusic.patches.length - 1,
-				Music.ChannelType.OPLR
+				Music.TrackConfiguration.ChannelType.OPLR
 			);
 
 			// We have to enable rhythm mode to use rhythm instruments, so add this
 			// event in front of the note events.
-			track.events.unshift(new Music.ConfigurationEvent({
-				option: Music.ConfigurationEvent.Option.EnableRhythm,
+			track.events.unshift(new Events.Configuration({
+				option: Events.Configuration.Option.EnableRhythm,
 				value: true,
 			}));
 
@@ -337,8 +342,8 @@ function createDefaultMusic(md)
 		}
 	}
 
-	if (channelTypes[Music.ChannelType.MIDI]) {
-		let inst = new Music.Patch.MIDI({
+	if (channelTypes[Music.TrackConfiguration.ChannelType.MIDI]) {
+		let inst = new Patch.MIDI({
 			midiBank: 0,
 			midiPatch: 1,
 		});
@@ -347,22 +352,22 @@ function createDefaultMusic(md)
 		// If the format has note-on events, add some.
 		if (hasNoteOn) {
 			defaultMusic.trackConfig.push(new Music.TrackConfiguration({
-				channelType: Music.ChannelType.MIDI,
+				channelType: Music.TrackConfiguration.ChannelType.MIDI,
 				channelIndex: 0,
 			}));
 
 			// Add some notes using this instrument to a new track.
 			let track = createTrack(
 				defaultMusic.patches.length - 1,
-				Music.ChannelType.MIDI
+				Music.TrackConfiguration.ChannelType.MIDI
 			);
 
 			pattern.tracks.push(track);
 		}
 	}
 
-	if (channelTypes[Music.ChannelType.PCM]) {
-		let inst = new Music.Patch.PCM({
+	if (channelTypes[Music.TrackConfiguration.ChannelType.PCM]) {
+		let inst = new Patch.PCM({
 			sampleRate: 8000,
 		});
 		defaultMusic.patches.push(inst);
@@ -370,14 +375,14 @@ function createDefaultMusic(md)
 		// If the format has note-on events, add some.
 		if (hasNoteOn) {
 			defaultMusic.trackConfig.push(new Music.TrackConfiguration({
-				channelType: Music.ChannelType.PCM,
+				channelType: Music.TrackConfiguration.ChannelType.PCM,
 				channelIndex: 0,
 			}));
 
 			// Add some notes using this instrument to a new track.
 			let track = createTrack(
 				defaultMusic.patches.length - 1,
-				Music.ChannelType.PCM
+				Music.TrackConfiguration.ChannelType.PCM
 			);
 
 			pattern.tracks.push(track);
@@ -397,12 +402,11 @@ function createDefaultMusic(md)
 	return defaultMusic;
 }
 
-const allHandlers = GameMusic.listHandlers();
-allHandlers.forEach(handler => {
+for (const handler of gamemusicFormats) {
 	const md = handler.metadata();
 
 	if (skipFormats.some(id => id === md.id)) {
-		return;
+		continue;
 	}
 
 	// Do this outside of the test handler so it's available when constructing
@@ -461,7 +465,7 @@ allHandlers.forEach(handler => {
 				let music;
 
 				assert.ok(md.caps.supportedEvents, `caps.supportedEvents missing for ${md.id}.`);
-				const hasNoteOn = md.caps.supportedEvents.some(ev => ev instanceof Music.NoteOnEvent);
+				const hasNoteOn = md.caps.supportedEvents.some(ev => ev instanceof Events.NoteOn);
 
 				before('should parse correctly', function() {
 					music = handler.parse(content.default);
@@ -476,7 +480,7 @@ allHandlers.forEach(handler => {
 
 				// Tests for each channel type.
 				for (const tcExp of defaultMusic.trackConfig) {
-					const channelTypeText = Music.ChannelType.toString(tcExp.channelType);
+					const channelTypeText = Music.TrackConfiguration.ChannelType.toString(tcExp.channelType);
 					describe(`should support ${channelTypeText} channels`, function() {
 
 						before(`merge patterns and tracks`, function() {
@@ -489,7 +493,7 @@ allHandlers.forEach(handler => {
 								this.timedEvents = [];
 								let t = 0;
 								for (const ev of mergedEvents) {
-									if (ev.type === Music.DelayEvent) {
+									if (ev.type === Events.Delay) {
 										t += ev.ticks;
 										continue;
 									}
@@ -510,7 +514,7 @@ allHandlers.forEach(handler => {
 							assert.ok(freq);
 
 							const ev = this.timedEvents.find(ev => (
-								(ev.type === Music.NoteOnEvent)
+								(ev.type === Events.NoteOn)
 								&& (ev.frequency > freq - 0.5)
 								&& (ev.frequency < freq + 0.5)
 							));
@@ -607,8 +611,7 @@ allHandlers.forEach(handler => {
 					});
 				});
 
-				const allHandlers = GameMusic.listHandlers();
-				allHandlers.forEach(subhandler => {
+				for (const subhandler of gamemusicFormats) {
 					const submd = subhandler.metadata();
 
 					// Skip ourselves
@@ -624,11 +627,12 @@ allHandlers.forEach(handler => {
 							assert.notEqual(result.valid, true);
 						});
 					}
-				});
+				}
 
 			}); // identify()
 
 		}); // I/O
+
 	}); // Standard tests
 
-}); // for each handler
+} // for each handler

@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "Read and write music files used by DOS games",
   "bin": {
-    "gamemus": "./bin/gamemus"
+    "gamemus": "./bin/gamemus.js"
   },
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "serve-doc": "documentation serve --shallow -w index.js src/*.js",
     "test": "mocha",
@@ -44,7 +45,7 @@
   },
   "homepage": "https://github.com/Malvineous/gamemusicjs#readme",
   "dependencies": {
-    "@camoto/record-io-buffer": "^2.4.1",
+    "@camoto/record-io-buffer": "^3.0.0",
     "chalk": "^4.1.0",
     "debug": "^4.2.0"
   },

@@ -20,13 +20,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const { RecordBuffer, RecordType } = require('@malvineous/record-io-buffer');
+const FORMAT_ID = 'mus-dro-dosbox-v1';
 
-const Debug = require('../src/utl-debug.js')('mus-dro-dosbox-v1');
-const Music = require('../src/music.js');
-const MusicHandler = require('../src/musicHandler.js');
-const UtilMusic = require('../src/utl-music.js');
-const UtilOPL = require('../src/utl-opl.js');
+import Debug from '../util/debug.js';
+const debug = Debug.extend(FORMAT_ID);
+
+import { RecordBuffer, RecordType } from '@camoto/record-io-buffer';
+import MusicHandler from '../interface/musicHandler.js';
+import { Music, UtilMusic, UtilOPL } from '../index.js';
+import { generateOPL, parseOPL } from '../util/opl/index.js';
+import { Tempo as TempoEvent } from '../interface/events/index.js';
 
 const recordTypes = {
 	header: {
@@ -54,12 +57,12 @@ const DRO_OPL_LOW = 0x02;
 const DRO_OPL_HIGH = 0x03;
 const DRO_ESCAPE = 0x04;
 
-class Music_DRO_DOSBox_v1 extends MusicHandler
+export default class Music_DRO_DOSBox_v1 extends MusicHandler
 {
 	static metadata() {
 		let md = {
 			...super.metadata(),
-			id: 'mus-dro-dosbox-v1',
+			id: FORMAT_ID,
 			title: 'DOSBox Raw OPL Capture (version 0.1)',
 			games: [],
 			glob: [
@@ -74,10 +77,10 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 								name: '2x melodic 2-op',
 								channels: [
 									{
-										type: Music.ChannelType.OPLT,
+										type: Music.TrackConfiguration.ChannelType.OPLT,
 										target: 0,
 									}, {
-										type: Music.ChannelType.OPLT,
+										type: Music.TrackConfiguration.ChannelType.OPLT,
 										target: 3,
 									},
 								],
@@ -85,7 +88,7 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 								name: '1x melodic 4-op',
 								channels: [
 									{
-										type: Music.ChannelType.OPLF,
+										type: Music.TrackConfiguration.ChannelType.OPLF,
 										target: 0,
 									},
 								],
@@ -98,10 +101,10 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 								name: '2x melodic 2-op',
 								channels: [
 									{
-										type: Music.ChannelType.OPLT,
+										type: Music.TrackConfiguration.ChannelType.OPLT,
 										target: 1,
 									}, {
-										type: Music.ChannelType.OPLT,
+										type: Music.TrackConfiguration.ChannelType.OPLT,
 										target: 4,
 									},
 								],
@@ -109,7 +112,7 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 								name: '1x melodic 4-op',
 								channels: [
 									{
-										type: Music.ChannelType.OPLF,
+										type: Music.TrackConfiguration.ChannelType.OPLF,
 										target: 1,
 									},
 								],
@@ -122,10 +125,10 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 								name: '2x melodic 2-op',
 								channels: [
 									{
-										type: Music.ChannelType.OPLT,
+										type: Music.TrackConfiguration.ChannelType.OPLT,
 										target: 2,
 									}, {
-										type: Music.ChannelType.OPLT,
+										type: Music.TrackConfiguration.ChannelType.OPLT,
 										target: 5,
 									},
 								],
@@ -133,7 +136,7 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 								name: '1x melodic 4-op',
 								channels: [
 									{
-										type: Music.ChannelType.OPLF,
+										type: Music.TrackConfiguration.ChannelType.OPLF,
 										target: 2,
 									},
 								],
@@ -146,13 +149,13 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 								name: '3x melodic 2-op',
 								channels: [
 									{
-										type: Music.ChannelType.OPLT,
+										type: Music.TrackConfiguration.ChannelType.OPLT,
 										target: 6,
 									}, {
-										type: Music.ChannelType.OPLT,
+										type: Music.TrackConfiguration.ChannelType.OPLT,
 										target: 7,
 									}, {
-										type: Music.ChannelType.OPLT,
+										type: Music.TrackConfiguration.ChannelType.OPLT,
 										target: 8,
 									},
 								],
@@ -160,19 +163,19 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 								name: '4x percussion 1-op + 1x percussion 2-op',
 								channels: [
 									{
-										type: Music.ChannelType.OPLR,
+										type: Music.TrackConfiguration.ChannelType.OPLR,
 										target: UtilOPL.Rhythm.HH,
 									}, {
-										type: Music.ChannelType.OPLR,
+										type: Music.TrackConfiguration.ChannelType.OPLR,
 										target: UtilOPL.Rhythm.CY,
 									}, {
-										type: Music.ChannelType.OPLR,
+										type: Music.TrackConfiguration.ChannelType.OPLR,
 										target: UtilOPL.Rhythm.TT,
 									}, {
-										type: Music.ChannelType.OPLR,
+										type: Music.TrackConfiguration.ChannelType.OPLR,
 										target: UtilOPL.Rhythm.SD,
 									}, {
-										type: Music.ChannelType.OPLR,
+										type: Music.TrackConfiguration.ChannelType.OPLR,
 										target: UtilOPL.Rhythm.BD,
 									},
 								],
@@ -185,10 +188,10 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 								name: '2x melodic 2-op',
 								channels: [
 									{
-										type: Music.ChannelType.OPLT,
+										type: Music.TrackConfiguration.ChannelType.OPLT,
 										target: 9,
 									}, {
-										type: Music.ChannelType.OPLT,
+										type: Music.TrackConfiguration.ChannelType.OPLT,
 										target: 12,
 									},
 								],
@@ -196,7 +199,7 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 								name: '1x melodic 4-op',
 								channels: [
 									{
-										type: Music.ChannelType.OPLF,
+										type: Music.TrackConfiguration.ChannelType.OPLF,
 										target: 9,
 									},
 								],
@@ -209,10 +212,10 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 								name: '2x melodic 2-op',
 								channels: [
 									{
-										type: Music.ChannelType.OPLT,
+										type: Music.TrackConfiguration.ChannelType.OPLT,
 										target: 10,
 									}, {
-										type: Music.ChannelType.OPLT,
+										type: Music.TrackConfiguration.ChannelType.OPLT,
 										target: 13,
 									},
 								],
@@ -220,7 +223,7 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 								name: '1x melodic 4-op',
 								channels: [
 									{
-										type: Music.ChannelType.OPLF,
+										type: Music.TrackConfiguration.ChannelType.OPLF,
 										target: 10,
 									},
 								],
@@ -233,10 +236,10 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 								name: '2x melodic 2-op',
 								channels: [
 									{
-										type: Music.ChannelType.OPLT,
+										type: Music.TrackConfiguration.ChannelType.OPLT,
 										target: 11,
 									}, {
-										type: Music.ChannelType.OPLT,
+										type: Music.TrackConfiguration.ChannelType.OPLT,
 										target: 14,
 									},
 								],
@@ -244,7 +247,7 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 								name: '1x melodic 4-op',
 								channels: [
 									{
-										type: Music.ChannelType.OPLF,
+										type: Music.TrackConfiguration.ChannelType.OPLF,
 										target: 11,
 									},
 								],
@@ -257,13 +260,13 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 								name: '3x melodic 2-op',
 								channels: [
 									{
-										type: Music.ChannelType.OPLT,
+										type: Music.TrackConfiguration.ChannelType.OPLT,
 										target: 15,
 									}, {
-										type: Music.ChannelType.OPLT,
+										type: Music.TrackConfiguration.ChannelType.OPLT,
 										target: 16,
 									}, {
-										type: Music.ChannelType.OPLT,
+										type: Music.TrackConfiguration.ChannelType.OPLT,
 										target: 17,
 									},
 								],
@@ -413,10 +416,10 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 			debug(`Not reading tags, only ${buffer.distFromEnd()} bytes left in file`);
 		}
 
-		music.initialTempo = new Music.TempoEvent();
+		music.initialTempo = new TempoEvent();
 		music.initialTempo.usPerTick = 1000;
 
-		const { events, patches } = UtilOPL.parseOPL(oplData);
+		const { events, patches } = parseOPL(oplData);
 		music.patches = patches;
 
 		// Split the single long list of events into tracks.
@@ -441,10 +444,10 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 		events = UtilMusic.fixedTempo(
 			events,
 			music.initialTempo,
-			new Music.TempoEvent({usPerTick: 1000})
+			new TempoEvent({usPerTick: 1000})
 		);
 
-		const { oplData, warnings } = UtilOPL.generateOPL(
+		const { oplData, warnings } = generateOPL(
 			events,
 			music.patches,
 			music.trackConfig
@@ -530,5 +533,3 @@ class Music_DRO_DOSBox_v1 extends MusicHandler
 		});
 	}
 }
-
-module.exports = Music_DRO_DOSBox_v1;

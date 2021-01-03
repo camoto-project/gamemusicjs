@@ -17,16 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const assert = require('assert');
-
-const TestUtil = require('./util.js');
-const Music = require('../src/music.js');
+import assert from 'assert';
+import TestUtil from './util.js';
+import { Events } from '../index.js';
 
 describe(`TempoEvent tests`, function() {
 
 	function runTest(field, value, usPerTick, extras) {
 		it(`${field} -> usPerTick`, function() {
-			let t = new Music.TempoEvent({
+			let t = new Events.Tempo({
 				...extras,
 				[field]: value,
 			});
@@ -34,7 +33,7 @@ describe(`TempoEvent tests`, function() {
 		});
 
 		it(`usPerTick -> ${field}`, function() {
-			let t = new Music.TempoEvent({
+			let t = new Events.Tempo({
 				...extras,
 				usPerTick: usPerTick,
 			});
@@ -47,7 +46,7 @@ describe(`TempoEvent tests`, function() {
 
 	it('.bpm throws on out of range values', function() {
 		function t() {
-			new Music.TempoEvent({
+			new Events.Tempo({
 				bpm: 0,
 			});
 		}
@@ -59,7 +58,7 @@ describe(`TempoEvent tests`, function() {
 
 	it('.usPerQuarterNote throws on out of range values', function() {
 		function t() {
-			new Music.TempoEvent({
+			new Events.Tempo({
 				usPerQuarterNote: 0,
 			});
 		}
@@ -71,7 +70,7 @@ describe(`TempoEvent tests`, function() {
 
 	it('.hertz throws on out of range values', function() {
 		function t() {
-			new Music.TempoEvent({
+			new Events.Tempo({
 				hertz: 0,
 			});
 		}
@@ -83,7 +82,7 @@ describe(`TempoEvent tests`, function() {
 
 	it('.module throws on out of range values', function() {
 		function t() {
-			new Music.TempoEvent({
+			new Events.Tempo({
 				module: { speed: 6, tempo: 0 },
 			});
 		}

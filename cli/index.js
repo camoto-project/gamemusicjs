@@ -17,12 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const fs = require('fs');
-const commandLineArgs = require('command-line-args');
-const GameMusic = require('../index.js');
-const Music = GameMusic.Music;
-const chalk = require('chalk');
-const Debug = require('../src/utl-debug.js')('gamemus');
+import Debug from '../util/debug.js';
+const g_debug = Debug.extend('cli');
+
+import fs from 'fs';
+import chalk from 'chalk';
+import commandLineArgs from 'command-line-args';
+import {
+	Events,
+	Music,
+	UtilMIDI,
+	UtilMusic,
+	all as gamemusicFormats,
+	findHandler as gamemusicFindHandler,
+} from '../index.js';
 
 class OperationsError extends Error {
 }
@@ -30,7 +38,7 @@ class OperationsError extends Error {
 class Operations
 {
 	constructor() {
-		this.music = new GameMusic.Music();
+		this.music = new Music();
 	}
 
 	identify(params) {
@@ -42,7 +50,7 @@ class Operations
 		const content = {
 			main: fs.readFileSync(params.target),
 		};
-		let handlers = GameMusic.findHandler(content.main, params.target);
+		let handlers = gamemusicFindHandler(content.main, params.target);
 
 		console.log(handlers.length + ' format handler(s) matched');
 		if (handlers.length === 0) {
@@ -100,7 +108,7 @@ class Operations
 	}
 
 	list(params) {
-		const debug = Debug.extend('list');
+		const debug = g_debug.extend('list');
 
 		const defaultPrint = Object.keys(params).length === 0;
 		let print = {
@@ -151,8 +159,8 @@ class Operations
 						continue;
 					}
 					switch (ev.type) {
-						case Music.NoteOnEvent: {
-							const note = GameMusic.UtilMIDI.frequencyToMIDIBend(ev.frequency);
+						case Events.NoteOn: {
+							const note = UtilMIDI.frequencyToMIDIBend(ev.frequency);
 							const vel = Math.round((ev.velocity * 255)).toString(16).toUpperCase().padStart(2, '0');
 							const inst = ev.instrument.toString(16).toUpperCase().padStart(2, '0').padStart(3);
 							process.stdout.write(
@@ -161,19 +169,19 @@ class Operations
 							break;
 						}
 
-						case Music.NoteOffEvent:
+						case Events.NoteOff:
 							process.stdout.write(
 								chalk`{green ---} {grey .. ..}`
 							);
 							break;
 
-						case Music.TempoEvent:
+						case Events.Tempo:
 							process.stdout.write(
 								chalk`{magenta.bold T${Math.round(ev.usPerTick).toString().padStart(8)}}`
 							);
 							break;
 
-						case Music.ConfigurationEvent: {
+						case Events.Configuration: {
 							const txt = [
 								() => '?????',
 								() => 'EMPTY',
@@ -206,12 +214,12 @@ class Operations
 
 			for (const pat of this.music.patterns) {
 				let events = [];
-				GameMusic.UtilMusic.mergeTracks(events, pat.tracks);
+				UtilMusic.mergeTracks(events, pat.tracks);
 
 				t = 0;
 				let cachedEvents = [];
 				for (const ev of events) {
-					if (ev.type === Music.DelayEvent) {
+					if (ev.type === Events.Delay) {
 						if (cachedEvents.length) {
 							printEvents(cachedEvents);
 							cachedEvents = [];
@@ -231,7 +239,7 @@ class Operations
 			process.stdout.write(`\nConfiguration for ${trackCount} tracks:\n`);
 			for (const t in this.music.trackConfig) {
 				const tc = this.music.trackConfig[t];
-				const channelTitle = `${Music.ChannelType.toString(tc.channelType)}-${tc.channelIndex}`;
+				const channelTitle = `${Music.TrackConfiguration.ChannelType.toString(tc.channelType)}-${tc.channelIndex}`;
 				process.stdout.write(
 					chalk`Track {yellow.bold ${t}}: {white.bold ${channelTitle}}\n`
 				);
@@ -253,7 +261,7 @@ class Operations
 	open(params) {
 		let handler;
 		if (params.format) {
-			handler = GameMusic.getHandler(params.format);
+			handler = gamemusicFormats.find(h => h.metadata().id === params.format);
 			if (!handler) {
 				throw new OperationsError('Invalid format code: ' + params.format);
 			}
@@ -266,7 +274,7 @@ class Operations
 			main: fs.readFileSync(params.target),
 		};
 		if (!handler) {
-			let handlers = GameMusic.findHandler(content.main, params.target);
+			let handlers = gamemusicFindHandler(content.main, params.target);
 			if (handlers.length === 0) {
 				throw new OperationsError('Unable to identify this music format.');
 			}
@@ -299,14 +307,14 @@ class Operations
 	}
 
 	async save(params) {
-		const debug = Debug.extend('save');
+		const debug = g_debug.extend('save');
 
 		if (!params.target) {
 			throw new OperationsError('save: missing filename');
 		}
 		if (!params.format) params.format = this.origFormat;
 
-		const handler = GameMusic.getHandler(params.format);
+		const handler = gamemusicFormats.find(h => h.metadata().id === params.format);
 		if (!handler) {
 			throw new OperationsError('save: invalid format code: ' + params.format);
 		}
@@ -387,13 +395,13 @@ Object.keys(aliases).forEach(cmd => {
 
 function listFormats()
 {
-	GameMusic.listHandlers().forEach(handler => {
+	for (const handler of gamemusicFormats) {
 		const md = handler.metadata();
 		console.log(`${md.id}: ${md.title}`);
 		if (md.params) Object.keys(md.params).forEach(p => {
 			console.log(`  * ${p}: ${md.params[p]}`);
 		});
-	});
+	}
 }
 
 async function processCommands()
@@ -480,4 +488,4 @@ Examples:
 	}
 }
 
-processCommands();
+export default processCommands;

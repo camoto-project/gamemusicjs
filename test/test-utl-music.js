@@ -17,17 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const assert = require('assert');
-
-const Music = require('../src/music.js');
-const UtilMusic = require('../src/utl-music.js');
+import assert from 'assert';
+import { Music, Events, UtilMusic } from '../index.js';
 
 describe(`UtilMusic tests`, function() {
 
 	describe('splitEvents()', function() {
 		const fnGetTrackConfig = ev => {
 			let tc = new Music.TrackConfiguration({
-				channelType: Music.ChannelType.OPLT,
+				channelType: Music.TrackConfiguration.ChannelType.OPLT,
 				channelIndex: ev.custom._test_channel_index,
 			});
 			tc.trackIndex = ev.custom._test_track_index;
@@ -36,7 +34,7 @@ describe(`UtilMusic tests`, function() {
 
 		it('various values are split correctly', function() {
 			const inputEvents = [
-				new Music.NoteOnEvent({
+				new Events.NoteOn({
 					frequency: 110,
 					velocity: 1,
 					instrument: 0,
@@ -45,7 +43,7 @@ describe(`UtilMusic tests`, function() {
 						_test_track_index: 0,
 					},
 				}),
-				new Music.NoteOnEvent({
+				new Events.NoteOn({
 					frequency: 220,
 					velocity: 1,
 					instrument: 0,
@@ -54,15 +52,15 @@ describe(`UtilMusic tests`, function() {
 						_test_track_index: 1,
 					},
 				}),
-				new Music.DelayEvent({ticks: 20}),
-				new Music.NoteOffEvent({
+				new Events.Delay({ticks: 20}),
+				new Events.NoteOff({
 					custom: {
 						_test_channel_index: 1,
 						_test_track_index: 0,
 					},
 				}),
-				new Music.DelayEvent({ticks: 10}),
-				new Music.NoteOffEvent({
+				new Events.Delay({ticks: 10}),
+				new Events.NoteOff({
 					custom: {
 						_test_channel_index: 2,
 						_test_track_index: 1,
@@ -74,11 +72,11 @@ describe(`UtilMusic tests`, function() {
 
 			assert.ok(r.trackConfig);
 			assert.ok(r.trackConfig[0]);
-			assert.equal(r.trackConfig[0].channelType, Music.ChannelType.OPLT);
+			assert.equal(r.trackConfig[0].channelType, Music.TrackConfiguration.ChannelType.OPLT);
 			assert.equal(r.trackConfig[0].channelIndex, 1);
 
 			assert.ok(r.trackConfig[1]);
-			assert.equal(r.trackConfig[1].channelType, Music.ChannelType.OPLT);
+			assert.equal(r.trackConfig[1].channelType, Music.TrackConfiguration.ChannelType.OPLT);
 			assert.equal(r.trackConfig[1].channelIndex, 2);
 
 			assert.ok(r.pattern);
@@ -89,18 +87,18 @@ describe(`UtilMusic tests`, function() {
 			assert.ok(r.pattern.tracks[1].events);
 
 			assert.ok(r.pattern.tracks[0].events[0]);
-			assert.equal(r.pattern.tracks[0].events[0].type, Music.NoteOnEvent);
+			assert.equal(r.pattern.tracks[0].events[0].type, Events.NoteOn);
 			assert.equal(r.pattern.tracks[0].events[0].frequency, 110);
-			assert.equal(r.pattern.tracks[0].events[1].type, Music.DelayEvent);
+			assert.equal(r.pattern.tracks[0].events[1].type, Events.Delay);
 			assert.equal(r.pattern.tracks[0].events[1].ticks, 20);
-			assert.equal(r.pattern.tracks[0].events[2].type, Music.NoteOffEvent);
+			assert.equal(r.pattern.tracks[0].events[2].type, Events.NoteOff);
 
 			assert.ok(r.pattern.tracks[1].events[0]);
-			assert.equal(r.pattern.tracks[1].events[0].type, Music.NoteOnEvent);
+			assert.equal(r.pattern.tracks[1].events[0].type, Events.NoteOn);
 			assert.equal(r.pattern.tracks[1].events[0].frequency, 220);
-			assert.equal(r.pattern.tracks[1].events[1].type, Music.DelayEvent);
+			assert.equal(r.pattern.tracks[1].events[1].type, Events.Delay);
 			assert.equal(r.pattern.tracks[1].events[1].ticks, 30);
-			assert.equal(r.pattern.tracks[1].events[2].type, Music.NoteOffEvent);
+			assert.equal(r.pattern.tracks[1].events[2].type, Events.NoteOff);
 		});
 	}); // midiToFrequency()
 
@@ -114,7 +112,7 @@ describe(`UtilMusic tests`, function() {
 			];
 
 			tracks[0].events = [
-				new Music.NoteOnEvent({
+				new Events.NoteOn({
 					frequency: 110,
 					velocity: 1,
 					instrument: 0,
@@ -123,8 +121,8 @@ describe(`UtilMusic tests`, function() {
 						_test_track_index: 0,
 					},
 				}),
-				new Music.DelayEvent({ticks: 20}),
-				new Music.NoteOffEvent({
+				new Events.Delay({ticks: 20}),
+				new Events.NoteOff({
 					custom: {
 						_test_channel_index: 1,
 						_test_track_index: 0,
@@ -133,7 +131,7 @@ describe(`UtilMusic tests`, function() {
 			];
 
 			tracks[1].events = [
-				new Music.NoteOnEvent({
+				new Events.NoteOn({
 					frequency: 220,
 					velocity: 1,
 					instrument: 0,
@@ -142,8 +140,8 @@ describe(`UtilMusic tests`, function() {
 						_test_track_index: 1,
 					},
 				}),
-				new Music.DelayEvent({ticks: 30}),
-				new Music.NoteOffEvent({
+				new Events.Delay({ticks: 30}),
+				new Events.NoteOff({
 					custom: {
 						_test_channel_index: 2,
 						_test_track_index: 1,
@@ -154,43 +152,43 @@ describe(`UtilMusic tests`, function() {
 			UtilMusic.mergeTracks(events, tracks);
 
 			assert.ok(events[0]);
-			assert.equal(events[0].type, Music.NoteOnEvent);
+			assert.equal(events[0].type, Events.NoteOn);
 			assert.equal(events[0].frequency, 110);
-			assert.equal(events[1].type, Music.NoteOnEvent);
+			assert.equal(events[1].type, Events.NoteOn);
 			assert.equal(events[1].frequency, 220);
-			assert.equal(events[2].type, Music.DelayEvent);
+			assert.equal(events[2].type, Events.Delay);
 			assert.equal(events[2].ticks, 20);
-			assert.equal(events[3].type, Music.NoteOffEvent);
-			assert.equal(events[4].type, Music.DelayEvent);
+			assert.equal(events[3].type, Events.NoteOff);
+			assert.equal(events[4].type, Events.Delay);
 			assert.equal(events[4].ticks, 10);
-			assert.equal(events[5].type, Music.NoteOffEvent);
+			assert.equal(events[5].type, Events.NoteOff);
 		});
 	}); // mergeTracks()
 
 	describe('fixedTempo()', function() {
 		it('same tempo does not change anything', function() {
-			const genericEvent = new Music.ConfigurationEvent({
-				option: Music.ConfigurationEvent.Option.EnableWaveSel,
+			const genericEvent = new Events.Configuration({
+				option: Events.Configuration.Option.EnableWaveSel,
 				value: true,
 			});
-			const initialTempo = new Music.TempoEvent({usPerTick: 1000});
+			const initialTempo = new Events.Tempo({usPerTick: 1000});
 
 			let srcEvents = [
-				new Music.TempoEvent({usPerTick: 1000}),
+				new Events.Tempo({usPerTick: 1000}),
 				genericEvent,
-				new Music.DelayEvent({ticks: 10}),
+				new Events.Delay({ticks: 10}),
 				genericEvent,
-				new Music.DelayEvent({ticks: 10}),
-				new Music.TempoEvent({usPerTick: 1000}),
-				new Music.DelayEvent({ticks: 10}),
+				new Events.Delay({ticks: 10}),
+				new Events.Tempo({usPerTick: 1000}),
+				new Events.Delay({ticks: 10}),
 				genericEvent,
-				new Music.DelayEvent({ticks: 10}),
+				new Events.Delay({ticks: 10}),
 			];
 
 			const dstEvents = UtilMusic.fixedTempo(
 				srcEvents,
 				initialTempo,
-				new Music.TempoEvent({usPerTick: 1000})
+				new Events.Tempo({usPerTick: 1000})
 			);
 
 			assert.ok(dstEvents[0]);
@@ -201,28 +199,28 @@ describe(`UtilMusic tests`, function() {
 		});
 
 		it('double tempo doubles ticks', function() {
-			const genericEvent = new Music.ConfigurationEvent({
-				option: Music.ConfigurationEvent.Option.EnableWaveSel,
+			const genericEvent = new Events.Configuration({
+				option: Events.Configuration.Option.EnableWaveSel,
 				value: true,
 			});
-			const initialTempo = new Music.TempoEvent({usPerTick: 1000});
+			const initialTempo = new Events.Tempo({usPerTick: 1000});
 
 			let srcEvents = [
-				new Music.TempoEvent({usPerTick: 1000}),
+				new Events.Tempo({usPerTick: 1000}),
 				genericEvent,
-				new Music.DelayEvent({ticks: 10}),
+				new Events.Delay({ticks: 10}),
 				genericEvent,
-				new Music.DelayEvent({ticks: 10}),
-				new Music.TempoEvent({usPerTick: 1000}),
-				new Music.DelayEvent({ticks: 10}),
+				new Events.Delay({ticks: 10}),
+				new Events.Tempo({usPerTick: 1000}),
+				new Events.Delay({ticks: 10}),
 				genericEvent,
-				new Music.DelayEvent({ticks: 10}),
+				new Events.Delay({ticks: 10}),
 			];
 
 			const dstEvents = UtilMusic.fixedTempo(
 				srcEvents,
 				initialTempo,
-				new Music.TempoEvent({usPerTick: 500})
+				new Events.Tempo({usPerTick: 500})
 			);
 
 			assert.ok(dstEvents[0]);
@@ -233,28 +231,28 @@ describe(`UtilMusic tests`, function() {
 		});
 
 		it('mid-song changes work', function() {
-			const genericEvent = new Music.ConfigurationEvent({
-				option: Music.ConfigurationEvent.Option.EnableWaveSel,
+			const genericEvent = new Events.Configuration({
+				option: Events.Configuration.Option.EnableWaveSel,
 				value: true,
 			});
-			const initialTempo = new Music.TempoEvent({usPerTick: 1000});
+			const initialTempo = new Events.Tempo({usPerTick: 1000});
 
 			let srcEvents = [
-				new Music.TempoEvent({usPerTick: 1000}),
+				new Events.Tempo({usPerTick: 1000}),
 				genericEvent,
-				new Music.DelayEvent({ticks: 10}),
+				new Events.Delay({ticks: 10}),
 				genericEvent,
-				new Music.DelayEvent({ticks: 10}),
-				new Music.TempoEvent({usPerTick: 2000}),
-				new Music.DelayEvent({ticks: 10}),
+				new Events.Delay({ticks: 10}),
+				new Events.Tempo({usPerTick: 2000}),
+				new Events.Delay({ticks: 10}),
 				genericEvent,
-				new Music.DelayEvent({ticks: 10}),
+				new Events.Delay({ticks: 10}),
 			];
 
 			const dstEvents = UtilMusic.fixedTempo(
 				srcEvents,
 				initialTempo,
-				new Music.TempoEvent({usPerTick: 500})
+				new Events.Tempo({usPerTick: 500})
 			);
 
 			assert.ok(dstEvents[0]);
@@ -265,29 +263,29 @@ describe(`UtilMusic tests`, function() {
 		});
 
 		it('does not lose custom data', function() {
-			const genericEvent = new Music.ConfigurationEvent({
-				option: Music.ConfigurationEvent.Option.EnableWaveSel,
+			const genericEvent = new Events.Configuration({
+				option: Events.Configuration.Option.EnableWaveSel,
 				value: true,
 				custom: 'a',
 			});
-			const initialTempo = new Music.TempoEvent({usPerTick: 1000});
+			const initialTempo = new Events.Tempo({usPerTick: 1000});
 
 			let srcEvents = [
-				new Music.TempoEvent({usPerTick: 1000}),
+				new Events.Tempo({usPerTick: 1000}),
 				genericEvent,
-				new Music.DelayEvent({ticks: 10}),
+				new Events.Delay({ticks: 10}),
 				genericEvent,
-				new Music.DelayEvent({ticks: 10}),
-				new Music.TempoEvent({usPerTick: 2000}),
-				new Music.DelayEvent({ticks: 10}),
+				new Events.Delay({ticks: 10}),
+				new Events.Tempo({usPerTick: 2000}),
+				new Events.Delay({ticks: 10}),
 				genericEvent,
-				new Music.DelayEvent({ticks: 10}),
+				new Events.Delay({ticks: 10}),
 			];
 
 			const dstEvents = UtilMusic.fixedTempo(
 				srcEvents,
 				initialTempo,
-				new Music.TempoEvent({usPerTick: 500})
+				new Events.Tempo({usPerTick: 500})
 			);
 
 			assert.ok(dstEvents[0]);
@@ -299,21 +297,21 @@ describe(`UtilMusic tests`, function() {
 
 	describe('initialEvents()', function() {
 		it('removing event works', function() {
-			const genericEvent = new Music.ConfigurationEvent({
-				option: Music.ConfigurationEvent.Option.EnableWaveSel,
+			const genericEvent = new Events.Configuration({
+				option: Events.Configuration.Option.EnableWaveSel,
 				value: true,
 			});
 
 			let srcEvents = [
-				new Music.TempoEvent({usPerTick: 1000}),
+				new Events.Tempo({usPerTick: 1000}),
 				genericEvent,
-				new Music.DelayEvent({ticks: 10}),
+				new Events.Delay({ticks: 10}),
 				genericEvent,
-				new Music.DelayEvent({ticks: 10}),
-				new Music.TempoEvent({usPerTick: 1000}),
-				new Music.DelayEvent({ticks: 10}),
+				new Events.Delay({ticks: 10}),
+				new Events.Tempo({usPerTick: 1000}),
+				new Events.Delay({ticks: 10}),
 				genericEvent,
-				new Music.DelayEvent({ticks: 10}),
+				new Events.Delay({ticks: 10}),
 			];
 
 			let music = new Music();
@@ -323,7 +321,7 @@ describe(`UtilMusic tests`, function() {
 			music.patterns[0].tracks[0].events = srcEvents;
 
 			UtilMusic.initialEvents(music, ev => {
-				if (ev.type === Music.TempoEvent) {
+				if (ev.type === Events.Tempo) {
 					// Remove initial tempo event, updating the initialTempo.
 					music.initialTempo = ev;
 					return null; // delete the event from the track
@@ -335,8 +333,8 @@ describe(`UtilMusic tests`, function() {
 
 			const dstEvents = music.patterns[0].tracks[0].events;
 			assert.ok(dstEvents[0], 'First TempoEvent not removed correctly');
-			assert.notEqual(dstEvents[0].type, Music.TempoEvent, 'TempoEvent not removed');
-			assert.equal(dstEvents[0].type, Music.ConfigurationEvent, 'New first event is wrong type');
+			assert.notEqual(dstEvents[0].type, Events.Tempo, 'TempoEvent not removed');
+			assert.equal(dstEvents[0].type, Events.Configuration, 'New first event is wrong type');
 			assert.equal(dstEvents[1].ticks, 10);
 			assert.equal(dstEvents[3].ticks, 10);
 			assert.equal(dstEvents[5].ticks, 10);

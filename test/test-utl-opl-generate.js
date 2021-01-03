@@ -17,16 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const assert = require('assert');
-
-const Music = require('../src/music.js');
-const UtilOPL = require('../src/utl-opl.js');
+import assert from 'assert';
+import { Events, Music } from '../index.js';
+import { OPL as PatchOPL } from '../interface/patch/index.js';
+import { generateOPL } from '../util/opl/index.js';
 
 describe('generateOPL() tests', function() {
 
 	const trackConfig = [
 		new Music.TrackConfiguration({
-			channelType: Music.ChannelType.OPLT,
+			channelType: Music.TrackConfiguration.ChannelType.OPLT,
 			channelIndex: 0,
 		}),
 	];
@@ -34,24 +34,24 @@ describe('generateOPL() tests', function() {
 	describe('should handle ConfigurationEvent', function() {
 		it('should handle EnableWaveSel', function() {
 			const events = [
-				new Music.ConfigurationEvent({
-					option: Music.ConfigurationEvent.Option.EnableWaveSel,
+				new Events.Configuration({
+					option: Events.Configuration.Option.EnableWaveSel,
 					value: true,
 				}),
-				new Music.DelayEvent({ticks: 10}),
-				new Music.ConfigurationEvent({
-					option: Music.ConfigurationEvent.Option.EnableWaveSel,
+				new Events.Delay({ticks: 10}),
+				new Events.Configuration({
+					option: Events.Configuration.Option.EnableWaveSel,
 					value: false,
 				}),
-				new Music.DelayEvent({ticks: 10}),
-				new Music.ConfigurationEvent({
-					option: Music.ConfigurationEvent.Option.EnableWaveSel,
+				new Events.Delay({ticks: 10}),
+				new Events.Configuration({
+					option: Events.Configuration.Option.EnableWaveSel,
 					value: false,
 				}),
-				new Music.DelayEvent({ticks: 10}),
+				new Events.Delay({ticks: 10}),
 			];
 			for (const ev of events) ev.custom.idxTrack = 0;
-			const { oplData } = UtilOPL.generateOPL(events, [], trackConfig);
+			const { oplData } = generateOPL(events, [], trackConfig);
 
 			assert.equal(oplData.length, 4, 'Incorrect number of register writes produced');
 
@@ -68,18 +68,18 @@ describe('generateOPL() tests', function() {
 
 		it('should handle EnableOPL3', function() {
 			const events = [
-				new Music.ConfigurationEvent({
-					option: Music.ConfigurationEvent.Option.EnableOPL3,
+				new Events.Configuration({
+					option: Events.Configuration.Option.EnableOPL3,
 					value: true,
 				}),
-				new Music.DelayEvent({ticks: 10}),
-				new Music.ConfigurationEvent({
-					option: Music.ConfigurationEvent.Option.EnableOPL3,
+				new Events.Delay({ticks: 10}),
+				new Events.Configuration({
+					option: Events.Configuration.Option.EnableOPL3,
 					value: false,
 				}),
 			];
 			for (const ev of events) ev.custom.idxTrack = 0;
-			const { oplData } = UtilOPL.generateOPL(events, [], trackConfig);
+			const { oplData } = generateOPL(events, [], trackConfig);
 
 			assert.equal(oplData.length, 3, 'Incorrect number of register writes produced');
 
@@ -95,24 +95,24 @@ describe('generateOPL() tests', function() {
 
 	it('should handle DelayEvent', function() {
 		const events = [
-			new Music.ConfigurationEvent({
-				option: Music.ConfigurationEvent.Option.EnableWaveSel,
+			new Events.Configuration({
+				option: Events.Configuration.Option.EnableWaveSel,
 				value: true,
 			}),
-			new Music.DelayEvent({ticks: 10}),
-			new Music.ConfigurationEvent({
-				option: Music.ConfigurationEvent.Option.EnableWaveSel,
+			new Events.Delay({ticks: 10}),
+			new Events.Configuration({
+				option: Events.Configuration.Option.EnableWaveSel,
 				value: false,
 			}),
-			new Music.DelayEvent({ticks: 20}),
-			new Music.ConfigurationEvent({
-				option: Music.ConfigurationEvent.Option.EnableWaveSel,
+			new Events.Delay({ticks: 20}),
+			new Events.Configuration({
+				option: Events.Configuration.Option.EnableWaveSel,
 				value: false,
 			}),
-			new Music.DelayEvent({ticks: 30}),
+			new Events.Delay({ticks: 30}),
 		];
 		for (const ev of events) ev.custom.idxTrack = 0;
-		const { oplData } = UtilOPL.generateOPL(events, [], trackConfig);
+		const { oplData } = generateOPL(events, [], trackConfig);
 
 		// First delay should be unchanged.
 		assert.equal(oplData[1].delay, 10, 'Wrong delay');
@@ -123,34 +123,34 @@ describe('generateOPL() tests', function() {
 
 	it('should handle TempoEvent', function() {
 		const events = [
-			new Music.TempoEvent({ usPerTick: 1000 }),
-			new Music.ConfigurationEvent({
-				option: Music.ConfigurationEvent.Option.EnableWaveSel,
+			new Events.Tempo({ usPerTick: 1000 }),
+			new Events.Configuration({
+				option: Events.Configuration.Option.EnableWaveSel,
 				value: true,
 			}),
-			new Music.DelayEvent({ticks: 10}),
-			new Music.ConfigurationEvent({
-				option: Music.ConfigurationEvent.Option.EnableWaveSel,
+			new Events.Delay({ticks: 10}),
+			new Events.Configuration({
+				option: Events.Configuration.Option.EnableWaveSel,
 				value: false,
 			}),
 			// Do a tempo event with no delay-merging.
-			new Music.TempoEvent({ usPerTick: 2000 }),
-			new Music.DelayEvent({ticks: 20}),
-			new Music.ConfigurationEvent({
-				option: Music.ConfigurationEvent.Option.EnableWaveSel,
+			new Events.Tempo({ usPerTick: 2000 }),
+			new Events.Delay({ticks: 20}),
+			new Events.Configuration({
+				option: Events.Configuration.Option.EnableWaveSel,
 				value: true,
 			}),
 			// Do a tempo event between delays to ensure they don't get merged.
-			new Music.DelayEvent({ticks: 30}),
-			new Music.TempoEvent({ usPerTick: 3000 }),
-			new Music.DelayEvent({ticks: 40}),
-			new Music.ConfigurationEvent({
-				option: Music.ConfigurationEvent.Option.EnableWaveSel,
+			new Events.Delay({ticks: 30}),
+			new Events.Tempo({ usPerTick: 3000 }),
+			new Events.Delay({ticks: 40}),
+			new Events.Configuration({
+				option: Events.Configuration.Option.EnableWaveSel,
 				value: false,
 			}),
 		];
 		for (const ev of events) ev.custom.idxTrack = 0;
-		const { oplData } = UtilOPL.generateOPL(events, [], trackConfig);
+		const { oplData } = generateOPL(events, [], trackConfig);
 
 		assert.equal(oplData[0].tempo.usPerTick, 1000, 'Wrong tempo value');
 		assert.equal(oplData[2].delay, 10, 'Wrong delay');
@@ -168,33 +168,33 @@ describe('generateOPL() tests', function() {
 
 	it('should handle NoteOnEvent/NoteOffEvent', function() {
 		const events = [
-			new Music.TempoEvent({ usPerTick: 1000 }),
-			new Music.NoteOnEvent({
+			new Events.Tempo({ usPerTick: 1000 }),
+			new Events.NoteOn({
 				frequency: 440,
 				velocity: 1,
 				instrument: 0,
 			}),
-			new Music.DelayEvent({ticks: 10}),
-			new Music.NoteOffEvent(),
+			new Events.Delay({ticks: 10}),
+			new Events.NoteOff(),
 			// No delay
-			new Music.NoteOnEvent({
+			new Events.NoteOn({
 				frequency: 220,
 				velocity: 1,
 				instrument: 0,
 			}),
-			new Music.DelayEvent({ticks: 20}),
-			new Music.NoteOffEvent(),
-			new Music.DelayEvent({ticks: 40}),
-			new Music.NoteOnEvent({
+			new Events.Delay({ticks: 20}),
+			new Events.NoteOff(),
+			new Events.Delay({ticks: 40}),
+			new Events.NoteOn({
 				frequency: 110,
 				velocity: 1,
 				instrument: 0,
 			}),
-			new Music.DelayEvent({ticks: 80}),
-			new Music.NoteOffEvent(),
+			new Events.Delay({ticks: 80}),
+			new Events.NoteOff(),
 		];
 		for (const ev of events) ev.custom.idxTrack = 0;
-		const { oplData } = UtilOPL.generateOPL(events, [], trackConfig);
+		const { oplData } = generateOPL(events, [], trackConfig);
 
 		assert.equal(oplData[0].tempo.usPerTick, 1000, 'Wrong tempo value');
 
@@ -231,7 +231,7 @@ describe('generateOPL() tests', function() {
 
 	it('should handle 2-op patches', function() {
 		const patches = [
-			new Music.Patch.OPL({
+			new PatchOPL({
 				slot: [
 					{
 						enableTremolo: true,
@@ -268,15 +268,15 @@ describe('generateOPL() tests', function() {
 		];
 
 		const events = [
-			new Music.TempoEvent({ usPerTick: 1000 }),
-			new Music.NoteOnEvent({
+			new Events.Tempo({ usPerTick: 1000 }),
+			new Events.NoteOn({
 				frequency: 440,
 				velocity: 1,
 				instrument: 0,
 			}),
 		];
 		for (const ev of events) ev.custom.idxTrack = 0;
-		const { oplData } = UtilOPL.generateOPL(events, patches, trackConfig);
+		const { oplData } = generateOPL(events, patches, trackConfig);
 
 		let oplState = [];
 		function advanceToNextDelay() {

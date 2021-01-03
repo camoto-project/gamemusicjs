@@ -17,12 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const assert = require('assert');
-
-const Music = require('../src/music.js');
-const UtilOPL = require('../src/utl-opl.js');
-
-const TestUtil = require('./util.js');
+import assert from 'assert';
+import TestUtil from './util.js';
+import UtilOPL from '../util/opl/index.js';
+import { OPL as PatchOPL } from '../interface/patch/index.js';
 
 describe(`UtilOPL tests`, function() {
 
@@ -129,7 +127,7 @@ describe(`UtilOPL tests`, function() {
 
 	describe('PatchOPL.equalTo()', function() {
 		it('single-operator instruments are matched', function() {
-			const a = new Music.Patch.OPL({
+			const a = new PatchOPL({
 				slot: [
 					{
 						enableTremolo: 1,
@@ -188,7 +186,7 @@ describe(`UtilOPL tests`, function() {
 		});
 
 		it('two-operator instruments are matched', function() {
-			const a = new Music.Patch.OPL({
+			const a = new PatchOPL({
 				slot: [
 					{
 						enableTremolo: 1,
@@ -254,7 +252,7 @@ describe(`UtilOPL tests`, function() {
 		});
 
 		it('outputLevel differences are ignored in slot[0] for 1op', function() {
-			const a = new Music.Patch.OPL({
+			const a = new PatchOPL({
 				slot: [
 					{
 						enableTremolo: 1,
@@ -285,7 +283,7 @@ describe(`UtilOPL tests`, function() {
 		});
 
 		it('outputLevel differences are ignored in slot[1] for 2op', function() {
-			const a = new Music.Patch.OPL({
+			const a = new PatchOPL({
 				slot: [
 					{
 						enableTremolo: 1,
