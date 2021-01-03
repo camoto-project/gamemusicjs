@@ -231,6 +231,10 @@ Music.TrackConfiguration = class TrackConfiguration {
 		this.channelType = params.channelType;
 		this.channelIndex = params.channelIndex;
 	}
+
+	toString() {
+		return Music.ChannelType.toString(this.channelType) + '-' + (this.channelIndex ?? '?');
+	}
 };
 
 /**
