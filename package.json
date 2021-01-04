@@ -8,19 +8,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "serve-doc": "documentation serve --shallow -w index.js src/*.js",
-    "test": "mocha",
-    "watch": "npm-watch"
-  },
-  "watch": {
-    "serve-doc": [
-      "index.js",
-      "formats/*.js"
-    ],
-    "test": [
-      "index.js",
-      "{formats,test}/*.js"
-    ]
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -51,11 +39,9 @@
   "devDependencies": {
     "chalk": "^4.1.0",
     "command-line-args": "^5.1.1",
-    "documentation": "^13.1.0",
     "eslint": "^7.16.0",
     "mocha": "^8.2.1",
-    "mocha-eslint": "^6.0.0",
-    "npm-watch": "^0.7.0"
+    "mocha-eslint": "^6.0.0"
   },
   "directories": {
     "test": "test"

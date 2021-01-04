@@ -102,15 +102,12 @@ During development you can test your code like this:
     # Make sure the format is identified correctly or if not why not
     $ DEBUG='gamemusic:*' ./bin/gamemus identify example.dat
 
+    # Run unit tests just for your format only
+    npm test -- -g mus-myformat
+
 If you use `debug()` rather than `console.log()` in your code then these
 messages can be left in for future diagnosis as they will only appear when the
 `DEBUG` environment variable is set correctly.
-
-## Documentation
-
-You can generate the documentation locally by running `npm serve-doc` or if you
-want it to regenerate automatically when the code is modified,
-`npm run watch serve-doc`.
 
 ### Development tips
 
