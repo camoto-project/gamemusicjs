@@ -25,11 +25,11 @@ Files in the following formats can be read and written:
 ## Installation as an end-user
 
 If you wish to use the command-line `gamemus` utility to work with music files
-directly, you can install the library globally on your system:
+directly, you can install the CLI globally on your system:
 
-    npm install -g @camoto/gamemusic
+    npm install -g @camoto/gamemusic-cli
 
-For Arch Linux users the AUR package `gamemusicjs` is also available.
+For Arch Linux users the AUR package `gamemusic-cli` is also available.
 
 ### Command line interface
 
