@@ -71,7 +71,7 @@ ChannelType.toString = v => (
  *
  * Only used by {@link Music.trackConfig}.
  *
- * @property {Music.ChannelType} channelType
+ * @property {TrackConfiguration.ChannelType} channelType
  *   What type of channel this track is allocated to.
  *
  *   For example if it is allocated to a MIDI channel, then the track can only

@@ -60,11 +60,11 @@ See `cli/index.js` for example use.
 If you would like to help add more file formats to the library, great!  Clone
 the repo, and to get started:
 
-    npm install --dev
+    npm install
 
 Run the tests to make sure everything worked:
 
-    npm -s run test
+    npm test
 
 You're ready to go!  To add a new file format:
 
@@ -85,7 +85,7 @@ You're ready to go!  To add a new file format:
     cause the archive file produced by your code to be saved to a temporary
     file in the current directory:
     
-        SAVE_FAILED_TEST=1 npm -s run test
+        SAVE_FAILED_TEST=1 npm test
         mv error1.bin test/mus-myformat/default.bin
 
 If your music format has any sort of compression or encryption, these

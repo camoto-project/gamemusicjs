@@ -61,9 +61,9 @@ export const all = [
  *   format, or an empty array if the format could not be identified.
  *
  * @example
- * import { findHandler as gameCodeFindHandler, decompressEXE } from '@camoto/gamecode';
- * const content = decompressEXE(fs.readFileSync('cosmo1.exe'));
- * const handler = gameCodeFindHandler(content, 'cosmo1.exe');
+ * import { findHandler as gamemusicFindHandler } from '@camoto/gamemusic';
+ * const content = fs.readFileSync('example.imf');
+ * const handler = gameCodeFindHandler(content, 'example.imf');
  * if (handler.length === 0) {
  *   console.log('Unable to identify file format.');
  * } else {
