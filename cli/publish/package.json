@@ -1,9 +1,9 @@
 {
   "name": "@camoto/gamemusic-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI for gamemusic.js, for use with `npm install -g`",
   "bin": {
-    "gamemusic": "./node_modules/@camoto/gamemusic/bin/gamemus.js"
+    "gamemus": "./node_modules/@camoto/gamemusic/bin/gamemus.js"
   },
   "author": "Adam Nielsen <malvineous@shikadi.net>",
   "license": "GPL-3.0",
