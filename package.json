@@ -46,11 +46,11 @@
   "homepage": "https://github.com/Malvineous/gamemusicjs#readme",
   "dependencies": {
     "@camoto/record-io-buffer": "^3.0.0",
-    "chalk": "^4.1.0",
-    "command-line-args": "^5.1.1",
     "debug": "^4.2.0"
   },
   "devDependencies": {
+    "chalk": "^4.1.0",
+    "command-line-args": "^5.1.1",
     "documentation": "^13.1.0",
     "eslint": "^7.16.0",
     "mocha": "^8.2.1",
