@@ -48,8 +48,8 @@ with when saving files, run:
 
 ## Installation as a dependency
 
-If you wish to make use of the library in your own project, install it
-in the usual way:
+If you wish to make use of the library in your own project, install it in the
+usual way:
 
     npm install @camoto/gamemusic
 
@@ -72,7 +72,7 @@ You're ready to go!  To add a new file format:
     Copying an existing file that covers a similar format will help
     considerably.
     
- 2. Edit `src/index.js` and add a `require()` statement for your new file.
+ 2. Edit `formats/index.js` and add an `import` statement for your new file.
     
  3. Make a folder in `test/` for your new format and populate it with
     files similar to the other formats.  The tests work by creating
@@ -85,14 +85,15 @@ You're ready to go!  To add a new file format:
     cause the archive file produced by your code to be saved to a temporary
     file in the current directory:
     
-        SAVE_FAILED_TEST=1 npm test
-        mv error1.bin test/mus-myformat/default.bin
+        SAVE_FAILED_TEST=1 npm test -- -g mus-myformat
+        cd test/mus-myformat/ && mv default.bin.failed_test_output default.bin
 
-If your music format has any sort of compression or encryption, these
-algorithms should go into the `gamecomp` project instead.  This is to make it
-easier to reuse the algorithms, as many of them (particularly the compression
-ones) are used amongst many unrelated file formats.  All the `gamecomp`
-algorithms are available to be used by any music format in this library.
+If your file format has any sort of compression or encryption, these algorithms
+should go into the [gamecomp.js](https://github.com/Malvineous/gamecompjs)
+project instead.  This is to make it easier to reuse the algorithms, as many of
+them (particularly the compression ones) are used amongst many unrelated file
+formats.  All the gamecomp.js algorithms are available to be used by any format
+in this library.
 
 During development you can test your code like this:
 
