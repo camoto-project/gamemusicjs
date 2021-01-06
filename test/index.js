@@ -626,7 +626,7 @@ for (const handler of gamemusicFormats) {
 					const submd = subhandler.metadata();
 
 					// Skip ourselves
-					if (submd.id === md.id) return;
+					if (submd.id === md.id) continue;
 
 					if (identifyConflicts[submd.id] && identifyConflicts[submd.id].includes(md.id)) {
 						it(`will be positively identified by ${submd.id} handler, so unable to test`, function() {
