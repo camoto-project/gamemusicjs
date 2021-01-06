@@ -69,6 +69,10 @@ export default class TestUtil {
 		let ab = new ArrayBuffer(buffer.length);
 		let u8 = new Uint8Array(ab);
 		u8.set(buffer);
+
+		// Save the filename for later use.
+		u8.filename = filename;
+
 		return u8;
 	}
 
@@ -79,17 +83,19 @@ export default class TestUtil {
 			const files = fs.readdirSync(pathFiles);
 			const target = files.filter(f => f.startsWith(name + '.'));
 			assert.ok(target.length === 1, `Expected only one file: ${this.idHandler}/${name}.*`);
-			const mainFilename = path.join(this.idHandler, target[0]);
-			let input = {
-				main: this.loadData(path.resolve(__dirname, mainFilename)),
-			};
-			input.main.filename = mainFilename;
 
-			const suppList = handler.supps(mainFilename, input.main);
-			if (suppList) Object.keys(suppList).forEach(id => {
-				input[id] = this.loadData(suppList[id]);
-				input[id].filename = suppList[id];
-			});
+			const mainFilename = path.join(__dirname, this.idHandler, target[0]);
+			let input = {
+				main: this.loadData(mainFilename),
+			};
+
+			const suppList = handler && handler.supps(mainFilename, input.main);
+			if (suppList) {
+				for (const [id, suppFilename] of Object.entries(suppList)) {
+					input[id] = this.loadData(suppFilename); // already includes full path
+				}
+			}
+
 			content[name] = input;
 		}
 
