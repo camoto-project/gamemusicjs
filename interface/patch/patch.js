@@ -28,6 +28,7 @@ export default class Patch
 		throw new Error(`BUG: clone() not implemented by descendent class.`);
 	}
 
+	// eslint-disable-next-line no-unused-vars
 	equalTo(b) {
 		throw new Error(`BUG: equalTo() not implemented by descendent class.`);
 	}

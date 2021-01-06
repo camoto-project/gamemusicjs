@@ -55,7 +55,7 @@ export default class ConfigurationEvent extends Event
 	static optionNameToString(o) {
 		return Object.keys(ConfigurationEvent.Option).find(k => ConfigurationEvent.Option[k] === o);
 	}
-};
+}
 
 /**
  * Option being modified by a ConfigurationEvent.

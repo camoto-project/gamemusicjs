@@ -90,4 +90,4 @@ export function findHandler(content, filename) {
 		}
 	}
 	return handlers;
-};
+}
