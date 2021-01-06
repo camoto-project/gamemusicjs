@@ -74,7 +74,7 @@ export default class TestUtil {
 
 	loadContent(handler, ids) {
 		let content = {};
-		ids.forEach(name => {
+		for (const name of ids) {
 			const pathFiles = path.resolve(__dirname, this.idHandler);
 			const files = fs.readdirSync(pathFiles);
 			const target = files.filter(f => f.startsWith(name + '.'));
@@ -91,29 +91,23 @@ export default class TestUtil {
 				input[id].filename = suppList[id];
 			});
 			content[name] = input;
-		});
+		}
 
 		return content;
 	}
 
 	static buffersEqual(expected, actual, msg) {
-		const errorFilename = path.resolve(__dirname, expected.filename);
+		const errorFilename = path.resolve(__dirname, expected.filename || 'error');
 
 		if (expected instanceof ArrayBuffer) {
 			expected = new Uint8Array(expected);
 		}
 		if (!arrayEqual(expected, actual)) {
 			if (process.env.SAVE_FAILED_TEST == 1) {
-				let fn = (errorFilename || 'error1') + '.failed_test_output';
-				for (let i = 1; i <= 20; i++) {
-					if (!fs.existsSync(fn)) {
-						// eslint-disable-next-line no-console
-						console.warn(`** Saving actual data to ${fn}`);
-						fs.writeFileSync(fn, actual);
-						break;
-					}
-					fn = `error${i + 1}.failed_test_output`;
-				}
+				let fn = errorFilename + '.failed_test_output';
+				// eslint-disable-next-line no-console
+				console.warn(`** Saving actual data to ${fn}`);
+				fs.writeFileSync(fn, actual);
 			}
 
 			throw new assert.AssertionError({
