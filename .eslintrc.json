@@ -47,10 +47,7 @@
 			}
 		},
 		{
-			"files": [
-				"compress/**/*.js",
-				"encrypt/**/*.js"
-			],
+			"files": ["formats/**/*.js"],
 			"rules": {
 				"no-console": [
 					"error",
