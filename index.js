@@ -46,9 +46,6 @@ export const all = [
 /**
  * Get a handler by examining the file content.
  *
- * Ensure the content has been decompressed first if necessary, e.g. by passing
- * it through `decompressEXE()` first.
- *
  * @param {Uint8Array} content
  *   Executable file content.
  *
@@ -57,7 +54,7 @@ export const all = [
  *   formats where the filename extension is significant.  This can be
  *   omitted for less accurate autodetection.
  *
- * @return {Array<CodeHandler>} from formats/*.js that can handle the
+ * @return {Array<MusicHandler>} from formats/*.js that can handle the
  *   format, or an empty array if the format could not be identified.
  *
  * @example

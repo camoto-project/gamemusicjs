@@ -134,7 +134,7 @@ export default class MusicHandler
 	}
 
 	/**
-	 * Identify any problems writing the given archive in the current format.
+	 * Identify any problems writing the given song in the current format.
 	 *
 	 * @param {Music} music
 	 *   Music to attempt to write in this handler's format.
