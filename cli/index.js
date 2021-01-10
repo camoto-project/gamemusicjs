@@ -290,14 +290,17 @@ class Operations
 		}
 
 		const suppList = handler.supps(params.target, content.main);
-		if (suppList) Object.keys(suppList).forEach(id => {
-			try {
-				content[id] = fs.readFileSync(suppList[id]);
-			} catch (e) {
-				throw new OperationsError(`open: unable to open supplementary file `
-					+ `"${suppList[id]}": ${e}`);
+		if (suppList) {
+			for (const [id, suppFilename] of Object.entries(suppList)) {
+				try {
+					content[id] = fs.readFileSync(suppFilename);
+					content[id].filename = suppFilename;
+				} catch (e) {
+					throw new OperationsError(`open: unable to open supplementary file `
+						+ `"${suppFilename}": ${e.message}`);
+				}
 			}
-		});
+		}
 
 		const m = handler.metadata();
 		console.warn(`Opening file as ${m.id} (${m.title})`);
@@ -330,23 +333,25 @@ class Operations
 		}
 
 		console.warn('Saving to', params.target, 'as', params.format);
-		let content, warnings;
+		let outContent, warnings;
 		try {
-			({ content, warnings } = handler.generate(this.music));
+			({ content: outContent, warnings } = handler.generate(this.music));
 		} catch (e) {
 			debug(e);
-			throw new OperationsError(`save: generate failed - ${e.message}`);
+			throw new OperationsError(`save: generate() failed - ${e.message}`);
 		}
 
 		let promises = [];
-		const suppList = handler.supps(params.target, content.main);
-		if (suppList) Object.keys(suppList).forEach(id => {
-			console.warn(' - Saving supplemental file', suppList[id]);
-			promises.push(
-				fs.promises.writeFile(suppList[id], content[id])
-			);
-		});
-		promises.push(fs.promises.writeFile(params.target, content.main));
+		const suppList = handler.supps(params.target, outContent.main);
+		if (suppList) {
+			for (const [id, suppFilename] of Object.entries(suppList)) {
+				console.warn(` - Saving supplemental file "${id}" to ${suppFilename}`);
+				promises.push(
+					fs.promises.writeFile(suppFilename, outContent[id])
+				);
+			}
+		}
+		promises.push(fs.promises.writeFile(params.target, outContent.main));
 
 		if (warnings.length) {
 			console.log('There were warnings generated while saving:\n');
@@ -355,7 +360,7 @@ class Operations
 			}
 		}
 
-		return Promise.all(promises);
+		return await Promise.all(promises);
 	}
 }
 
