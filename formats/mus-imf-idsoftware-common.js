@@ -174,6 +174,7 @@ export default class Music_IMF_IDSoftware_Common extends MusicHandler
 		let oplData = [];
 
 		const contentLength = this.getContentLength(buffer);
+		const headerLength = buffer.getPos();
 
 		for (let pos = 0; pos < contentLength; pos += 4) {
 			const event = buffer.readRecord(recordTypes.event);
@@ -190,7 +191,7 @@ export default class Music_IMF_IDSoftware_Common extends MusicHandler
 
 		let music = new Music();
 
-		if (contentLength < buffer.length) {
+		if (headerLength + contentLength < buffer.length) {
 			// There's some trailing data
 			const sig = buffer.read(RecordType.int.u8);
 			if (sig === 0x1A) {
@@ -213,7 +214,7 @@ export default class Music_IMF_IDSoftware_Common extends MusicHandler
 				debug('Not reading tags, extra data but incorrect signature byte.');
 			}
 		} else {
-			debug(`Not reading tags, only ${buffer.length - contentLength} bytes left in file`);
+			debug(`Not reading tags, only ${buffer.length - contentLength - headerLength} bytes left in file`);
 		}
 
 		music.initialTempo = new TempoEvent({
