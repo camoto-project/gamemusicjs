@@ -39,7 +39,7 @@ Use the `--help` option to get a list of all the available commands.  Some
 quick examples:
 
     # Convert a DOSBox raw OPL capture to MIDI format
-    gamemus open example.dro save -f mus-mid-type1 output.mid
+    gamemus open example.dro save -t mus-mid-type1 output.mid
 
 To get a list of supported file formats and the code names to identify them
 with when saving files, run:
@@ -98,7 +98,7 @@ in this library.
 During development you can test your code like this:
 
     # Read a sample song and list its details, with debug messages on
-    $ DEBUG='gamemusic:*' ./bin/gamemus open -f mus-myformat example.dat list
+    $ DEBUG='gamemusic:*' ./bin/gamemus open -t mus-myformat example.dat list
 
     # Make sure the format is identified correctly or if not why not
     $ DEBUG='gamemusic:*' ./bin/gamemus identify example.dat

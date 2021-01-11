@@ -284,7 +284,7 @@ class Operations
 					const m = h.metadata();
 					console.error(` * ${m.id} (${m.title})`);
 				});
-				throw new OperationsError('open: please use the -f option to specify the format.');
+				throw new OperationsError('open: please use the -t option to specify the format.');
 			}
 			handler = handlers[0];
 		}
@@ -369,11 +369,11 @@ Operations.names = {
 		{ name: 'target', defaultOption: true },
 	],
 	open: [
-		{ name: 'format', alias: 'f' },
+		{ name: 'format', alias: 't' },
 		{ name: 'target', defaultOption: true },
 	],
 	save: [
-		{ name: 'format', alias: 'f' },
+		{ name: 'format', alias: 't' },
 		{ name: 'target', defaultOption: true },
 	],
 	dump: [],
@@ -440,8 +440,8 @@ Commands:
   identify <file>
     Read local <file> and try to work out what music format it is in.
 
-  open [-f format] <file>
-    Open the local <file>, autodetecting the format unless -f is
+  open [-t format] <file>
+    Open the local <file>, autodetecting the format unless -t is
     given.  Use --formats for a list of possible values.  If other commands are
     used without 'open', a new empty song is used.
 
@@ -451,8 +451,8 @@ Commands:
   dump
     List all the events in the song in raw format.
 
-  save [-f format] <file>
-    Save the current song to local <file> in the given <format>.  -f defaults
+  save [-t format] <file>
+    Save the current song to local <file> in the given <format>.  -t defaults
     to the value previously used by 'open', so it can be omitted when modifying
     existing files.  Files are written from memory, so the same file
     can be passed to 'open' and then 'save' without issue.
@@ -460,7 +460,7 @@ Commands:
 Examples:
 
   # Convert a DOSBox .dro capture to MIDI
-  gamemus open example.dro save -f mus-mid-type1 output.mid
+  gamemus open example.dro save -t mus-mid-type1 output.mid
 
   # The DEBUG environment variable can be used for troubleshooting.
   DEBUG='gamemusic:*' gamemus ...
