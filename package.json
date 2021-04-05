@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/Malvineous/gamemusicjs.git"
+    "url": "git+ssh://git@github.com/camoto-project/gamemusicjs.git"
   },
   "keywords": [
     "camoto",
@@ -29,9 +29,9 @@
   "author": "Adam Nielsen <malvineous@shikadi.net>",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/Malvineous/gamemusicjs/issues"
+    "url": "https://github.com/camoto-project/gamemusicjs/issues"
   },
-  "homepage": "https://github.com/Malvineous/gamemusicjs#readme",
+  "homepage": "https://github.com/camoto-project/gamemusicjs#readme",
   "dependencies": {
     "@camoto/record-io-buffer": "^3.0.0",
     "debug": "^4.2.0"
