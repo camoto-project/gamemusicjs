@@ -39,9 +39,9 @@
   "devDependencies": {
     "chalk": "^4.1.0",
     "command-line-args": "^5.1.1",
-    "eslint": "^7.16.0",
-    "mocha": "^8.2.1",
-    "mocha-eslint": "^6.0.0"
+    "eslint": "^7.24.0",
+    "mocha": "^8.3.2",
+    "mocha-eslint": "^7.0.0"
   },
   "directories": {
     "test": "test"
