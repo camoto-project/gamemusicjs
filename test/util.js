@@ -79,12 +79,19 @@ export default class TestUtil {
 	loadContent(handler, ids) {
 		let content = {};
 		for (const name of ids) {
+			// Read <name>.bin if present, otherwise look for <name>.*
 			const pathFiles = path.resolve(__dirname, this.idHandler);
 			const files = fs.readdirSync(pathFiles);
-			const target = files.filter(f => f.startsWith(name + '.'));
-			assert.ok(target.length === 1, `Expected only one file: ${this.idHandler}/${name}.*`);
+			let targetName;
+			if (files.includes(name + '.bin')) {
+				targetName = name + '.bin';
+			} else {
+				const target = files.filter(f => f.startsWith(name + '.'));
+				assert.ok(target.length === 1, `Expected only one file: ${this.idHandler}/${name}.*`);
+				targetName = target[0];
+			}
 
-			const mainFilename = path.join(__dirname, this.idHandler, target[0]);
+			const mainFilename = path.join(__dirname, this.idHandler, targetName);
 			let input = {
 				main: this.loadData(mainFilename),
 			};
