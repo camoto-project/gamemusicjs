@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+const nullCo = (v, d) => ((v === null) || (v === undefined)) ? d : v;
+
 /**
  * The type of channel in use.
  *
@@ -61,9 +63,9 @@ export const ChannelType = {
 };
 
 ChannelType.toString = v => (
-	Object.entries(ChannelType).find(
+	nullCo(Object.entries(ChannelType).find(
 		n => n[1] === v
-	) ?? ['?']
+	), ['?'])
 )[0];
 
 /**
@@ -126,7 +128,7 @@ export default class TrackConfiguration
 	}
 
 	toString() {
-		return ChannelType.toString(this.channelType) + '-' + (this.channelIndex ?? '?');
+		return ChannelType.toString(this.channelType) + '-' + nullCo(this.channelIndex, '?');
 	}
 }
 
