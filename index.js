@@ -79,8 +79,9 @@ export function findHandler(content, filename) {
 		const confidence = x.identify(content, filename);
 		if (confidence.valid === true) {
 			debug(`Matched ${metadata.id}: ${confidence.reason}`);
-			handlers = [x];
-			break;
+			// Put it first as the mode likely option, but keep going in case there
+			// are others (e.g. IMF 560/280 Hz).
+			handlers = [x, ...handlers];
 		} else if (confidence.valid === undefined) {
 			debug(`Possible match for ${metadata.id}: ${confidence.reason}`);
 			handlers.push(x);

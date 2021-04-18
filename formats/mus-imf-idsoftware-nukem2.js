@@ -41,12 +41,16 @@ export default class Music_IMF_IDSoftware_Nukem2 extends Music_IMF_IDSoftware_Ty
 	}
 
 	static identify(content, filename) {
-		if (super.identify(content, filename) === true) {
+		let superResult = super.identify(content, filename);
+		if (superResult.valid === true) {
 			// Matches IMF, but we can't be sure it's a Nukem2 variant, so return a
 			// definite maybe.
-			return undefined;
+			return {
+				valid: undefined,
+				reason: 'Could be 280 Hz but cannot be certain.',
+			};
 		}
-		return false;
+		return superResult;
 	}
 
 	static getTempo() {

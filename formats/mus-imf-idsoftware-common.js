@@ -163,6 +163,7 @@ export default class Music_IMF_IDSoftware_Common extends MusicHandler
 
 		return {
 			valid: true,
+			reason: 'Data seems valid.',
 		};
 	}
 
