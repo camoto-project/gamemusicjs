@@ -33,8 +33,8 @@
   },
   "homepage": "https://github.com/camoto-project/gamemusicjs#readme",
   "dependencies": {
-    "@camoto/record-io-buffer": "^3.0.0",
-    "debug": "^4.2.0"
+    "@camoto/record-io-buffer": "^3.1.3",
+    "debug": "^4.3.1"
   },
   "devDependencies": {
     "chalk": "^4.1.0",
