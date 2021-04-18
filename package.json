@@ -43,6 +43,14 @@
     "mocha": "^8.3.2",
     "mocha-eslint": "^7.0.0"
   },
+  "files": [
+    "bin/",
+    "cli/*.js",
+    "interface/",
+    "formats/",
+    "util/",
+    "index.js"
+  ],
   "directories": {
     "test": "test"
   }
